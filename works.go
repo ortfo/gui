@@ -27,13 +27,10 @@ func (w wrappedWork) Card(ctx *state) fyne.CanvasObject {
 	work := w.Work.InLanguage(ctx.data.defaultWorksLanguage)
 	title := work.Title
 	location := filepath.Join(ctx.data.projectsRoot, work.ID)
-	fmt.Println(location)
 	thumbnailSource := strings.TrimPrefix(work.ThumbnailSource(400), "file://")
 	thumbnail := canvas.NewImageFromFile(thumbnailSource)
 	thumbnail.SetMinSize(fyne.NewSize(220, 320))
 	thumbnail.FillMode = canvas.ImageFillContain
-	// thumbnail.SetMinSize(fyne.NewSize())
-	fmt.Printf("%q\n", filepath.Join(thumbnailSource))
 
 	return container.NewVBox(
 		thumbnail,
