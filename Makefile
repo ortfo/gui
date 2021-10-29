@@ -5,9 +5,11 @@ LOCAL != test -d $(DESTDIR)/usr/local && echo -n "/local" || echo -n ""
 LOCAL ?= $(shell test -d $(DESTDIR)/usr/local && echo "/local" || echo "")
 PREFIX ?= /usr$(LOCAL)
 
-default:
-	# Run "sudo make install" to install the application.
-	# Run "sudo make uninstall" to uninstall the application.
+
+
+build:
+	fyne bundle assets/ > bundle.go
+	fyne package --release --name ortfo --tags portfolio --appVersion $(shell cat version) --id works.ewen.ortfo.gui
 
 install:
 	install -Dm00644 usr/local/share/applications/gui.desktop $(DESTDIR)$(PREFIX)/share/applications/gui.desktop

@@ -17,11 +17,11 @@ func TestWorksGreeting(t *testing.T) {
 
 	state.data.surname = "Ewen Le Bihan"
 	state.loadUI()
-	assert.Equal(t, "Good to see you, Ewen Le Bihan.", state.ui.main.Objects[0].(*widget.Label).Text)
+	assert.Equal(t, "Good to see you, Ewen Le Bihan.", state.ui.main.Objects[0].(*canvas.Text).Text)
 
 	state.data.surname = ""
 	state.loadUI()
-	assert.Equal(t, "Good to see you.", state.ui.main.Objects[0].(*widget.Label).Text)
+	assert.Equal(t, "Good to see you.", state.ui.main.Objects[0].(*canvas.Text).Text)
 }
 
 func TestWorksGrid(t *testing.T) {

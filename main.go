@@ -131,7 +131,8 @@ func (ui *ui) refresh() {
 	)
 }
 
-type ortfoguiTheme struct {}
+type ortfoguiTheme struct{}
+
 var _ fyne.Theme = (*ortfoguiTheme)(nil)
 
 func (t *ortfoguiTheme) Icon(n fyne.ThemeIconName) fyne.Resource {
@@ -144,6 +145,15 @@ func (t *ortfoguiTheme) Color(n fyne.ThemeColorName, v fyne.ThemeVariant) color.
 
 // TextFont returns the font resource for the regular font style
 func (t *ortfoguiTheme) Font(style fyne.TextStyle) fyne.Resource {
+	if !style.Monospace {
+		if style.Bold {
+			return resourceManropeExtraboldTtf
+		} else if style.Italic {
+			return resourceManropeMediumTtf
+		} else {
+			return resourceManropeRegularTtf
+		}
+	}
 	return theme.DefaultTheme().Font(style)
 }
 

@@ -8,19 +8,13 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	ortfomk "github.com/ortfo/mk"
 )
 
 type wrappedWork struct {
 	ortfomk.Work
-}
-
-type workCard struct {
-	title         string
-	location      string
-	thumbnailPath string
 }
 
 func (w wrappedWork) Card(ctx *state) fyne.CanvasObject {
@@ -32,11 +26,11 @@ func (w wrappedWork) Card(ctx *state) fyne.CanvasObject {
 	thumbnail.SetMinSize(fyne.NewSize(220, 320))
 	thumbnail.FillMode = canvas.ImageFillContain
 
-	return container.NewVBox(
-		thumbnail,
-		widget.NewLabel(title),
-		widget.NewLabelWithStyle(location, fyne.TextAlignCenter, widget.RichTextStyleCodeInline.TextStyle),
-	)
+	card := NewTappableCard(title, location, thumbnail, func() {
+		ctx.ui.main = ctx.buildEditorUI(w)
+		ctx.ui.refresh()
+	})
+	return card
 }
 
 func buildWorksUI(ctx *state) *fyne.Container {
@@ -44,20 +38,23 @@ func buildWorksUI(ctx *state) *fyne.Container {
 	if ctx.data.surname != "" {
 		greetingText = fmt.Sprintf("Good to see you, %s.", ctx.data.surname)
 	}
-	cards := make([]fyne.CanvasObject, 0, len(ctx.data.Works))
 
-	for _, work := range ctx.data.Works {
-		cards = append(cards, Margins(wrappedWork{Work: work}.Card(ctx), 50))
-	}
-
-	heading := widget.NewLabelWithStyle(greetingText, fyne.TextAlignCenter, fyne.TextStyle{
-		Bold: true,
+	addWorkButton := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
+		widget.NewModalPopUp(Atop(
+			Heading("Create a new portfolio entry from…"),
+			container.NewVBox(),
+		), ctx.window().Canvas())
 	})
+	addWork := widget.NewCard("", "", addWorkButton)
+
+	cards := make([]fyne.CanvasObject, 0, len(ctx.data.Works))
+	cards = append(cards, addWork)
+	for _, work := range ctx.data.Works {
+		cards = append(cards, Margins(wrappedWork{Work: work}.Card(ctx), 20))
+	}
 	scrollable := container.NewVScroll(
 		container.NewAdaptiveGrid(6, cards...),
 	)
-	return container.New(
-		layout.NewBorderLayout(heading, nil, nil, nil),
-		heading, scrollable,
-	)
+
+	return Atop(Heading(greetingText), scrollable)
 }
