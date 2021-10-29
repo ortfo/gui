@@ -30,3 +30,9 @@
 
 # Bundled assets
 bundle.go
+
+# Svelte stuff
+/node_modules/
+/build/
+
+.DS_Store

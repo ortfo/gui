@@ -1,32 +1,14 @@
 package main
 
 import (
-    _ "embed"
-	"github.com/wailsapp/wails"
+	"github.com/webview/webview"
 )
 
-func basic() string {
-	return "World!"
-}
-
-//go:embed frontend/public/build/bundle.js
-var js string
-
-//go:embed frontend/public/build/bundle.css
-var css string
-
 func main() {
-
-	app := wails.CreateApp(&wails.AppConfig{
-		MinWidth:  1024,
-		MinHeight: 768,
-		Resizable: true,
-		Title:  "ortfo",
-		JS:     js,
-		CSS:    css,
-		Colour: "#FFF",
-	})
-
-	app.Bind(basic)
-	app.Run()
+	w := webview.New(true)
+	defer w.Destroy()
+	w.SetTitle("ortfo")
+	w.SetSize(800, 600, webview.HintNone)
+	w.Navigate("http://localhost:5000")
+	w.Run()
 }
