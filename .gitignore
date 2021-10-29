@@ -32,7 +32,7 @@
 bundle.go
 
 # Svelte stuff
-/node_modules/
-/build/
+node_modules/
+public/build/
 
 .DS_Store
