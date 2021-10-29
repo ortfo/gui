@@ -27,3 +27,6 @@
 
 # Environment variables
 .env
+
+# Bundled assets
+bundle.go
