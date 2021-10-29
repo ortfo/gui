@@ -3,9 +3,9 @@ package main
 import (
 	"testing"
 
-	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/alecthomas/assert"
 	ortfodb "github.com/ortfo/db"
@@ -66,17 +66,20 @@ func TestWorksGrid(t *testing.T) {
 
 	state.loadUI()
 
+	// main > scrollable area > adaptative grid
 	cards := state.ui.main.Objects[1].(*container.Scroll).Content.(*fyne.Container)
 
 	assert.Equal(t, 2, len(cards.Objects))
 
-	card1 := cards.Objects[0].(*fyne.Container)
+	// adaptative grid > margins > vbox
+	card1 := cards.Objects[0].(*fyne.Container).Objects[4].(*fyne.Container)
 	assert.Equal(t, "fixtures/works/portfolio/media/work-1/media.png", card1.Objects[0].(*canvas.Image).File)
-	assert.Empty(t, "Work 1", card1.Objects[1].(*widget.Label).Text)
-	assert.Empty(t, "fixtures/works/work-2", card1.Objects[2].(*widget.Label).Text)
+	assert.Equal(t, "Work 1", card1.Objects[1].(*widget.Label).Text)
+	assert.Equal(t, "fixtures/works/work-1", card1.Objects[2].(*widget.Label).Text)
 
-	card2 := cards.Objects[1].(*fyne.Container)
+	// adaptative grid > margins > vbox
+	card2 := cards.Objects[1].(*fyne.Container).Objects[4].(*fyne.Container)
 	assert.Equal(t, "fixtures/works/portfolio/media/work-2/media.png", card2.Objects[0].(*canvas.Image).File)
-	assert.Empty(t, "Work 2", card2.Objects[1].(*widget.Label).Text)
-	assert.Empty(t, "fixtures/works/work-2", card2.Objects[2].(*widget.Label).Text)
+	assert.Equal(t, "Work 2", card2.Objects[1].(*widget.Label).Text)
+	assert.Equal(t, "fixtures/works/work-2", card2.Objects[2].(*widget.Label).Text)
 }

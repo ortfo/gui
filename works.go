@@ -49,9 +49,8 @@ func buildWorksUI(ctx *state) *fyne.Container {
 	}
 	cards := make([]fyne.CanvasObject, 0, len(ctx.data.Works))
 
-	println("size works", len(ctx.data.Works))
 	for _, work := range ctx.data.Works {
-		cards = append(cards, wrappedWork{Work: work}.Card(ctx))
+		cards = append(cards, Margins(wrappedWork{Work: work}.Card(ctx), 50))
 	}
 
 	heading := widget.NewLabelWithStyle(greetingText, fyne.TextAlignCenter, fyne.TextStyle{

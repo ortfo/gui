@@ -150,11 +150,11 @@ func (t *ortfoguiTheme) Font(style fyne.TextStyle) fyne.Resource {
 func (t *ortfoguiTheme) Size(s fyne.ThemeSizeName) float32 {
 	switch s {
 	case theme.SizeNameSeparatorThickness:
-		return 0.25
+		return 1
 	case theme.SizeNameInlineIcon:
 		return 20
 	case theme.SizeNamePadding:
-		return 8
+		return 4
 	case theme.SizeNameScrollBar:
 		return 16
 	case theme.SizeNameScrollBarSmall:
