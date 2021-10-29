@@ -9,6 +9,7 @@
 <style>
 	.card {
 		border: 1px solid var(--grey);
+		border-radius: 0.7rem;
 		padding: 1.125rem;
 	}
 

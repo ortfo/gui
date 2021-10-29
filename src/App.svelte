@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from "./components/Card.svelte";
 	import Navbar from "./components/Navbar.svelte";
 	import { surname, theme } from "./stores";
 
@@ -10,9 +11,10 @@
 	}
 </script>
 
+<Navbar />
 <main>
-	<Navbar />
 	<h1>Good to see you, {$surname}.</h1>
+	<Card creates><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sint ipsa iure praesentium optio dolore ea veritatis corporis architecto eos itaque velit, commodi doloribus placeat error reiciendis, assumenda harum nisi. Dolores.</p></Card>
 </main>
 
 <style>
@@ -24,9 +26,18 @@
 
 	:global(*) {
 		color: var(--black);
+		font-family: var(--sans);
+		margin: 0;
+		padding: 0;
 	}
 
 	:global(button) {
+		background: transparent;
+		border: none;
+		cursor: pointer;
+	}
+
+	:global(button):not([data-looks-like]) {
 		border-radius: 2em;
 		border: 2px solid var(--ortforange);
 		color: var(--ortforange);
@@ -37,7 +48,7 @@
 		transition: all 0.2s ease;
 	}
 
-	:global(button):hover {
+	:global(button):not([data-looks-like]):hover {
 		background-color: var(--ortforange-light);
 	}
 
@@ -45,6 +56,7 @@
 		text-align: center;
 		font-size: 3em;
 		font-weight: normal;
+		margin: 2rem 0;
 	}
 
 	:root {
@@ -55,5 +67,10 @@
 		--white: #fff;
 		--gray: #ccc;
 		--sans: "Manrope";
+	}
+
+	main {
+		max-width: 1200px;
+		margin: 0 auto;
 	}
 </style>

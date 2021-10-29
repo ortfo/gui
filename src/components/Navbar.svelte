@@ -26,6 +26,7 @@
 		</a>
 	{/each}
 	<button on:click={() => summon("publish")}>publish!</button>
+	<button class="quit" data-looks-like="a" on:click={() => send("close")}>×</button>
 </nav>
 
 <style>
@@ -51,7 +52,11 @@
 		font-weight: bold; 
 		border-bottom-color: var(--ortforange);
 	}
-	button {
+	button:first-of-type {
 		margin-left: auto;
+	}
+
+	.quit {
+		font-size: 2rem;
 	}
 </style>
