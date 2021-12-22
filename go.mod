@@ -3,7 +3,9 @@ module github.com/ortfo/gui
 go 1.17
 
 require (
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.2
+	github.com/ortfo/db v0.0.0-20210523225259-4c9c15bdfa0c
 	github.com/ortfo/mk v0.0.0-20211027175104-bf5d13a87f47
 	github.com/webview/webview v0.0.0-20210330151455-f540d88dde4e
 )
@@ -45,7 +47,6 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/oliamb/cutter v0.2.2 // indirect
-	github.com/ortfo/db v0.0.0-20210523225259-4c9c15bdfa0c // indirect
 	github.com/radovskyb/watcher v1.0.7 // indirect
 	github.com/relvacode/iso8601 v1.1.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect

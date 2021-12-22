@@ -2,5 +2,6 @@
 	"semi": false,
 	"singleQuote": false,
 	"arrowParens": "avoid",
-	"pluginSearchDirs": ["."]
+	"pluginSearchDirs": ["."],
+	"svelteIndentScriptAndStyle": false
 }

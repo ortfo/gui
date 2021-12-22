@@ -5,8 +5,11 @@ specifiers:
   '@rollup/plugin-node-resolve': ^11.0.0
   '@rollup/plugin-typescript': ^8.0.0
   '@tsconfig/svelte': ^2.0.0
+  base64-arraybuffer: ^1.0.1
   concurrently: ^6.3.0
   nodemon: ^2.0.14
+  prettier: ^2.5.1
+  prettier-plugin-svelte: ^2.5.1
   rollup: ^2.3.4
   rollup-plugin-css-only: ^3.1.0
   rollup-plugin-livereload: ^2.0.0
@@ -16,14 +19,17 @@ specifiers:
   svelte: ^3.0.0
   svelte-check: ^2.0.0
   svelte-grid: ^5.1.0
+  svelte-json-tree: ^0.1.0
   svelte-preprocess: ^4.0.0
   tslib: ^2.0.0
   typescript: ^4.0.0
   uuid: ^8.3.2
 
 dependencies:
+  base64-arraybuffer: 1.0.1
   sirv-cli: 1.0.14
   svelte-grid: 5.1.0
+  svelte-json-tree: 0.1.0
   uuid: 8.3.2
 
 devDependencies:
@@ -33,6 +39,8 @@ devDependencies:
   '@tsconfig/svelte': 2.0.1
   concurrently: 6.3.0
   nodemon: 2.0.14
+  prettier: 2.5.1
+  prettier-plugin-svelte: 2.5.1_prettier@2.5.1+svelte@3.44.0
   rollup: 2.58.3
   rollup-plugin-css-only: 3.1.0_rollup@2.58.3
   rollup-plugin-livereload: 2.0.5
@@ -242,6 +250,11 @@ packages:
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
+
+  /base64-arraybuffer/1.0.1:
+    resolution: {integrity: sha512-vFIUq7FdLtjZMhATwDul5RZWv2jpXQ09Pd6jcVEOvIsqCWTRFD/ONHNfyOS8dA/Ippi5dsIgpyKWKZaAKZltbA==}
+    engines: {node: '>= 0.6.0'}
+    dev: false
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -1022,6 +1035,22 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /prettier-plugin-svelte/2.5.1_prettier@2.5.1+svelte@3.44.0:
+    resolution: {integrity: sha512-IhZUcqr7Bg4LY15d87t9lDr7EyC0IPehkzH5ya5igG8zYwf3UYaYDFnVW2mckREaZyLREcH9YOouesmt4f5Ozg==}
+    peerDependencies:
+      prettier: ^1.16.4 || ^2.0.0
+      svelte: ^3.2.0
+    dependencies:
+      prettier: 2.5.1
+      svelte: 3.44.0
+    dev: true
+
+  /prettier/2.5.1:
+    resolution: {integrity: sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
   /pstree.remy/1.1.8:
     resolution: {integrity: sha512-77DZwxQmxKnu3aR542U+X8FypNzbfJ+C5XQDk3uWjWxn6151aIMGthWYRXTqT1E5oJvg+ljaa2OJi+VfvCOQ8w==}
     dev: true
@@ -1390,6 +1419,10 @@ packages:
 
   /svelte-grid/5.1.0:
     resolution: {integrity: sha512-iGfN2eqjrrdSoOGhYfAyhgVdM9gmKKvu9C0n5+PYm2Ck42Ep+5iTHlti885YrYIzhax4FOwDAyzLZ5Keniv/ew==}
+    dev: false
+
+  /svelte-json-tree/0.1.0:
+    resolution: {integrity: sha512-ufKWvS94z5m6Je9Hu0yosvdALy0mOPcaexbTcQQ/jW+3Rzi4oaHkOeg4RQ3cNpOlOQlIs0lfsF9FBlyquZ7XuQ==}
     dev: false
 
   /svelte-preprocess/4.9.8_svelte@3.44.0+typescript@4.4.4:

@@ -84,7 +84,7 @@ func LoadSettings() (settings Settings, err error) {
 	// parse
 	err = json.Unmarshal(content, &settings)
 
-	return settings, err
+	return
 }
 
 func InitializeConfigurationDirectory() error {
@@ -104,7 +104,11 @@ func InitializeConfigurationDirectory() error {
 		return fmt.Errorf("couldn't initialize database settings file: %w", err)
 	}
 
-	settings := DefaultSettings()
+	settings, err := LoadSettings()
+	if err != nil {
+		return fmt.Errorf("couldn't save default settings: %w", err)
+	}
+
 	err = SaveSettings(settings)
 	if err != nil {
 		return fmt.Errorf("couldn't save default settings: %w", err)

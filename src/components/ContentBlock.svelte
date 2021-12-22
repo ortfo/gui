@@ -1,7 +1,6 @@
 <script lang="ts">
-
 </script>
 
 <div class="block">
-	<slot></slot>
+	<slot />
 </div>

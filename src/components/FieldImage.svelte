@@ -1,0 +1,67 @@
+<script lang="ts">
+import type { Base64WithFiletype } from "../backend"
+import { encode as bufferBase64encode } from "base64-arraybuffer"
+import { createEventDispatcher } from "svelte"
+import { metadataReadableNames } from "../ortfo"
+import { state } from "../stores"
+import MetadataField from "./MetadataField.svelte"
+
+const emit = createEventDispatcher()
+
+export let value: Base64WithFiletype
+let files: FileList = [] as FileList
+let fakepath = ""
+export let key: string
+
+async function getBase64d() {
+	if (!files.length) {
+		console.log($state)
+		emit("change", "")
+		return
+	}
+
+	value =
+		`data:${files[0].type};base64,` +
+		bufferBase64encode(await files[0].arrayBuffer())
+	emit("change", value)
+	console.log($state)
+	return value
+}
+</script>
+
+<MetadataField {key}>
+	<input
+		type="file"
+		accept="image/*"
+		name={key}
+		id="input-{key}"
+		bind:files
+	/>
+	{#if files.length || value}
+		<div class="preview">
+			{#await getBase64d()}
+				<p>Loading...</p>
+			{:then}
+				<img class="preview" src={value} alt="chosen image for {key}" />
+				<button
+					class="remove"
+					on:click={() => {
+						files = []
+						document.getElementById(`input-${key}`).value = ""
+						value = ""
+						emit("change", "")
+						console.log($state)
+					}}>&times;</button
+				>
+			{:catch err}
+				<p>An error occured: {err}</p>
+			{/await}
+		</div>
+	{/if}
+</MetadataField>
+
+<style>
+img.preview {
+	height: 2rem;
+}
+</style>

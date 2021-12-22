@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/mapstructure"
+	ortfomk "github.com/ortfo/mk"
 	"github.com/webview/webview"
 )
 
@@ -27,6 +28,20 @@ func main() {
 		println("Quitting...")
 		w.Terminate()
 		return nil
+	})
+	w.Bind("backend__databaseRead", func() (ortfomk.Database, error) {
+		settings, _ := LoadSettings()
+		return settings.LoadDatabase()
+		// db, err := settings.LoadDatabase()
+		// spew.Dump(db, err)
+		// return db, err
+	})
+	w.Bind("backend__rebuildDatabase", func() error {
+		settings, _ := LoadSettings()
+		return settings.RebuildDatabase()
+	})
+	w.Bind("backend__getMedia", func(path string) (string, error) {
+		return GetMedia(path)
 	})
 	w.Run()
 }

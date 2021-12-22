@@ -17,12 +17,10 @@ export type SvelteGridItem = {
     data: any
 }
 
-export type OrtfoMkLayout = (`${"p" | "m" | "l"}${number}`)[][]
+export type OrtfoMkLayout = `${"p" | "m" | "l"}${number}`[][]
 
 // toLayout transforms an array of grid of svelte-grid items into a ortfomk layout
-export function toLayout(items: SvelteGridItem[]) OrtfoMkLayout {
+export function toLayout(items: SvelteGridItem[]): OrtfoMkLayout {
     let layout: OrtfoMkLayout = []
-    items.forEach(item => {
-        
-    })
+    items.forEach(item => {})
 }

@@ -36,3 +36,6 @@ node_modules/
 public/build/
 
 .DS_Store
+
+# Link to my personal .config/ortfo for convinience (I recommend it, it can be quite useful)
+.config/
