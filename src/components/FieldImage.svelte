@@ -10,7 +10,6 @@ const emit = createEventDispatcher()
 
 export let value: Base64WithFiletype
 let files: FileList = [] as FileList
-let fakepath = ""
 export let key: string
 
 async function getBase64d() {
@@ -29,7 +28,7 @@ async function getBase64d() {
 }
 </script>
 
-<MetadataField {key}>
+<MetadataField {key} oneline>
 	<input
 		type="file"
 		accept="image/*"

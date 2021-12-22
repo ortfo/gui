@@ -2,19 +2,48 @@
 import { onMount } from "svelte"
 import type { WorkOneLang } from "../ortfo"
 import SwitchButton from "../components/SwitchButton.svelte"
-import JSONTree from "svelte-json-tree"
 import { state, settings, database, fillEditorMetadataState } from "../stores"
 import VerticalSplit from "../components/VerticalSplit.svelte"
+import JSONTree from "svelte-json-tree"
+import equal from "deep-equal"
 import FieldImage from "../components/FieldImage.svelte"
 import FieldList from "../components/FieldList.svelte"
+import { backend } from "../backend";
+import FieldColors from "../components/FieldColors.svelte";
 
 export let work: WorkOneLang = $database.works.find(
 	w => w.id == $state.editingWork
 )
-onMount(() => {
-	$state.editor.metadata = fillEditorMetadataState(work.metadata)
-	console.log($state)
+onMount(async () => {
+	$state.editor.metadata = await fillEditorMetadataState(work, $settings)
 })
+
+function diffWithSaved() {
+	const current = $state.editor.metadata
+	const saved = work.metadata
+	return (
+		current.aliases !== saved?.aliases ||
+		!equal(current.colors, saved.colors) ||
+		current.created.toISOString() !== saved.created.toISOString() ||
+		current.titlestyle !== saved?.titlestyle
+		// TODO pagebackground
+	)
+}
+
+function editTitle(e) {
+	if (!editingTitle) {
+		editingTitle = true
+		document.getElementById("title").focus()
+	} else {
+		editingTitle = false
+		$state.editor.title = e.target.textContent
+	}
+}
+
+let editingTitle = false
+
+$: $state.editor.unsavedChanges = diffWithSaved()
+
 </script>
 
 <VerticalSplit right={$state.editor.metadataPaneSplitRatio}>
@@ -25,7 +54,20 @@ onMount(() => {
 			showCodes
 		/>
 		<p class="url">/{work.id}</p>
-		<h1>{work.title} <button data-variant="inline">edit</button></h1>
+
+		<div class="title" id="title">
+			<h1
+				on:blur={() => {editingTitle = false; $state.editor.title = e.target.textContent}}
+				contenteditable={editingTitle}
+			>
+				{work.title}
+			</h1>
+			<button
+				data-variant="inline"
+				on:click={editTitle}
+				>{#if editingTitle}finish editing{:else}edit{/if}</button
+			>
+		</div>
 
 		{#if $settings.showTips}
 			<p class="tip">
@@ -50,20 +92,40 @@ onMount(() => {
 
 		<dl>
 			<FieldList key="tags" bind:value={$state.editor.metadata.tags} />
+			<FieldList key="madewith" bind:value={$state.editor.metadata.madewith} />
+			<FieldColors key="colors" bind:value={$state.editor.metadata.colors} />
 			<FieldImage
 				key="pagebackground"
 				bind:value={$state.editor.metadata.pagebackground}
 			/>
 		</dl>
-
-		<JSONTree data={$state.editor.metadata} />
-		<JSONTree data={$state} />
 	</section>
 </VerticalSplit>
 
+<JSONTree data={$state.editor}/>
+
 <style>
-h1 {
+.title {
 	text-align: left;
 	margin-top: -0.25em;
 }
+.title h1 {
+	margin: 0;
+}
+[contenteditable] {
+	border: 2px solid transparent;
+}
+[contenteditable="true"] {
+	border-color: var(--ortforange);
+}
+.title {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+}
+
+.url {
+	font-family: var(--mono);
+}
+
 </style>

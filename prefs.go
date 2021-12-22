@@ -13,6 +13,7 @@ type Settings struct {
 	Theme          string `json:"theme"`
 	Surname        string `json:"surname"`
 	ProjectsFolder string `json:"projectsFolder"`
+	ShowTips       bool   `json:"showTips"`
 }
 
 func ConfigurationDirectory(segments ...string) string {

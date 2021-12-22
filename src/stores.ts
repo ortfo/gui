@@ -1,7 +1,7 @@
 import { writable } from "svelte/store"
 import type { Writable } from "svelte/store"
 import type { DatabaseOneLang, WorkMetadata, WorkOneLang } from "./ortfo"
-import type { Base64WithFiletype } from "./backend"
+import { backend, Base64WithFiletype } from "./backend"
 
 export type Settings = {
     theme: string
@@ -41,12 +41,16 @@ export type State = {
             titlestyle: "filled" | "outlined"
             pagebackground: Base64WithFiletype
         }
+        title: string
+        unsavedChanges: boolean
     }
 }
 
-export function fillEditorMetadataState(
-    metadata: WorkMetadata
-): State["editor"]["metadata"] {
+export async function fillEditorMetadataState(
+    work: WorkOneLang,
+    settings: Settings
+): Promise<State["editor"]["metadata"]> {
+    const metadata = work.metadata
     return {
         tags: metadata.tags,
         madewith: metadata.madewith,
@@ -54,7 +58,7 @@ export function fillEditorMetadataState(
         colors: metadata.colors,
         aliases: metadata?.aliases || [],
         titlestyle: metadata?.titlestyle || "filled",
-        pagebackground: metadata?.pagebackground,
+        pagebackground: metadata?.pagebackground ? await backend.getMedia(`${settings.projectsfolder}/${work.id}/.portfoliodb/${metadata?.pagebackground}`) : "",
     }
 }
 
@@ -75,7 +79,15 @@ export const state: Writable<State> = writable({
         metadataPaneSplitRatio: 0.333,
         metadata: {
             tags: [],
+            madewith: [],
+            colors: {
+                primary: "",
+                secondary: "",
+                tertiary: "",
+            },
         } as State["editor"]["metadata"],
+        unsavedChanges: false,
+        title: "",
     },
 })
 

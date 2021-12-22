@@ -1,3 +1,3 @@
-export let summon = (modalName: "publish" | "new-entry") => {
+export let summon = (modalName: "publish" | "pick-image" | "new-entry") => {
     console.error("Not implemented")
 }

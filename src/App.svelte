@@ -36,7 +36,7 @@ async function loadDatabase() {
 async function load() {
 	await loadSettings()
 	await loadDatabase()
-	$state.editingWork = "condenses"
+	$state.editingWork = "ideaseed"
 	$state.openTab = "editor"
 }
 </script>
@@ -113,6 +113,11 @@ async function load() {
 :global(button):not([data-variant]):hover {
 	background-color: var(--ortforange-light);
 }
+
+:global(button)[data-variant=inline] {
+	border: 1px solid var(--black);
+}
+
 
 :global(h1) {
 	text-align: center;

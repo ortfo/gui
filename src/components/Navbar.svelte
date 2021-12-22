@@ -33,6 +33,9 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			href="#editor"
 			class:current={$state.openTab === "editor"}>{$state.editingWork}</a
 		>
+		{#if $state.editor.unsavedChanges} 
+		<span class="unsaved-changes" title="You have unsaved changes">&bull;</span>
+		{/if}
 	{/if}
 	{#each tabs as tab}
 		<a
@@ -77,6 +80,14 @@ nav {
 	margin: 0 -1em;
 	font-size: 1.5em;
 	color: var(--gray);
+}
+.unsaved-changes {
+	margin-left: -0.7em;
+	font-size: 2.5em;
+	color: var(--ortforange)
+}
+.separator, .unsaved-changes {
+	padding-bottom: 1px; /* nav: border-bottom-width */
 }
 img {
 	height: 2.1rem;

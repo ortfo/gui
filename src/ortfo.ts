@@ -102,16 +102,9 @@ export interface WorkMetadata {
 }
 
 export const metadataReadableNames = {
-    created: "created",
-    started: "started",
-    finished: "finished",
-    tags: "tags",
     madewith: "made with",
-    colors: "colors",
     pagebackground: "page background",
-    title: "title",
     wip: "work in progress",
-    thumbnails: "thumbnails",
 }
 
 export interface Database {

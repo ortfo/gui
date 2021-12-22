@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "base64-arraybuffer": "^1.0.1",
+    "deep-equal": "^2.0.5",
     "sirv-cli": "^1.0.0",
     "svelte-grid": "^5.1.0",
     "svelte-json-tree": "^0.1.0",

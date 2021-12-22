@@ -16,7 +16,10 @@ settings.subscribe(async settings => {
 		<select name="theme" id="theme" bind:value={$settings.theme}>
 			<option value="light">light</option>
 			<option value="dark">dark</option>
-		</select><button on:click={_ => window.location.reload()}>apply</button>
+		</select><button
+			data-variant="inline"
+			on:click={_ => window.location.reload()}>apply</button
+		>
 	</dd>
 
 	<dt>surname</dt>
@@ -31,5 +34,10 @@ settings.subscribe(async settings => {
 			<option value="fr">french</option>
 			<option value="en">english</option>
 		</select>
+	</dd>
+
+	<dt>show tips</dt>
+	<dd>
+		<input type="checkbox" name="show-tips" id="show-tips" bind:checked={$settings.showTips}>
 	</dd>
 </dl>
