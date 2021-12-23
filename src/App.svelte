@@ -6,6 +6,7 @@ import Works from "./tabs/works.svelte"
 import Tags from "./tabs/tags.svelte"
 import Editor from "./tabs/editor.svelte"
 import Settings from "./tabs/settings.svelte"
+import { onMount } from "svelte";
 
 async function loadSettings() {
 	await backend.initializeConfigurationDirectory()
@@ -39,6 +40,14 @@ async function load() {
 	$state.editingWork = "ideaseed"
 	$state.openTab = "editor"
 }
+
+onMount(() => {
+	window.addEventListener("keypress", e => {
+		if (e.key == "r" && e.ctrlKey) {
+			window.location.reload()
+		}
+	})
+})
 </script>
 
 {#await load()}
