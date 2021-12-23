@@ -7,8 +7,8 @@ export let partOfObject: boolean = false
 export let oneline: boolean = false
 </script>
 
-<div class="entry" class:oneline>
-	<dt class:colon class:part-of-object={partOfObject}>
+<div class="entry" class:oneline class:part-of-object={partOfObject}>
+	<dt class:colon >
 		{metadataReadableNames[key] || key}
 	</dt>
 	<dd><slot /></dd>
@@ -30,12 +30,18 @@ dt {
 dt.colon::after {
 	content: ": ";
 }
-dt.part-of-object::before {
+.part-of-object > dt::before {
 	content: "└";
 	font-weight: bold;
 	font-size: 2em;
 	color: var(--gray);
 	margin-right: 0.25em;
 	line-height: 0.7;
+}
+.entry {
+	margin-bottom: 0.5em;
+}
+.entry.part-of-object {
+	margin-bottom: 0.25em;
 }
 </style>
