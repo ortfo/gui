@@ -81,7 +81,6 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 		<h2>Metadata</h2>
 		{#if $settings.showTips}
 			<p class="tip">
-				right-click any item to reset its value <br />
 				unset values inherit their defaults, set in
 				<a
 					href="#settings"

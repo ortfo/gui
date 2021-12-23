@@ -11,11 +11,12 @@ function reset(e) {
 }
 </script>
 
-<MetadataField oneline {partOfObject} {key} on:contextmenu={reset}>
+<MetadataField oneline {partOfObject} {key}>
 	<div
 		class="swatch"
 		class:unset={!value}
 		style={value ? `background-color: #${value};` : ""}
+		on:dblclick={reset}
 	/>
 	<input type="text" bind:value placeholder="unset" />
 </MetadataField>
