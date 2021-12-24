@@ -1,0 +1,31 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="53" xmlns="http://www.w3.org/2000/svg" id="screenshot"
+	version="1.1" viewBox="0 0 53 53" height="53" style="-webkit-print-color-adjust: exact;">
+	<g id="shape-f5a70b56-521c-11ec-82ab-a3353aea1069">
+		<g id="shape-f5a70b65-521c-11ec-82ab-a3353aea1069">
+			<ellipse cx="21.137392175314403" cy="20.999987770622283" rx="3" ry="3" transform="matrix(1,0,0,1,0,0)"
+				style="fill: rgb(0, 0, 0); fill-opacity: 1;" />
+		</g>
+		<g id="shape-f5a70b5c-521c-11ec-82ab-a3353aea1069">
+			<defs>
+				<clipPath id="inner-stroke-65276250-64b9-11ec-8a7b-25ab537ecbd1">
+					<use xlink:href="#stroke-shape-65276250-64b9-11ec-8a7b-25ab537ecbd1" />
+				</clipPath>
+			</defs>
+			<g class="inner-stroke-shape">
+				<defs>
+					<path
+						d="M17.000000000000114,17.5L36.000000000000114,17.5L36.000000000000114,35.5L17.000000000000114,35.5L17.000000000000114,17.5Z"
+						id="stroke-shape-65276250-64b9-11ec-8a7b-25ab537ecbd1"
+						style="fill: none; stroke-width: 4; stroke: rgb(0, 0, 0); stroke-opacity: 1;" />
+				</defs>
+				<use xlink:href="#stroke-shape-65276250-64b9-11ec-8a7b-25ab537ecbd1"
+					clip-path="url('#inner-stroke-65276250-64b9-11ec-8a7b-25ab537ecbd1')" />
+			</g>
+		</g>
+		<g id="shape-f5a70b50-521c-11ec-82ab-a3353aea1069">
+			<path
+				d="M18.000000000000114,34.5C17.528595479209002,34.5,25.000000000000114,26.5,25.000000000000114,26.5L29.000000000000114,30.5L33.000000000000114,34.5C33.000000000000114,34.5,33.000000000000114,34.5,18.000000000000114,34.5ZM29.000000000000114,30.5L32.000000000000114,27.5L35.000000000000114,30.5L35.000000000000114,34.5L33.000000000000114,34.5"
+				style="fill: none; stroke-width: 2; stroke: rgb(0, 0, 0); stroke-opacity: 1;" />
+		</g>
+	</g>
+</svg>

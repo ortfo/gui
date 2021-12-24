@@ -7,13 +7,14 @@ import gridHelp from "svelte-grid/build/helper"
 import { ContentBlock, makeBlocks } from "../contentblocks"
 import type { WorkOneLang } from "../ortfo"
 import Card from "./Card.svelte"
+import { state } from "../stores"
 
 export let work: WorkOneLang
 let blocks: ContentBlock[] = []
 let numberOfColumns: number = 0
 let cols: number[][] = []
 let items: any = []
-let editingBlock: number|null = null
+let editingBlock: number | null = null
 onMount(async () => {
 	const _ = await makeBlocks(work)
 	blocks = _.blocks
@@ -21,9 +22,31 @@ onMount(async () => {
 	cols = [[400, numberOfColumns]]
 	items = gridHelp.adjust(blocks, numberOfColumns)
 })
-</script>
 
-<!-- <pre>{JSON.stringify(items)}</pre> -->
+$: items = gridHelp.adjust(blocks, numberOfColumns)
+
+const addBlock = (type: ContentBlock["data"]["type"]) => e => {
+	const geometry = {
+		x: Math.max(...blocks.map(block => block[numberOfColumns].x)),
+		y: Math.max(...blocks.map(block => block[numberOfColumns].y)),
+		w: numberOfColumns,
+		h: 1,
+	}
+	console.log(geometry)
+	blocks = [
+		...blocks,
+		{
+			[numberOfColumns]: gridHelp.item(geometry),
+			id: Math.max(...blocks.map(block => block.id)) + 1,
+			data: {
+				type,
+				raw: "",
+				display: "",
+			},
+		},
+	]
+}
+</script>
 
 <Grid
 	bind:items
@@ -33,7 +56,7 @@ onMount(async () => {
 	fastStart
 	on:change={e => console.log("hello", e)}
 >
-	<div class="block" on:dblclick={editingBlock = item.id}>
+	<div class="block" on:dblclick={(editingBlock = item.id)}>
 		{#if item.data.type === "paragraph"}
 			{@html item.data.display}
 		{:else if item.data.type === "link"}
@@ -45,6 +68,20 @@ onMount(async () => {
 </Grid>
 <div class="create-block">
 	<h2>Add a new block?</h2>
+	<div class="types">
+		<button data-variant="none" on:click={addBlock("media")}>
+			<img src="/assets/icon-media.svg" alt="media icon" />
+			media
+		</button>
+		<button data-variant="none" on:click={addBlock("paragraph")}>
+			<img src="/assets/icon-paragraph.svg" alt="¶" />
+			paragraph
+		</button>
+		<button data-variant="none" on:click={addBlock("link")}>
+			<img src="/assets/icon-major-link.svg" alt="link icon" />
+			link
+		</button>
+	</div>
 </div>
 
 <!-- 
@@ -81,9 +118,19 @@ h2 {
 	border-color: var(--black);
 }
 
-.card-wrapper {
+.create-block .types {
 	display: flex;
-	align-items: center;
+	justify-content: space-between;
+	margin: 0 2em;
+}
+.create-block .types button {
+	display: flex;
 	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.create-block .types button:hover:not(:active) {
+	font-weight: bold;
 }
 </style>
