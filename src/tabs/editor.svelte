@@ -10,10 +10,13 @@ import FieldImage from "../components/FieldImage.svelte"
 import FieldList from "../components/FieldList.svelte"
 import { backend } from "../backend";
 import FieldColors from "../components/FieldColors.svelte";
+import { ContentBlock, makeBlocks } from "../contentblocks"
+import ContentGrid from "../components/ContentGrid.svelte"
 
 export let work: WorkOneLang = $database.works.find(
 	w => w.id == $state.editingWork
 )
+let blocks: ContentBlock[] = []
 onMount(async () => {
 	$state.editor.metadata = await fillEditorMetadataState(work, $settings)
 })
@@ -22,7 +25,7 @@ function diffWithSaved() {
 	const current = $state.editor.metadata
 	const saved = work.metadata
 	return (
-		current.aliases !== saved?.aliases ||
+		current.aliases !== (saved?.aliases || []) ||
 		!equal(current.colors, saved.colors) ||
 		current.created.toISOString() !== saved.created.toISOString() ||
 		current.titlestyle !== saved?.titlestyle
@@ -75,6 +78,8 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 				Double-click a block to edit it.
 			</p>
 		{/if}
+
+		<ContentGrid {work} />
 	</section>
 
 	<section class="metadata">

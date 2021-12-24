@@ -1,52 +1,50 @@
-<script>
+<script lang="ts">
+import { onMount } from "svelte"
+
 import Grid from "svelte-grid"
+import JSONTree from "svelte-json-tree"
 import gridHelp from "svelte-grid/build/helper"
+import { ContentBlock, makeBlocks } from "../contentblocks"
+import type { WorkOneLang } from "../ortfo"
 import Card from "./Card.svelte"
-const id = () => "_" + Math.random().toString(36).substr(2, 9)
-const randomHexColorCode = () => {
-	let n = (Math.random() * 0xfffff * 1000000).toString(16)
-	return "#" + n.slice(0, 6)
-}
-function generateLayout(col) {
-	return new Array(10).fill(null).map(function (item, i) {
-		const y = Math.ceil(Math.random() * 4) + 1
-		return {
-			[col]: gridHelp.item({
-				x: (i * 2) % col,
-				y: Math.floor(i / 6) * y,
-				w: 1,
-				h: y,
-			}),
-			id: id(),
-			data: {
-				start: randomHexColorCode(),
-				end: randomHexColorCode(),
-			},
-		}
-	})
-}
-let cols = [[1200, 2]]
-let items = gridHelp.adjust(generateLayout(2), 2)
+
+export let work: WorkOneLang
+let blocks: ContentBlock[] = []
+let numberOfColumns: number = 0
+let cols: number[][] = []
+let items: any = []
+let editingBlock: number|null = null
+onMount(async () => {
+	const _ = await makeBlocks(work)
+	blocks = _.blocks
+	numberOfColumns = _.numberOfColumns
+	cols = [[400, numberOfColumns]]
+	items = gridHelp.adjust(blocks, numberOfColumns)
+})
 </script>
 
-<code>{JSON.stringify(items, null, "\t")}</code>
+<!-- <pre>{JSON.stringify(items)}</pre> -->
+
 <Grid
 	bind:items
 	{cols}
-	rowHeight={100}
-	let:item
-	fillSpace={true}
-	fastStart={true}
+	rowHeight={200}
+	let:dataItem={item}
+	fastStart
 	on:change={e => console.log("hello", e)}
 >
-	<pre>
-		{JSON.stringify(item, null, "\t")}
-	</pre>
+	<div class="block" on:dblclick={editingBlock = item.id}>
+		{#if item.data.type === "paragraph"}
+			{@html item.data.display}
+		{:else if item.data.type === "link"}
+			<a href={item.data.source}>{@html item.data.display}</a>
+		{:else if item.data.type === "media"}
+			<img src={item.data.source} alt={item.data.display} />
+		{/if}
+	</div>
 </Grid>
-<div class="card-wrapper">
-	<Card creates>
-		<h2>Add a new block?</h2>
-	</Card>
+<div class="create-block">
+	<h2>Add a new block?</h2>
 </div>
 
 <!-- 
@@ -54,13 +52,33 @@ let items = gridHelp.adjust(generateLayout(2), 2)
 	- stretch items to fill horizontal space (spacers are here to fill empty space): group by `x`, for groups of length 1, set `w = number of columns on current breakpoint`
  -->
 <style>
-:global(.svlt-grid-item) {
-	background-color: var(--ortforange);
-}
-
 h2 {
 	text-align: center;
 	color: var(--ortforange);
+	font-weight: normal;
+}
+
+:global(.svlt-grid-item) {
+	border: 0.175em solid var(--gray);
+	border-radius: 0.5em;
+}
+
+.create-block {
+	border: 0.175em solid var(--ortforange);
+	border-radius: 0.5em;
+	max-width: 300px;
+	margin: 0 auto;
+	background-color: var(--ortforange-light);
+}
+
+.block,
+.create-block {
+	padding: 1em;
+}
+
+:global(.svlt-grid-item):hover {
+	cursor: move;
+	border-color: var(--black);
 }
 
 .card-wrapper {

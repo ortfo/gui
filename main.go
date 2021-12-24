@@ -43,5 +43,10 @@ func main() {
 	w.Bind("backend__getMedia", func(path string) (string, error) {
 		return GetMedia(path)
 	})
+	w.Bind("backend__layout", func(workUntyped interface{}) (ortfomk.Layout, error) {
+		var work ortfomk.WorkOneLang
+		mapstructure.Decode(workUntyped, &work)
+		return Layout(work)
+	})
 	w.Run()
 }

@@ -3,6 +3,7 @@ import { createEventDispatcher } from "svelte"
 
 export let creates: boolean = false
 export let clickable: boolean = creates
+export let hasIcon: boolean = false
 const emit = createEventDispatcher()
 </script>
 
@@ -10,6 +11,7 @@ const emit = createEventDispatcher()
 	class="card"
 	class:creates
 	class:clickable
+	class:has-icon={hasIcon}
 	on:click={() => {
 		if (clickable) emit("click")
 	}}
@@ -35,8 +37,11 @@ const emit = createEventDispatcher()
 	background-color: var(--ortforange-light);
 	justify-content: center;
 	align-items: center;
-	font-size: 7em;
 	color: var(--ortforange);
+}
+
+.card.has-icon {
+	font-size: 7em;
 }
 
 .card.clickable {
@@ -54,12 +59,12 @@ const emit = createEventDispatcher()
 	transform: translateY(0);
 }
 
-.card.clickable.creates:hover {
+.card.clickable.creates.has-icon:hover {
 	background-color: var(--ortforange);
 	color: var(--white);
 	font-size: 5em;
 }
-.card.clickable.creates:active {
+.card.clickable.creates.has-icon:active {
 	background-color: var(--ortforange-light);
 	color: var(--black);
 	font-size: 5em;

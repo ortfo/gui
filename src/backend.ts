@@ -19,6 +19,7 @@ type Backend = {
     databaseRead: () => Promise<DatabaseOneLang>
     rebuildDatabase: () => Promise<null | string>
     getMedia: (path: string) => Promise<Base64WithFiletype>
+    layout: (work: WorkOneLang) => Promise<LayedOutElement[]>
 }
 
 export const backend: Backend = {
@@ -48,5 +49,9 @@ export const backend: Backend = {
     },
     getMedia: async (path: string) => {
         return await backend__getMedia(path)
+    },
+    layout: async (work: string) => {
+        const data = (await backend__layout(work))
+        return data.map(lowercaseNoSpacesKeys)
     },
 }

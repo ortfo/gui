@@ -13,7 +13,7 @@ import { summon } from "../modals"
 
 <ul class="cards">
 	<li id="create">
-		<Card creates on:click={() => summon("new-entry")}>+</Card>
+		<Card creates hasIcon on:click={() => summon("new-entry")}>+</Card>
 	</li>
 	{#each $database.works as work}
 		<li id={`work-${work.id}`}>
