@@ -7,16 +7,13 @@ import JSONTree from "svelte-json-tree"
 import equal from "deep-equal"
 import FieldImage from "../components/FieldImage.svelte"
 import FieldList from "../components/FieldList.svelte"
-import { backend } from "../backend";
-import FieldColors from "../components/FieldColors.svelte";
-import { ContentBlock, makeBlocks } from "../contentblocks"
+import FieldColors from "../components/FieldColors.svelte"
 import ContentGrid from "../components/ContentGrid.svelte"
-import {Split} from "@geoffcox/svelte-splitter"
+import { Split } from "@geoffcox/svelte-splitter"
 
 export let work: WorkOneLang = $database.works.find(
 	w => w.id == $state.editingWork
 )
-let blocks: ContentBlock[] = []
 onMount(async () => {
 	$state.editor.metadata = await fillEditorMetadataState(work, $settings)
 })
@@ -46,7 +43,6 @@ function editTitle(e) {
 let editingTitle = false
 
 $: $state.editor.unsavedChanges = diffWithSaved()
-
 </script>
 
 <Split initialPrimarySize="{100 - $state.editor.metadataPaneSplitRatio * 100}%">
@@ -60,14 +56,15 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 
 		<div class="title" id="title">
 			<h1
-				on:blur={() => {editingTitle = false; $state.editor.title = e.target.textContent}}
+				on:blur={() => {
+					editingTitle = false
+					$state.editor.title = e.target.textContent
+				}}
 				contenteditable={editingTitle}
 			>
 				{work.title}
 			</h1>
-			<button
-				data-variant="inline"
-				on:click={editTitle}
+			<button data-variant="inline" on:click={editTitle}
 				>{#if editingTitle}finish editing{:else}edit{/if}</button
 			>
 		</div>
@@ -96,8 +93,14 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 
 		<dl>
 			<FieldList key="tags" bind:value={$state.editor.metadata.tags} />
-			<FieldList key="madewith" bind:value={$state.editor.metadata.madewith} />
-			<FieldColors key="colors" bind:value={$state.editor.metadata.colors} />
+			<FieldList
+				key="madewith"
+				bind:value={$state.editor.metadata.madewith}
+			/>
+			<FieldColors
+				key="colors"
+				bind:value={$state.editor.metadata.colors}
+			/>
 			<FieldImage
 				key="pagebackground"
 				bind:value={$state.editor.metadata.pagebackground}
@@ -106,7 +109,7 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 	</section>
 </Split>
 
-<JSONTree data={$state.editor}/>
+<JSONTree data={$state.editor} />
 
 <style>
 .title {
@@ -131,5 +134,4 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 .url {
 	font-family: var(--mono);
 }
-
 </style>

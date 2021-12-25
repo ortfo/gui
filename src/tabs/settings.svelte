@@ -38,6 +38,11 @@ settings.subscribe(async settings => {
 
 	<dt>show tips</dt>
 	<dd>
-		<input type="checkbox" name="show-tips" id="show-tips" bind:checked={$settings.showTips}>
+		<input
+			type="checkbox"
+			name="show-tips"
+			id="show-tips"
+			bind:checked={$settings.showTips}
+		/>
 	</dd>
 </dl>

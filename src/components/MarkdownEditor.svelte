@@ -65,14 +65,16 @@ $: while (operationsStack?.length) {
 	let result: boolean
 	if (action in ["code", "link", "bold", "italic"]) {
 		result = editor.chain().focus().toggleMark(action).run()
-	} else if (action === "code-block")  {
+	} else if (action === "code-block") {
 		result = editor.chain().focus().toggleCodeBlock().run()
 	} else if (action === "list-bullets") {
 		result = editor.chain().focus().toggleBulletList().run()
 	} else if (action === "list-numbered") {
 		result = editor.chain().focus().toggleOrderedList().run()
 	}
-	console.log(`, which was executed ${result ? "successfully" : "unsuccessfully"}`)
+	console.log(
+		`, which was executed ${result ? "successfully" : "unsuccessfully"}`
+	)
 }
 </script>
 

@@ -8,7 +8,7 @@ export let oneline: boolean = false
 </script>
 
 <div class="entry" class:oneline class:part-of-object={partOfObject}>
-	<dt class:colon >
+	<dt class:colon>
 		{metadataReadableNames[key] || key}
 	</dt>
 	<dd><slot /></dd>
@@ -19,7 +19,8 @@ export let oneline: boolean = false
 	display: grid;
 	grid-template-columns: 1fr auto;
 }
-dt, dd {
+dt,
+dd {
 	display: flex;
 	flex-direction: row;
 	align-items: center;

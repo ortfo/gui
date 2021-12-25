@@ -76,7 +76,9 @@ li.new > input::placeholder {
 	color: var(--ortforange);
 }
 
-li::before, li > input, li > button.remove {
+li::before,
+li > input,
+li > button.remove {
 	height: 1.5rem;
 }
 

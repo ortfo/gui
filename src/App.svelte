@@ -6,7 +6,7 @@ import Works from "./tabs/works.svelte"
 import Tags from "./tabs/tags.svelte"
 import Editor from "./tabs/editor.svelte"
 import Settings from "./tabs/settings.svelte"
-import { onMount } from "svelte";
+import { onMount } from "svelte"
 
 async function loadSettings() {
 	await backend.initializeConfigurationDirectory()
@@ -123,10 +123,9 @@ onMount(() => {
 	background-color: var(--ortforange-light);
 }
 
-:global(button)[data-variant=inline] {
+:global(button)[data-variant="inline"] {
 	border: 1px solid var(--black);
 }
-
 
 :global(h1) {
 	text-align: center;

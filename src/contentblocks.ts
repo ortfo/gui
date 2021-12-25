@@ -20,11 +20,13 @@ export type ContentBlock = {
 export async function makeBlocks(
     work: WorkOneLang
 ): Promise<{ blocks: ContentBlock[]; numberOfColumns: number }> {
-    const numberOfColumns = work.metadata.layout ? Math.max(
-        ...work.metadata.layout.map(
-            row => (Array.isArray(row) ? row : [row]).length
-        )
-    ) : 1
+    const numberOfColumns = work.metadata.layout
+        ? Math.max(
+              ...work.metadata.layout.map(
+                  row => (Array.isArray(row) ? row : [row]).length
+              )
+          )
+        : 1
     const elements = await backend.layout(work)
     return {
         numberOfColumns,

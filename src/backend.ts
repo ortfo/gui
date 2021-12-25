@@ -51,7 +51,7 @@ export const backend: Backend = {
         return await backend__getMedia(path)
     },
     layout: async (work: string) => {
-        const data = (await backend__layout(work))
+        const data = await backend__layout(work)
         return data.map(lowercaseNoSpacesKeys)
     },
 }

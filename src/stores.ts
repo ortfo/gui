@@ -58,7 +58,11 @@ export async function fillEditorMetadataState(
         colors: metadata.colors,
         aliases: metadata?.aliases || [],
         titlestyle: metadata?.titlestyle || "filled",
-        pagebackground: metadata?.pagebackground ? await backend.getMedia(`${settings.projectsfolder}/${work.id}/.portfoliodb/${metadata?.pagebackground}`) : "",
+        pagebackground: metadata?.pagebackground
+            ? await backend.getMedia(
+                  `${settings.projectsfolder}/${work.id}/.portfoliodb/${metadata?.pagebackground}`
+              )
+            : "",
     }
 }
 

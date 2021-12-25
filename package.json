@@ -9,7 +9,8 @@
     "frontend-check": "svelte-check --tsconfig ./tsconfig.json",
     "backend-build": "go build",
     "backend-dev": "nodemon --signal SIGINT --exec 'go run . || exit 1' -e go",
-    "dev": "concurrently npm:frontend-dev npm:backend-dev"
+    "dev": "concurrently npm:frontend-dev npm:backend-dev",
+    "format": "pnpm prettier src/ --write --plugin-search-dir=."
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
