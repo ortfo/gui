@@ -3,7 +3,6 @@ import { onMount } from "svelte"
 import type { WorkOneLang } from "../ortfo"
 import SwitchButton from "../components/SwitchButton.svelte"
 import { state, settings, database, fillEditorMetadataState } from "../stores"
-import VerticalSplit from "../components/VerticalSplit.svelte"
 import JSONTree from "svelte-json-tree"
 import equal from "deep-equal"
 import FieldImage from "../components/FieldImage.svelte"
@@ -12,6 +11,7 @@ import { backend } from "../backend";
 import FieldColors from "../components/FieldColors.svelte";
 import { ContentBlock, makeBlocks } from "../contentblocks"
 import ContentGrid from "../components/ContentGrid.svelte"
+import {Split} from "@geoffcox/svelte-splitter"
 
 export let work: WorkOneLang = $database.works.find(
 	w => w.id == $state.editingWork
@@ -49,8 +49,8 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 
 </script>
 
-<VerticalSplit right={$state.editor.metadataPaneSplitRatio}>
-	<section class="layout">
+<Split initialPrimarySize="{100 - $state.editor.metadataPaneSplitRatio * 100}%">
+	<section class="layout" slot="primary">
 		<SwitchButton
 			bind:value={$state.editor.language}
 			options={{ en: "english", fr: "français" }}
@@ -82,7 +82,7 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 		<ContentGrid {work} />
 	</section>
 
-	<section class="metadata">
+	<section class="metadata" slot="secondary">
 		<h2>Metadata</h2>
 		{#if $settings.showTips}
 			<p class="tip">
@@ -104,7 +104,7 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 			/>
 		</dl>
 	</section>
-</VerticalSplit>
+</Split>
 
 <JSONTree data={$state.editor}/>
 

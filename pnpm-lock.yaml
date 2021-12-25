@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@geoffcox/svelte-splitter': ^1.0.1
   '@rollup/plugin-commonjs': ^17.0.0
   '@rollup/plugin-node-resolve': ^11.0.0
   '@rollup/plugin-typescript': ^8.0.0
@@ -27,6 +28,7 @@ specifiers:
   uuid: ^8.3.2
 
 dependencies:
+  '@geoffcox/svelte-splitter': 1.0.1
   base64-arraybuffer: 1.0.1
   deep-equal: 2.0.5
   sirv-cli: 1.0.14
@@ -76,6 +78,10 @@ packages:
       chalk: 2.4.2
       js-tokens: 4.0.0
     dev: true
+
+  /@geoffcox/svelte-splitter/1.0.1:
+    resolution: {integrity: sha512-iWDNDnuNhsB6tKMGqjXStRhytALlB+/KBQ82T4xSjDndQsrN0CKspdMiu21RUj0AQoDxv3yzAqgp3bwEnF5SCQ==}
+    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
