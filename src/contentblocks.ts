@@ -20,14 +20,11 @@ export type ContentBlock = {
 export async function makeBlocks(
     work: WorkOneLang
 ): Promise<{ blocks: ContentBlock[]; numberOfColumns: number }> {
-    const numberOfColumns = Math.max(
+    const numberOfColumns = work.metadata.layout ? Math.max(
         ...work.metadata.layout.map(
             row => (Array.isArray(row) ? row : [row]).length
         )
-    )
-    console.log(
-        `#cols=${numberOfColumns} for ${JSON.stringify(work.metadata.layout)}`
-    )
+    ) : 1
     const elements = await backend.layout(work)
     return {
         numberOfColumns,
@@ -35,19 +32,21 @@ export async function makeBlocks(
             let block = {
                 id: index,
             }
+            console.log(element.positions)
             block[numberOfColumns] = gridHelp.item({
                 // We assume that the element's positions are contiguous.
-                x: Math.min(...element.positions.map(pos => pos[0])),
-                y: Math.min(...element.positions.map(pos => pos[1])),
+                x: Math.min(...element.positions.map(pos => pos[1])),
+                y: Math.min(...element.positions.map(pos => pos[0])),
                 w:
-                    Math.max(...element.positions.map(pos => pos[0])) -
-                    Math.min(...element.positions.map(pos => pos[0])) +
-                    1,
-                h:
                     Math.max(...element.positions.map(pos => pos[1])) -
                     Math.min(...element.positions.map(pos => pos[1])) +
                     1,
+                h:
+                    Math.max(...element.positions.map(pos => pos[0])) -
+                    Math.min(...element.positions.map(pos => pos[0])) +
+                    1,
             })
+            console.log(block[numberOfColumns])
             switch (element.type) {
                 case "paragraph":
                     block.data = {
