@@ -47,6 +47,8 @@ export async function makeBlocks(
                     Math.max(...element.positions.map(pos => pos[0])) -
                     Math.min(...element.positions.map(pos => pos[0])) +
                     1,
+                customDragger: true,
+                customResizer: true,
             })
             console.log(block[numberOfColumns])
             switch (element.type) {

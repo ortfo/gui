@@ -19,7 +19,7 @@ let numberOfColumns: number = 0
 let cols: number[][] = []
 let items: any[] = []
 let operationsStacks: Record<ItemID, ActionName[]> = {}
-let editingBlock: number | null = null
+let activeBlock: number | null = null
 onMount(async () => {
 	const _ = await makeBlocks(work)
 	blocks = _.blocks
@@ -45,16 +45,26 @@ const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 		...blocks,
 		{
 			id,
-			[numberOfColumns]: gridHelp.item(geometry),
+			[numberOfColumns]: {
+				...gridHelp.item(geometry),
+				customDragger: true,
+				customResizer: true,
+			},
 			data: {
 				type,
 				raw: "",
-				display: "",
+				display: type === "paragraph" ? "Enter some text…" : "",
 			},
 		},
 	]
 	items = gridHelp.adjust(blocks, numberOfColumns)
 	operationsStacks[id] = []
+}
+
+const removeBlock = (item: ContentBlock) => e => {
+	blocks = blocks.filter(block => block.id !== item.id)
+	items = gridHelp.adjust(blocks, numberOfColumns)
+	delete operationsStacks[item.id]
 }
 
 function index(item: { id: number }): number {
@@ -69,39 +79,63 @@ function pushToOpStack(id: number, action: ActionName) {
 }
 </script>
 
-<Grid bind:items {cols} rowHeight={300} let:dataItem={item} fastStart fillSpace>
-	<div class="block" data-type={item.data.type}>
-		{#if item.data.type === "paragraph"}
-			<code>Editor #{item.id}</code>
-			<MarkdownToolbar
-				on:action={e => pushToOpStack(item.id, e.detail)}
-			/>
-			<MarkdownEditor
-				bind:value={items[index(item)].data.display}
-				on:input={({ detail }) => {
-					console.log(`updating from editor #${item.id}`)
-					items[index(item)].data.display = detail
-				}}
-				bind:operationsStack={operationsStacks[item.id]}
-				itemID={item.id}
-			/>
-		{:else if item.data.type === "link"}
-			<input
-				class="name"
-				bind:value={items[index(item)].data.display}
-				placeholder="name your link"
-			/>
-			<input
-				class="url"
-				bind:value={items[index(item)].data.raw}
-				placeholder="put the url here"
-			/>
-		{:else if item.data.type === "media"}
-			<img
-				src={items[index(item)].data.raw}
-				alt={items[index(item)].data.display}
-			/>
-		{/if}
+<Grid
+	bind:items
+	{cols}
+	rowHeight={300}
+	let:dataItem={item}
+	let:movePointerDown
+	let:resizePointerDown
+	fastStart
+	fillSpace
+>
+	<div
+		class="block"
+		data-type={item.data.type}
+		class:active={activeBlock === item.id}
+	>
+		<div class="content">
+			{#if item.data.type === "paragraph"}
+				<MarkdownToolbar
+					on:action={e => pushToOpStack(item.id, e.detail)}
+				/>
+				<MarkdownEditor
+					bind:value={items[index(item)].data.display}
+					on:input={({ detail }) => {
+						items[index(item)].data.display = detail
+					}}
+					on:blur={() => (activeBlock = null)}
+					on:focus={() => (activeBlock = item.id)}
+					bind:operationsStack={operationsStacks[item.id]}
+					itemID={item.id}
+				/>
+			{:else if item.data.type === "link"}
+				<input
+					class="name"
+					bind:value={items[index(item)].data.display}
+					placeholder="name your link"
+				/>
+				<input
+					class="url"
+					bind:value={items[index(item)].data.raw}
+					placeholder="put the url here"
+				/>
+			{:else if item.data.type === "media"}
+				<img
+					src={items[index(item)].data.raw}
+					alt={items[index(item)].data.display}
+				/>
+			{/if}
+		</div>
+		<div class="deleter" on:click={removeBlock(item)}>
+			<img src="/assets/icon-delete.svg" alt="delete" />
+		</div>
+		<div class="dragger" on:mousedown={movePointerDown}>
+			<img src="/assets/icon-move.svg" alt="move" />
+		</div>
+		<div class="resizer" on:mousedown={resizePointerDown}>
+			<img src="/assets/icon-resize.svg" alt="resize" />
+		</div>
 	</div>
 </Grid>
 <div class="create-block">
@@ -139,6 +173,14 @@ h2 {
 	display: flex;
 }
 
+:global(.block:not(.active) .toolbar) {
+	opacity: 0;
+}
+
+:global(.block .toolbar) {
+	transition: all 0.2s ease-in-out;
+}
+
 .create-block {
 	border: 0.175em solid var(--ortforange);
 	border-radius: 0.5em;
@@ -170,19 +212,66 @@ h2 {
 .block[data-type="link"] input {
 	text-align: center;
 }
+.block[data-type="link"] .url {
+	width: 90%;
+}
 
 .block,
+.create-block {
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+.block .content,
 .create-block {
 	padding: 1em;
 }
 
+.block .content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
 :global(.svlt-grid-item):hover {
-	cursor: move;
 	border-color: var(--black);
 }
 
-:global(.markdown-editor) {
-	cursor: text;
+.block:not(:hover) .dragger,
+.block:not(:hover) .resizer,
+.block:not(:hover) .deleter {
+	opacity: 0;
+}
+.resizer,
+.dragger,
+.deleter {
+	position: absolute;
+	transition: all 0.2s ease;
+}
+.resizer {
+	cursor: nwse-resize;
+	bottom: 1em;
+	right: 1em;
+}
+
+.dragger {
+	cursor: move;
+	bottom: 1em;
+	left: 1em;
+}
+
+.deleter {
+	cursor: pointer;
+	top: 1em;
+	right: 1em;
+}
+
+.dragger img,
+.resizer img,
+.deleter img {
+	height: 2em;
+	width: 2em;
 }
 
 .create-block .types {

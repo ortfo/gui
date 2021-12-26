@@ -48,6 +48,12 @@ onMount(() => {
 		onUpdate: ({ editor }) => {
 			dispatch("input", editor.getHTML())
 		},
+		onBlur: () => {
+			dispatch("blur")
+		},
+		onFocus: () => {
+			dispatch("focus")
+		},
 	})
 })
 
@@ -64,3 +70,9 @@ $: while (operationsStack?.length) {
 </script>
 
 <div class="markdown-editor" bind:this={element} />
+
+<style>
+:global(.markdown-editor ul, .markdown-editor ol) {
+	padding-left: 1em;
+}
+</style>
