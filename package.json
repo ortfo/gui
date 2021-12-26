@@ -15,13 +15,14 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
+    "@rollup/plugin-replace": "^3.0.0",
     "@rollup/plugin-typescript": "^8.0.0",
     "@tsconfig/svelte": "^2.0.0",
     "concurrently": "^6.3.0",
     "nodemon": "^2.0.14",
     "prettier": "^2.5.1",
     "prettier-plugin-svelte": "^2.5.1",
-    "rollup": "^2.3.4",
+    "rollup": "^2.62.0",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^7.0.0",
@@ -44,6 +45,7 @@
     "sirv-cli": "^1.0.0",
     "svelte-grid": "^5.1.0",
     "svelte-json-tree": "^0.1.0",
+    "sveltejs-tippy": "^3.0.0",
     "uuid": "^8.3.2"
   }
 }

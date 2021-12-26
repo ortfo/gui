@@ -11,6 +11,7 @@ import { database, state } from "../stores"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
+import tippy from "sveltejs-tippy"
 
 export let work: WorkOneLang
 type ItemID = number
@@ -127,13 +128,13 @@ function pushToOpStack(id: number, action: ActionName) {
 				/>
 			{/if}
 		</div>
-		<div class="deleter" on:click={removeBlock(item)}>
+		<div class="deleter" use:tippy={{content: "delete block", delay: [500, 0]}} on:click={removeBlock(item)}>
 			<img src="/assets/icon-delete.svg" alt="delete" />
 		</div>
-		<div class="dragger" on:mousedown={movePointerDown}>
+		<div class="dragger" use:tippy={{content: "move", delay: [500, 0]}} on:mousedown={movePointerDown}>
 			<img src="/assets/icon-move.svg" alt="move" />
 		</div>
-		<div class="resizer" on:mousedown={resizePointerDown}>
+		<div class="resizer" use:tippy={{content: "resize", delay: [500, 0]}} on:mousedown={resizePointerDown}>
 			<img src="/assets/icon-resize.svg" alt="resize" />
 		</div>
 	</div>
