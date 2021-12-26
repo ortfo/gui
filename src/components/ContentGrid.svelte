@@ -182,6 +182,10 @@ h2 {
 	transition: all 0.2s ease-in-out;
 }
 
+:global(.toolbar) {
+	align-self: flex-start;
+}
+
 .create-block {
 	border: 0.175em solid var(--ortforange);
 	border-radius: 0.5em;
