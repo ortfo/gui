@@ -12,8 +12,29 @@ export let itemID: number
 
 let element
 let editor: Editor
-let actions: Record<ActionName, { run: () => boolean }>
 
+const actions = editor => ({
+	bold: editor.chain().focus().toggleMark("bold"),
+	italic: editor.chain().focus().toggleMark("italic"),
+	code: editor.chain().focus().toggleMark("code"),
+	link: editor.chain().focus().toggleMark("link"),
+	heading: editor.chain().focus().toggleHeading({ level: 2 }),
+	"code-block": editor.chain().focus().toggleCodeBlock(),
+	"list-bullets": editor.chain().focus().toggleBulletList(),
+	"list-numbered": editor.chain().focus().toggleOrderedList(),
+	media: {
+		run: () => {
+			console.error("not implemented")
+			return false
+		},
+	},
+	"list-definitions": {
+		run: () => {
+			console.error("not implemented")
+			return false
+		},
+	},
+})
 const dispatch = createEventDispatcher()
 
 onMount(() => {
@@ -28,28 +49,6 @@ onMount(() => {
 			dispatch("input", editor.getHTML())
 		},
 	})
-	actions = {
-		bold: editor.chain().focus().toggleMark("bold"),
-		italic: editor.chain().focus().toggleMark("italic"),
-		code: editor.chain().focus().toggleMark("code"),
-		link: editor.chain().focus().toggleMark("link"),
-		heading: editor.chain().focus().toggleHeading({ level: 2 }),
-		"code-block": editor.chain().focus().toggleCodeBlock(),
-		"list-bullets": editor.chain().focus().toggleBulletList(),
-		"list-numbered": editor.chain().focus().toggleOrderedList(),
-		media: {
-			run: () => {
-				console.error("not implemented")
-				return false
-			},
-		},
-		"list-definitions": {
-			run: () => {
-				console.error("not implemented")
-				return false
-			},
-		},
-	}
 })
 
 onDestroy(() => {
@@ -59,22 +58,8 @@ onDestroy(() => {
 })
 
 $: while (operationsStack?.length) {
-	console.log(operationsStack)
 	const action = operationsStack.pop()
-	console.log(`Executing action ${action} on editor #${itemID}`)
-	let result: boolean
-	if (action in ["code", "link", "bold", "italic"]) {
-		result = editor.chain().focus().toggleMark(action).run()
-	} else if (action === "code-block") {
-		result = editor.chain().focus().toggleCodeBlock().run()
-	} else if (action === "list-bullets") {
-		result = editor.chain().focus().toggleBulletList().run()
-	} else if (action === "list-numbered") {
-		result = editor.chain().focus().toggleOrderedList().run()
-	}
-	console.log(
-		`, which was executed ${result ? "successfully" : "unsuccessfully"}`
-	)
+	actions(editor)[action].run()
 }
 </script>
 
