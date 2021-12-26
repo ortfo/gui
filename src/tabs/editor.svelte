@@ -134,4 +134,12 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 .url {
 	font-family: var(--mono);
 }
+.layout {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.title, .url {
+	align-self: flex-start;
+}
 </style>
