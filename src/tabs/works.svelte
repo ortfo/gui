@@ -17,7 +17,7 @@ import { summon } from "../modals"
 	</li>
 	{#each $database.works as work}
 		<li id={`work-${work.id}`}>
-			<CardWork bind:work />
+			<CardWork {work} />
 		</li>
 	{/each}
 </ul>
