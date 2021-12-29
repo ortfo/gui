@@ -14,7 +14,6 @@ export let key: string
 
 async function getBase64d() {
 	if (!files.length) {
-		console.log($state)
 		emit("change", "")
 		return
 	}
@@ -23,7 +22,6 @@ async function getBase64d() {
 		`data:${files[0].type};base64,` +
 		bufferBase64encode(await files[0].arrayBuffer())
 	emit("change", value)
-	console.log($state)
 	return value
 }
 </script>
@@ -49,7 +47,6 @@ async function getBase64d() {
 						document.getElementById(`input-${key}`).value = ""
 						value = ""
 						emit("change", "")
-						console.log($state)
 					}}>&times;</button
 				>
 			{:catch err}

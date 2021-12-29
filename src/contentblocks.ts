@@ -34,7 +34,6 @@ export async function makeBlocks(
             let block = {
                 id: index,
             }
-            console.log(element.positions)
             block[numberOfColumns] = gridHelp.item({
                 // We assume that the element's positions are contiguous.
                 x: Math.min(...element.positions.map(pos => pos[1])),
@@ -50,7 +49,6 @@ export async function makeBlocks(
                 customDragger: true,
                 customResizer: true,
             })
-            console.log(block[numberOfColumns])
             switch (element.type) {
                 case "paragraph":
                     block.data = {
