@@ -1,4 +1,4 @@
-import type { Settings } from "./stores"
+import type { Settings, State } from "./stores"
 import { Database, DatabaseOneLang, inLanguage } from "./ortfo"
 import { lowercaseNoSpacesKeys, transformKeys } from "./utils"
 
@@ -16,7 +16,7 @@ type Backend = {
     settingsRead: () => Promise<Settings>
     settingsWrite: (settings: Settings) => Promise<null | string>
     quit: () => Promise<void>
-    databaseRead: () => Promise<DatabaseOneLang>
+    databaseRead: () => Promise<Database>
     rebuildDatabase: () => Promise<null | string>
     getMedia: (path: string) => Promise<Base64WithFiletype>
     layout: (work: WorkOneLang) => Promise<LayedOutElement[]>
@@ -40,8 +40,6 @@ export const backend: Backend = {
         const data = lowercaseNoSpacesKeys(
             (await backend__databaseRead()) || {}
         )
-        console.log(JSON.stringify(data))
-        data.works = data.works.map(inLanguage("en"))
         return data
     },
     rebuildDatabase: async () => {

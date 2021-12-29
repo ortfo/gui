@@ -1,8 +1,15 @@
 <script lang="ts">
 import { onMount } from "svelte"
-import type { WorkOneLang } from "../ortfo"
+import { inLanguage, WorkOneLang } from "../ortfo"
 import SwitchButton from "../components/SwitchButton.svelte"
-import { state, settings, database, fillEditorMetadataState } from "../stores"
+import {
+	state,
+	settings,
+	database,
+	fillEditorMetadataState,
+	databaseLanguages,
+	editorWork,
+} from "../stores"
 import JSONTree from "svelte-json-tree"
 import equal from "deep-equal"
 import FieldImage from "../components/FieldImage.svelte"
@@ -11,16 +18,16 @@ import FieldColors from "../components/FieldColors.svelte"
 import ContentGrid from "../components/ContentGrid.svelte"
 import { Split } from "@geoffcox/svelte-splitter"
 
-export let work: WorkOneLang = $database.works.find(
-	w => w.id == $state.editingWork
-)
 onMount(async () => {
-	$state.editor.metadata = await fillEditorMetadataState(work, $settings)
+	$state.editor.metadata = await fillEditorMetadataState(
+		$editorWork,
+		$settings
+	)
 })
 
 function diffWithSaved() {
 	const current = $state.editor.metadata
-	const saved = work.metadata
+	const saved = $editorWork.metadata
 	return (
 		current.aliases !== (saved?.aliases || []) ||
 		!equal(current.colors, saved.colors) ||
@@ -42,17 +49,18 @@ function editTitle(e) {
 
 let editingTitle = false
 
-$: $state.editor.unsavedChanges = diffWithSaved()
+// $: $state.editor.unsavedChanges = diffWithSaved()
 </script>
 
 <Split initialPrimarySize="{100 - $state.editor.metadataPaneSplitRatio * 100}%">
 	<section class="layout" slot="primary">
 		<SwitchButton
 			bind:value={$state.editor.language}
+			on:change={e => ($state.editor.language = e.detail)}
 			options={{ en: "english", fr: "français" }}
 			showCodes
 		/>
-		<p class="url">/{work.id}</p>
+		<p class="url">/{$editorWork.id}</p>
 
 		<div class="title" id="title">
 			<h1
@@ -62,7 +70,7 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 				}}
 				contenteditable={editingTitle}
 			>
-				{work.title}
+				{$editorWork.title}
 			</h1>
 			<button data-variant="inline" on:click={editTitle}
 				>{#if editingTitle}finish editing{:else}edit{/if}</button
@@ -76,7 +84,7 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 			</p>
 		{/if}
 
-		<ContentGrid {work} />
+		<ContentGrid work={$editorWork} />
 	</section>
 
 	<section class="metadata" slot="secondary">
@@ -139,7 +147,8 @@ $: $state.editor.unsavedChanges = diffWithSaved()
 	flex-direction: column;
 	align-items: center;
 }
-.title, .url {
+.title,
+.url {
 	align-self: flex-start;
 }
 </style>

@@ -7,7 +7,7 @@ import gridHelp from "svelte-grid/build/helper"
 import { ContentBlock, makeBlocks } from "../contentblocks"
 import type { WorkOneLang } from "../ortfo"
 import Card from "./Card.svelte"
-import { database, state } from "../stores"
+import { database, state, editorWork } from "../stores"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
@@ -21,17 +21,25 @@ let cols: number[][] = []
 let items: any[] = []
 let operationsStacks: Record<ItemID, ActionName[]> = {}
 let activeBlock: number | null = null
-onMount(async () => {
-	const _ = await makeBlocks(work)
+
+async function initialize() {
+	const _ = await makeBlocks($editorWork)
 	blocks = _.blocks
-	console.log(blocks)
 	numberOfColumns = _.numberOfColumns
-	console.log(numberOfColumns)
 	cols = [[400, numberOfColumns]]
 	items = gridHelp.adjust(blocks, numberOfColumns)
 	items.forEach(item => {
 		operationsStacks[item.id] = []
 	})
+}
+
+onMount(initialize)
+
+editorWork.subscribe(async _ => {
+	await initialize()
+	items.forEach(
+		item => (operationsStacks[item.id] = ["set-content-to-value"])
+	)
 })
 
 const addBlock = (type: ContentBlock["data"]["type"]) => e => {
@@ -101,7 +109,7 @@ function pushToOpStack(id: number, action: ActionName) {
 					on:action={e => pushToOpStack(item.id, e.detail)}
 				/>
 				<MarkdownEditor
-					bind:value={items[index(item)].data.display}
+					value={items[index(item)].data.display}
 					on:input={({ detail }) => {
 						items[index(item)].data.display = detail
 					}}

@@ -1,6 +1,12 @@
 <script lang="ts">
 import Navbar from "./components/Navbar.svelte"
-import { database, settings, state } from "./stores"
+import {
+	database,
+	databaseLanguages,
+	settings,
+	state,
+	editorWork,
+} from "./stores"
 import { backend } from "./backend"
 import Works from "./tabs/works.svelte"
 import Tags from "./tabs/tags.svelte"
@@ -30,15 +36,13 @@ async function loadSettings() {
 }
 
 async function loadDatabase() {
-	$database = await backend.databaseRead()
-	console.info(`Loaded database from backend: ${JSON.stringify($database)}`)
+	$databaseLanguages = await backend.databaseRead()
+	console.info(`Loaded database from backend`)
 }
 
 async function load() {
 	await loadSettings()
 	await loadDatabase()
-	$state.editingWork = "ideaseed"
-	$state.openTab = "editor"
 }
 
 onMount(() => {
@@ -66,9 +70,7 @@ onMount(() => {
 		{:else if $state.openTab == "settings"}
 			<Settings />
 		{:else if $state.openTab == "editor"}
-			<Editor
-				work={$database.works.find(w => w.id === $state.editingWork)}
-			/>
+			<Editor />
 		{/if}
 	</main>
 {:catch e}

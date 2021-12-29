@@ -34,6 +34,7 @@ const actions = editor => ({
 			return false
 		},
 	},
+	"set-content-to-value": editor.chain().setContent(value),
 })
 const dispatch = createEventDispatcher()
 
@@ -65,7 +66,11 @@ onDestroy(() => {
 
 $: while (operationsStack?.length) {
 	const action = operationsStack.pop()
-	actions(editor)[action].run()
+	try {
+		actions(editor)[action].run()
+	} catch (e) {
+		console.error(`Couldn't run ${action}: ${e}`)
+	}
 }
 </script>
 

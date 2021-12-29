@@ -1,7 +1,13 @@
-import { writable } from "svelte/store"
-import type { Writable } from "svelte/store"
-import type { DatabaseOneLang, WorkMetadata, WorkOneLang } from "./ortfo"
+import { writable, derived } from "svelte/store"
+import type { Writable, Derived } from "svelte/store"
+import type {
+    DatabaseOneLang,
+    Database,
+    WorkMetadata,
+    WorkOneLang,
+} from "./ortfo"
 import { backend, Base64WithFiletype } from "./backend"
+import { inLanguage } from "./ortfo"
 
 export type Settings = {
     theme: string
@@ -75,9 +81,9 @@ export const settings: Writable<Settings> = writable({
 })
 
 export const state: Writable<State> = writable({
-    openTab: "works",
+    openTab: "editor",
     rebuildingDatabase: false,
-    editingWork: null,
+    editingWork: "humanr",
     editor: {
         language: "en",
         metadataPaneSplitRatio: 0.333,
@@ -95,9 +101,30 @@ export const state: Writable<State> = writable({
     },
 })
 
-export const database: Writable<DatabaseOneLang> = writable({
-    sites: [],
-    tags: [],
-    technologies: [],
-    works: [],
-} as DatabaseOneLang)
+export const databaseLanguages: Writable<Database> = writable({} as Database)
+
+export const database = derived(
+    [databaseLanguages, settings],
+    ([$databaseLanguages, $settings]) => {
+        if (Object.keys($databaseLanguages).length) {
+            return {
+                ...$databaseLanguages,
+                works: $databaseLanguages.works.map(
+                    inLanguage($settings.language)
+                ),
+            }
+        }
+        return {}
+    }
+)
+
+export const editorWork: Derived<WorkOneLang> = derived(
+    [databaseLanguages, state],
+    ([$databaseLanguages, $state]) => {
+        if ("works" in $databaseLanguages) {
+            return $databaseLanguages.works
+                .map(inLanguage($state.editor.language))
+                .find(w => w.id === $state.editingWork)
+        }
+    }
+)
