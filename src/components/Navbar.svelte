@@ -34,8 +34,10 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			class:current={$state.openTab === "editor"}>{$state.editingWork}</a
 		>
 		{#if $state.editor.unsavedChanges}
-			<span class="unsaved-changes" title="You have unsaved changes"
-				>&bull;</span
+			<span
+				class="unsaved-changes"
+				use:tippy={{ content: "You have unsaved changes" }}
+				title="You have unsaved changes">&bull;</span
 			>
 		{/if}
 	{/if}
