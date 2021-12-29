@@ -16,10 +16,7 @@ settings.subscribe(async settings => {
 		<select name="theme" id="theme" bind:value={$settings.theme}>
 			<option value="light">light</option>
 			<option value="dark">dark</option>
-		</select><button
-			data-variant="inline"
-			on:click={_ => window.location.reload()}>apply</button
-		>
+		</select>
 	</dd>
 
 	<dt>surname</dt>

@@ -25,13 +25,26 @@ async function loadSettings() {
 		$settings.projectsfolder = prompt("Where are your projects stored?", "")
 	}
 	await backend.settingsWrite($settings)
-	if ($settings.theme == "dark") {
-		const root = document.querySelector(":root") as HTMLElement
-		root.style.setProperty("--black", "#FFF")
-		root.style.setProperty("--white", "#000")
-		root.style.setProperty("--gray", "#757575")
-		root.style.setProperty("--gray-light", "#222")
-		root.style.setProperty("--ortforange-light", "#2e1902")
+}
+
+function applyTheme(themeName: string) {
+	const root = document.querySelector(":root") as HTMLElement
+	switch (themeName) {
+		case "light":
+			root.style.setProperty("--ortforange", "#e57c08")
+			root.style.setProperty("--ortforange-light", "#fae5ce")
+			root.style.setProperty("--black", "#000")
+			root.style.setProperty("--white", "#fff")
+			root.style.setProperty("--gray-light", "#ccc")
+			root.style.setProperty("--gray", "#767676")
+			break
+		case "dark":
+			root.style.setProperty("--black", "#FFF")
+			root.style.setProperty("--white", "#000")
+			root.style.setProperty("--gray", "#757575")
+			root.style.setProperty("--gray-light", "#222")
+			root.style.setProperty("--ortforange-light", "#2e1902")
+			break
 	}
 }
 
@@ -52,6 +65,8 @@ onMount(() => {
 		}
 	})
 })
+
+settings.subscribe(settings => applyTheme(settings.theme))
 </script>
 
 {#await load()}
@@ -71,6 +86,8 @@ onMount(() => {
 			<Settings />
 		{:else if $state.openTab == "editor"}
 			<Editor />
+		{:else}
+			404
 		{/if}
 	</main>
 {:catch e}
@@ -143,7 +160,6 @@ onMount(() => {
 
 :root {
 	--ortforange: #e57c08;
-	/* dark mode: --ortforange-light: #2e1902 */
 	--ortforange-light: #fae5ce;
 	--black: #000;
 	--white: #fff;
