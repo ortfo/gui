@@ -211,6 +211,7 @@ h2 {
 	border-radius: 0.5em;
 	max-width: 300px;
 	margin: 0 auto;
+	margin-top: 5em;
 	background-color: var(--ortforange-light);
 }
 
