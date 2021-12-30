@@ -7,10 +7,10 @@
     "frontend-dev": "rollup -c -w",
     "frontend-start": "sirv public --no-clear",
     "frontend-check": "svelte-check --tsconfig ./tsconfig.json",
-    "backend-build": "go build",
-    "backend-dev": "nodemon --signal SIGINT --exec 'go run . || exit 1' -e go",
+    "backend-build": "cd backend && go build",
+    "backend-dev": "cd backend && nodemon --signal SIGINT --exec 'go run . || exit 1' -e go",
     "dev": "concurrently npm:frontend-dev npm:backend-dev",
-    "format": "pnpm prettier src/ --write --plugin-search-dir=."
+    "format": "pnpm prettier frontend/ --write --plugin-search-dir=."
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
