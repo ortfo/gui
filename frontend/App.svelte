@@ -29,6 +29,7 @@ async function loadSettings() {
 
 function applyTheme(themeName: string) {
 	const root = document.querySelector(":root") as HTMLElement
+	document.body.dataset.theme = themeName
 	switch (themeName) {
 		case "light":
 			root.style.setProperty("--ortforange", "#e57c08")
@@ -158,13 +159,8 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	--mono: "Victor Mono", monospace;
 }
 
-:root {
-	--ortforange: #e57c08;
-	--ortforange-light: #fae5ce;
-	--black: #000;
-	--white: #fff;
-	--gray-light: #ccc;
-	--gray: #767676;
+:global(body[data-theme=dark] .icon) {
+	filter: invert(1);
 }
 
 main {

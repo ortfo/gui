@@ -141,21 +141,21 @@ function pushToOpStack(id: number, action: ActionName) {
 			use:tippy={{ content: "delete block", delay: [500, 0] }}
 			on:click={removeBlock(item)}
 		>
-			<img src="/assets/icon-delete.svg" alt="delete" />
+			<img src="/assets/icon-delete.svg" class="icon" alt="delete" />
 		</div>
 		<div
 			class="dragger"
 			use:tippy={{ content: "move", delay: [500, 0] }}
 			on:mousedown={movePointerDown}
 		>
-			<img src="/assets/icon-move.svg" alt="move" />
+			<img src="/assets/icon-move.svg" class="icon" alt="move" />
 		</div>
 		<div
 			class="resizer"
 			use:tippy={{ content: "resize", delay: [500, 0] }}
 			on:mousedown={resizePointerDown}
 		>
-			<img src="/assets/icon-resize.svg" alt="resize" />
+			<img src="/assets/icon-resize.svg" class="icon" alt="resize" />
 		</div>
 	</div>
 </Grid>
@@ -163,15 +163,15 @@ function pushToOpStack(id: number, action: ActionName) {
 	<h2>Add a new block?</h2>
 	<div class="types">
 		<button data-variant="none" on:click={addBlock("media")}>
-			<img src="/assets/icon-media.svg" alt="media icon" />
+			<img src="/assets/icon-media.svg" alt="media icon" class="icon" />
 			media
 		</button>
 		<button data-variant="none" on:click={addBlock("paragraph")}>
-			<img src="/assets/icon-paragraph.svg" alt="¶" />
+			<img src="/assets/icon-paragraph.svg" alt="¶" class="icon" />
 			paragraph
 		</button>
 		<button data-variant="none" on:click={addBlock("link")}>
-			<img src="/assets/icon-major-link.svg" alt="link icon" />
+			<img src="/assets/icon-major-link.svg" alt="link icon" class="icon" />
 			link
 		</button>
 	</div>
