@@ -60,7 +60,7 @@ export async function makeBlocks(
                 case "media":
                     block.data = {
                         type: element.type,
-                        raw: element.source,
+                        raw: element.absolutepath,
                         display: element.alt,
                     }
                     break

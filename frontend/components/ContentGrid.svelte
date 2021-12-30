@@ -12,19 +12,28 @@ import MarkdownEditor from "./MarkdownEditor.svelte"
 import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
 import tippy from "sveltejs-tippy"
+import { backend } from "../backend"
 
 export let work: WorkOneLang
 type ItemID = number
 let blocks: ContentBlock[] = []
 let numberOfColumns: number = 0
 let cols: number[][] = []
-let items: any[] = []
+let items: ContentBlock[] = []
 let operationsStacks: Record<ItemID, ActionName[]> = {}
 let activeBlock: number | null = null
 
 async function initialize() {
 	const _ = await makeBlocks($editorWork)
 	blocks = _.blocks
+	blocks = await Promise.all(
+		_.blocks.map(async b => {
+			if (b.data.type === "media") {
+				b.data.raw = await backend.getMedia(b.data.raw)
+			}
+			return b
+		})
+	)
 	numberOfColumns = _.numberOfColumns
 	cols = [[400, numberOfColumns]]
 	items = gridHelp.adjust(blocks, numberOfColumns)
@@ -32,8 +41,6 @@ async function initialize() {
 		operationsStacks[item.id] = []
 	})
 }
-
-onMount(initialize)
 
 editorWork.subscribe(async _ => {
 	await initialize()
@@ -88,10 +95,13 @@ function pushToOpStack(id: number, action: ActionName) {
 }
 </script>
 
+{#await initialize()}
+Loading...
+{:then}
 <Grid
 	bind:items
 	{cols}
-	rowHeight={300}
+	rowHeight={400}
 	let:dataItem={item}
 	let:movePointerDown
 	let:resizePointerDown
@@ -171,11 +181,16 @@ function pushToOpStack(id: number, action: ActionName) {
 			paragraph
 		</button>
 		<button data-variant="none" on:click={addBlock("link")}>
-			<img src="/assets/icon-major-link.svg" alt="link icon" class="icon" />
+			<img
+				src="/assets/icon-major-link.svg"
+				alt="link icon"
+				class="icon"
+			/>
 			link
 		</button>
 	</div>
 </div>
+{/await}
 
 <!-- 
 	- remove space (if any) at top: get minimum `y` and translate all items with `y <- y - minY`
@@ -232,6 +247,7 @@ h2 {
 .block:not([data-type="paragraph"]) {
 	justify-self: center;
 	align-self: center;
+	flex-direction: column;
 	margin: 0 auto;
 }
 
@@ -240,6 +256,11 @@ h2 {
 }
 .block[data-type="link"] .url {
 	width: 90%;
+}
+
+.block[data-type="media"] img {
+	object-fit: contain;
+	height: 300px;
 }
 
 .block,
