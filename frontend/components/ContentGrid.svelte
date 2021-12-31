@@ -258,7 +258,7 @@ h2 {
 	width: 90%;
 }
 
-.block[data-type="media"] img {
+.block[data-type="media"] img:not(.icon) {
 	object-fit: contain;
 	height: 300px;
 }
