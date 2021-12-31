@@ -60,7 +60,7 @@ export async function makeBlocks(
                 case "media":
                     block.data = {
                         type: element.type,
-                        raw: element.absolutepath,
+                        raw: work.metadata.thumbnails[element.path][400],
                         display: element.alt,
                     }
                     break
