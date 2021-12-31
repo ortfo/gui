@@ -159,7 +159,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	--mono: "Victor Mono", monospace;
 }
 
-:global(body[data-theme=dark] .icon) {
+:global(body[data-theme="dark"] .icon) {
 	filter: invert(1);
 }
 

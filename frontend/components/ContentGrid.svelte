@@ -13,6 +13,7 @@ import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
 import tippy from "sveltejs-tippy"
 import { backend } from "../backend"
+import { scale } from "svelte/transition"
 
 export let work: WorkOneLang
 type ItemID = number
@@ -96,99 +97,109 @@ function pushToOpStack(id: number, action: ActionName) {
 </script>
 
 {#await initialize()}
-Loading...
+	Loading...
 {:then}
-<Grid
-	bind:items
-	{cols}
-	rowHeight={400}
-	let:dataItem={item}
-	let:movePointerDown
-	let:resizePointerDown
-	fastStart
->
-	<div
-		class="block"
-		data-type={item.data.type}
-		class:active={activeBlock === item.id}
+	<Grid
+		bind:items
+		{cols}
+		rowHeight={400}
+		let:dataItem={item}
+		let:movePointerDown
+		let:resizePointerDown
+		fastStart
 	>
-		<div class="content">
-			{#if item.data.type === "paragraph"}
-				<MarkdownToolbar
-					on:action={e => pushToOpStack(item.id, e.detail)}
-				/>
-				<MarkdownEditor
-					value={items[index(item)].data.display}
-					on:input={({ detail }) => {
-						items[index(item)].data.display = detail
-					}}
-					on:blur={() => (activeBlock = null)}
-					on:focus={() => (activeBlock = item.id)}
-					bind:operationsStack={operationsStacks[item.id]}
-					itemID={item.id}
-				/>
-			{:else if item.data.type === "link"}
-				<input
-					class="name"
-					bind:value={items[index(item)].data.display}
-					placeholder="name your link"
-				/>
-				<input
-					class="url"
-					bind:value={items[index(item)].data.raw}
-					placeholder="put the url here"
-				/>
-			{:else if item.data.type === "media"}
+		<div
+			class="block"
+			data-type={item.data.type}
+			class:active={activeBlock === item.id}
+			transition:scale
+		>
+			<div class="content">
+				{#if item.data.type === "paragraph"}
+					<MarkdownToolbar
+						on:action={e => pushToOpStack(item.id, e.detail)}
+					/>
+					<MarkdownEditor
+						value={items[index(item)].data.display}
+						on:input={({ detail }) => {
+							items[index(item)].data.display = detail
+						}}
+						on:blur={() => (activeBlock = null)}
+						on:focus={() => (activeBlock = item.id)}
+						bind:operationsStack={operationsStacks[item.id]}
+						itemID={item.id}
+					/>
+				{:else if item.data.type === "link"}
+					<input
+						class="name"
+						bind:value={items[index(item)].data.display}
+						placeholder="name your link"
+					/>
+					<input
+						class="url"
+						bind:value={items[index(item)].data.raw}
+						placeholder="put the url here"
+					/>
+				{:else if item.data.type === "media"}
+					<img
+						src={items[index(item)].data.raw}
+						alt={items[index(item)].data.display}
+					/>
+				{/if}
+			</div>
+			<div
+				class="deleter"
+				use:tippy={{ content: "delete block", delay: [500, 0] }}
+				on:click={removeBlock(item)}
+			>
+				<img src="/assets/icon-delete.svg" class="icon" alt="delete" />
+			</div>
+			<div
+				class="dragger"
+				use:tippy={{ content: "move", delay: [500, 0] }}
+				on:mousedown={movePointerDown}
+			>
+				<img src="/assets/icon-move.svg" class="icon" alt="move" />
+			</div>
+			<div
+				class="resizer"
+				use:tippy={{ content: "resize", delay: [500, 0] }}
+				on:mousedown={resizePointerDown}
+			>
 				<img
-					src={items[index(item)].data.raw}
-					alt={items[index(item)].data.display}
+					src="/assets/icon-resize.svg"
+					class="icon"
+					alt="resize"
+					draggable="false"
 				/>
-			{/if}
+			</div>
 		</div>
-		<div
-			class="deleter"
-			use:tippy={{ content: "delete block", delay: [500, 0] }}
-			on:click={removeBlock(item)}
-		>
-			<img src="/assets/icon-delete.svg" class="icon" alt="delete" />
-		</div>
-		<div
-			class="dragger"
-			use:tippy={{ content: "move", delay: [500, 0] }}
-			on:mousedown={movePointerDown}
-		>
-			<img src="/assets/icon-move.svg" class="icon" alt="move" />
-		</div>
-		<div
-			class="resizer"
-			use:tippy={{ content: "resize", delay: [500, 0] }}
-			on:mousedown={resizePointerDown}
-		>
-			<img src="/assets/icon-resize.svg" class="icon" alt="resize" />
+	</Grid>
+	<div class="create-block">
+		<h2>Add a new block?</h2>
+		<div class="types">
+			<button data-variant="none" on:click={addBlock("media")}>
+				<img
+					src="/assets/icon-media.svg"
+					alt="media icon"
+					class="icon"
+				/>
+				media
+			</button>
+			<button data-variant="none" on:click={addBlock("paragraph")}>
+				<img src="/assets/icon-paragraph.svg" alt="¶" class="icon" />
+				paragraph
+			</button>
+			<button data-variant="none" on:click={addBlock("link")}>
+				<img
+					src="/assets/icon-major-link.svg"
+					alt="link icon"
+					class="icon"
+				/>
+				link
+			</button>
 		</div>
 	</div>
-</Grid>
-<div class="create-block">
-	<h2>Add a new block?</h2>
-	<div class="types">
-		<button data-variant="none" on:click={addBlock("media")}>
-			<img src="/assets/icon-media.svg" alt="media icon" class="icon" />
-			media
-		</button>
-		<button data-variant="none" on:click={addBlock("paragraph")}>
-			<img src="/assets/icon-paragraph.svg" alt="¶" class="icon" />
-			paragraph
-		</button>
-		<button data-variant="none" on:click={addBlock("link")}>
-			<img
-				src="/assets/icon-major-link.svg"
-				alt="link icon"
-				class="icon"
-			/>
-			link
-		</button>
-	</div>
-</div>
 {/await}
 
 <!-- 
@@ -289,6 +300,7 @@ h2 {
 .block:not(:hover) .deleter {
 	opacity: 0;
 }
+
 .resizer,
 .dragger,
 .deleter {
@@ -297,27 +309,27 @@ h2 {
 }
 .resizer {
 	cursor: nwse-resize;
-	bottom: 1em;
-	right: 1em;
+	bottom: 1rem;
+	right: 1rem;
 }
 
 .dragger {
 	cursor: move;
-	bottom: 1em;
-	left: 1em;
+	bottom: 1rem;
+	left: 1rem;
 }
 
 .deleter {
 	cursor: pointer;
-	top: 1em;
-	right: 1em;
+	top: 1rem;
+	right: 1rem;
 }
 
 .dragger img,
 .resizer img,
 .deleter img {
-	height: 2em;
-	width: 2em;
+	height: 2rem;
+	width: 2rem;
 }
 
 .create-block .types {
