@@ -27,14 +27,6 @@ let activeBlock: number | null = null
 async function initialize() {
 	const _ = await makeBlocks($editorWork)
 	blocks = _.blocks
-	blocks = await Promise.all(
-		_.blocks.map(async b => {
-			if (b.data.type === "media") {
-				b.data.raw = await backend.getMedia(b.data.raw)
-			}
-			return b
-		})
-	)
 	numberOfColumns = _.numberOfColumns
 	cols = [[400, numberOfColumns]]
 	items = gridHelp.adjust(blocks, numberOfColumns)
@@ -112,6 +104,9 @@ function pushToOpStack(id: number, action: ActionName) {
 			class="block"
 			data-type={item.data.type}
 			class:active={activeBlock === item.id}
+			style={item.data.type === "media"
+				? `background-image: url("${item.data.raw}")`
+				: ""}
 			transition:scale
 		>
 			<div class="content">
@@ -141,9 +136,19 @@ function pushToOpStack(id: number, action: ActionName) {
 						placeholder="put the url here"
 					/>
 				{:else if item.data.type === "media"}
-					<img
-						src={items[index(item)].data.raw}
-						alt={items[index(item)].data.display}
+					<input
+						class="name"
+						bind:value={items[index(item)].data.display}
+						on:focus={() => (activeBlock = item.id)}
+						on:blur={() => (activeBlock = null)}
+						placeholder="describe your media"
+					/>
+					<input
+						class="url"
+						bind:value={items[index(item)].data.path}
+						on:focus={() => (activeBlock = item.id)}
+						on:blur={() => (activeBlock = null)}
+						placeholder="put the path or url to the media here"
 					/>
 				{/if}
 			</div>
@@ -247,30 +252,25 @@ h2 {
 	color: var(--gray);
 }
 
-.block[data-type="link"] {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-
-.block:not([data-type="paragraph"]) {
-	justify-self: center;
-	align-self: center;
-	flex-direction: column;
-	margin: 0 auto;
-}
-
-.block[data-type="link"] input {
+.block input {
 	text-align: center;
+	transition: opacity 0.2s ease-in-out;
 }
-.block[data-type="link"] .url {
+.block input.url {
 	width: 90%;
 }
+.block input.name {
+	width: 80%;
+}
 
-.block[data-type="media"] img:not(.icon) {
-	object-fit: contain;
-	height: 300px;
+.block[data-type="media"] {
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+
+.block[data-type="media"]:not(:hover):not(.active) input {
+	opacity: 0;
 }
 
 .block,
@@ -285,14 +285,14 @@ h2 {
 }
 
 .block .content {
+	height: 100%;
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
-	align-items: center;
 }
 
-:global(.svlt-grid-item):hover {
-	border-color: var(--black);
+.block:not([data-type="paragraph"]) .content {
+	justify-content: center;
+	align-items: center;
 }
 
 .block:not(:hover) .dragger,

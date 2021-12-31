@@ -12,8 +12,9 @@ export type ContentBlock = {
     }
     data: {
         type: string
-        raw: string // paragraph: empty, media: src, link: href
+        raw: string // paragraph: empty, media: base64-encoded image data of 400px thumbnail, link: href
         display: string // paragraph: content, media: alt, link: name
+        path?: string // media: path
     }
 }
 
@@ -30,48 +31,53 @@ export async function makeBlocks(
     const elements = await backend.layout(work)
     return {
         numberOfColumns,
-        blocks: elements.map((element, index) => {
-            let block = {
-                id: index,
-            }
-            block[numberOfColumns] = gridHelp.item({
-                // We assume that the element's positions are contiguous.
-                x: Math.min(...element.positions.map(pos => pos[1])),
-                y: Math.min(...element.positions.map(pos => pos[0])),
-                w:
-                    Math.max(...element.positions.map(pos => pos[1])) -
-                    Math.min(...element.positions.map(pos => pos[1])) +
-                    1,
-                h:
-                    Math.max(...element.positions.map(pos => pos[0])) -
-                    Math.min(...element.positions.map(pos => pos[0])) +
-                    1,
-                customDragger: true,
-                customResizer: true,
+        blocks: await Promise.all(
+            elements.map(async (element, index) => {
+                let block: ContentBlock = {
+                    id: index,
+                } as ContentBlock
+                block[numberOfColumns] = gridHelp.item({
+                    // We assume that the element's positions are contiguous.
+                    x: Math.min(...element.positions.map(pos => pos[1])),
+                    y: Math.min(...element.positions.map(pos => pos[0])),
+                    w:
+                        Math.max(...element.positions.map(pos => pos[1])) -
+                        Math.min(...element.positions.map(pos => pos[1])) +
+                        1,
+                    h:
+                        Math.max(...element.positions.map(pos => pos[0])) -
+                        Math.min(...element.positions.map(pos => pos[0])) +
+                        1,
+                    customDragger: true,
+                    customResizer: true,
+                })
+                switch (element.type) {
+                    case "paragraph":
+                        block.data = {
+                            type: element.type,
+                            raw: "",
+                            display: element.content,
+                        }
+                        break
+                    case "media":
+                        block.data = {
+                            type: element.type,
+                            raw: await backend.getMedia(
+                                work.metadata.thumbnails[element.path][400]
+                            ),
+                            display: element.alt,
+                            path: element.path,
+                        }
+                        break
+                    case "link":
+                        block.data = {
+                            type: element.type,
+                            raw: element.url,
+                            display: element.name,
+                        }
+                }
+                return block
             })
-            switch (element.type) {
-                case "paragraph":
-                    block.data = {
-                        type: element.type,
-                        raw: "",
-                        display: element.content,
-                    }
-                    break
-                case "media":
-                    block.data = {
-                        type: element.type,
-                        raw: work.metadata.thumbnails[element.path][400],
-                        display: element.alt,
-                    }
-                    break
-                case "link":
-                    block.data = {
-                        type: element.type,
-                        raw: element.url,
-                        display: element.name,
-                    }
-            }
-            return block
-        }),
+        ),
     }
 }
