@@ -29,7 +29,7 @@ async function initialize() {
 	blocks = _.blocks
 	numberOfColumns = _.numberOfColumns
 	cols = [[400, numberOfColumns]]
-	items = gridHelp.adjust(blocks, numberOfColumns)
+	items = blocks.map(gridHelp.item)
 	items.forEach(item => {
 		operationsStacks[item.id] = []
 	})
@@ -44,8 +44,8 @@ editorWork.subscribe(async _ => {
 
 const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 	const geometry = {
-		x: Math.max(...blocks.map(block => block[numberOfColumns].x)),
-		y: Math.max(...blocks.map(block => block[numberOfColumns].y)),
+		x: Math.min(...blocks.map(block => block[numberOfColumns].x)),
+		y: Math.max(...blocks.map(block => block[numberOfColumns].y)) + 1,
 		w: numberOfColumns,
 		h: 1,
 	}
@@ -66,13 +66,13 @@ const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 			},
 		},
 	]
-	items = gridHelp.adjust(blocks, numberOfColumns)
+	items = blocks.map(gridHelp.item)
 	operationsStacks[id] = []
 }
 
 const removeBlock = (item: ContentBlock) => e => {
 	blocks = blocks.filter(block => block.id !== item.id)
-	items = gridHelp.adjust(blocks, numberOfColumns)
+	items = blocks.map(gridHelp.item)
 	delete operationsStacks[item.id]
 }
 
