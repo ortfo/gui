@@ -1,21 +1,15 @@
 <script lang="ts">
-import { onMount } from "svelte"
-
 import Grid from "svelte-grid"
-import JSONTree from "svelte-json-tree"
 import gridHelp from "svelte-grid/build/helper"
 import { ContentBlock, makeBlocks } from "../contentblocks"
 import type { WorkOneLang } from "../ortfo"
-import Card from "./Card.svelte"
-import { database, state, editorWork } from "../stores"
+import { editorWork } from "../stores"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
 import tippy from "sveltejs-tippy"
-import { backend } from "../backend"
 import { scale } from "svelte/transition"
 
-export let work: WorkOneLang
 type ItemID = number
 let blocks: ContentBlock[] = []
 let numberOfColumns: number = 0
@@ -98,7 +92,6 @@ function pushToOpStack(id: number, action: ActionName) {
 		let:dataItem={item}
 		let:movePointerDown
 		let:resizePointerDown
-		fastStart
 	>
 		<div
 			class="block"
@@ -128,11 +121,15 @@ function pushToOpStack(id: number, action: ActionName) {
 					<input
 						class="name"
 						bind:value={items[index(item)].data.display}
+						on:focus={() => (activeBlock = item.id)}
+						on:blur={() => (activeBlock = null)}
 						placeholder="name your link"
 					/>
 					<input
 						class="url"
 						bind:value={items[index(item)].data.raw}
+						on:focus={() => (activeBlock = item.id)}
+						on:blur={() => (activeBlock = null)}
 						placeholder="put the url here"
 					/>
 				{:else if item.data.type === "media"}
