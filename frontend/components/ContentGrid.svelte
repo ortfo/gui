@@ -106,7 +106,6 @@ Loading...
 	let:movePointerDown
 	let:resizePointerDown
 	fastStart
-	fillSpace
 >
 	<div
 		class="block"
