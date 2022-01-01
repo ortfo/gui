@@ -31,6 +31,7 @@ specifiers:
   svelte-grid: ^5.1.0
   svelte-json-tree: ^0.1.0
   svelte-preprocess: ^4.0.0
+  svelte-simple-modal: ^1.2.0
   sveltejs-tippy: ^3.0.0
   tslib: ^2.0.0
   typescript: ^4.0.0
@@ -49,6 +50,7 @@ dependencies:
   sirv-cli: 1.0.14
   svelte-grid: 5.1.0
   svelte-json-tree: 0.1.0
+  svelte-simple-modal: 1.2.0_svelte@3.44.0
   sveltejs-tippy: 3.0.0
   uuid: 8.3.2
 
@@ -2211,6 +2213,14 @@ packages:
       svelte: 3.44.0
       typescript: 4.4.4
     dev: true
+
+  /svelte-simple-modal/1.2.0_svelte@3.44.0:
+    resolution: {integrity: sha512-uiKQ3/iNMepzMkaw15wHpP+GieuuB8SDg+Mm+8uiS3hQDJAyjc8ApR/YtUlZs77d779sJ3lukhao+WkmoIyxzA==}
+    peerDependencies:
+      svelte: ^3.31.2
+    dependencies:
+      svelte: 3.44.0
+    dev: false
 
   /svelte/3.44.0:
     resolution: {integrity: sha512-zWACSJBSncGiDvFfYOMFGNV5zDLOlyhftmO5yOZ0lEtQMptpElaRtl39MWz1+lYCpwUq4F3Q2lTzI9TrTL+eMA==}
