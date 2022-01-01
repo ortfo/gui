@@ -10,6 +10,7 @@ export type ActionName =
 	| "list-bullets"
 	| "list-numbered"
 	| "list-definitions"
+	| "set-content-to-value"
 </script>
 
 <script lang="ts">
