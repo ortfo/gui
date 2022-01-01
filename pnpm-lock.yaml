@@ -12,7 +12,9 @@ specifiers:
   '@tiptap/extension-link': ^2.0.0-beta.33
   '@tiptap/starter-kit': ^2.0.0-beta.164
   '@tsconfig/svelte': ^2.0.0
+  '@types/colornames': ^1.1.2
   base64-arraybuffer: ^1.0.1
+  colornames: ^1.1.1
   concurrently: ^6.3.0
   deep-equal: ^2.0.5
   nodemon: ^2.0.14
@@ -42,6 +44,7 @@ dependencies:
   '@tiptap/extension-link': 2.0.0-beta.33_@tiptap+core@2.0.0-beta.159
   '@tiptap/starter-kit': 2.0.0-beta.164
   base64-arraybuffer: 1.0.1
+  colornames: 1.1.1
   deep-equal: 2.0.5
   sirv-cli: 1.0.14
   svelte-grid: 5.1.0
@@ -55,6 +58,7 @@ devDependencies:
   '@rollup/plugin-replace': 3.0.0_rollup@2.62.0
   '@rollup/plugin-typescript': 8.3.0_1bc74bae420544def0d70123411a44da
   '@tsconfig/svelte': 2.0.1
+  '@types/colornames': 1.1.2
   concurrently: 6.3.0
   nodemon: 2.0.14
   prettier: 2.5.1
@@ -443,6 +447,10 @@ packages:
     resolution: {integrity: sha512-aqkICXbM1oX5FfgZd2qSSAGdyo/NRxjWCamxoyi3T8iVQnzGge19HhDYzZ6NrVOW7bhcWNSq9XexWFtMzbB24A==}
     dev: true
 
+  /@types/colornames/1.1.2:
+    resolution: {integrity: sha512-tq8AZME3IzZDtW/xpgk6EjqMCtIy5c8/YthsRDSkfj10O8y7QNpD5A22GQf5ziB4OaX7u1jtWu5werbjAKFleQ==}
+    dev: true
+
   /@types/estree/0.0.39:
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
     dev: true
@@ -751,6 +759,10 @@ packages:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
     dev: true
 
+  /colornames/1.1.1:
+    resolution: {integrity: sha1-+IiQMGhcfE/54qVZ9Qd+t2qBb5Y=}
+    dev: false
+
   /commander/2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
     dev: true
@@ -1000,6 +1012,7 @@ packages:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
+    requiresBuild: true
     dev: true
     optional: true
 
