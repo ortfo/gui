@@ -66,6 +66,7 @@ onDestroy(() => {
 
 $: while (operationsStack?.length) {
 	const action = operationsStack.pop()
+	if (editor === undefined) continue
 	try {
 		actions(editor)[action].run()
 	} catch (e) {
