@@ -13,6 +13,8 @@ import Tags from "./tabs/tags.svelte"
 import Editor from "./tabs/editor.svelte"
 import Settings from "./tabs/settings.svelte"
 import { onMount } from "svelte"
+import Modal from "svelte-simple-modal"
+import ModalButtonClose from "./components/ModalButtonClose.svelte"
 
 async function loadSettings() {
 	await backend.initializeConfigurationDirectory()
@@ -73,24 +75,26 @@ settings.subscribe(settings => applyTheme(settings.theme))
 {#await load()}
 	<h1>Sit tight, loading your stuff…</h1>
 {:then _}
-	<Navbar />
-	<main>
-		{#if $state.openTab == "works"}
-			<Works />
-		{:else if $state.openTab == "tags"}
-			<Tags />
-		{:else if $state.openTab == "technologies"}
-			TODO
-		{:else if $state.openTab == "sites"}
-			TODO
-		{:else if $state.openTab == "settings"}
-			<Settings />
-		{:else if $state.openTab == "editor"}
-			<Editor />
-		{:else}
-			404
-		{/if}
-	</main>
+	<Modal closeButton={ModalButtonClose}>
+		<Navbar />
+		<main>
+			{#if $state.openTab == "works"}
+				<Works />
+			{:else if $state.openTab == "tags"}
+				<Tags />
+			{:else if $state.openTab == "technologies"}
+				TODO
+			{:else if $state.openTab == "sites"}
+				TODO
+			{:else if $state.openTab == "settings"}
+				<Settings />
+			{:else if $state.openTab == "editor"}
+				<Editor />
+			{:else}
+				404
+			{/if}
+		</main>
+	</Modal>
 {:catch e}
 	<div class="error">
 		<h1>Woops!</h1>
