@@ -1,4 +1,5 @@
 <script lang="ts">
+import tippy from "sveltejs-tippy"
 import { settings, state } from "../stores"
 import type { PageName } from "../stores"
 import { summon } from "../modals"
@@ -36,8 +37,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 		{#if $state.editor.unsavedChanges}
 			<span
 				class="unsaved-changes"
-				use:tippy={{ content: "You have unsaved changes" }}
-				title="You have unsaved changes">&bull;</span
+				use:tippy={{ content: "You have unsaved changes" }}>&bull;</span
 			>
 		{/if}
 	{/if}
@@ -60,8 +60,11 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 		{/if}
 	</button>
 	<button on:click={() => summon("publish")}>publish!</button>
-	<button class="quit" data-variant="a" on:click={() => backend.quit()}
-		>×</button
+	<button
+		use:tippy={{ content: "Quit ortfo" }}
+		class="quit"
+		data-variant="a"
+		on:click={() => backend.quit()}>×</button
 	>
 </nav>
 
