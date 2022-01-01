@@ -7,7 +7,7 @@ import { editorWork } from "../stores"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
-import tippy from "sveltejs-tippy"
+import { tooltip } from "../actions"
 import { scale } from "svelte/transition"
 
 type ItemID = number
@@ -151,21 +151,21 @@ function pushToOpStack(id: number, action: ActionName) {
 			</div>
 			<div
 				class="deleter"
-				use:tippy={{ content: "delete block", delay: [500, 0] }}
+				use:tooltip={["delete block", 500]}
 				on:click={removeBlock(item)}
 			>
 				<img src="/assets/icon-delete.svg" class="icon" alt="delete" />
 			</div>
 			<div
 				class="dragger"
-				use:tippy={{ content: "move", delay: [500, 0] }}
+				use:tooltip={["move", 500]}
 				on:mousedown={movePointerDown}
 			>
 				<img src="/assets/icon-move.svg" class="icon" alt="move" />
 			</div>
 			<div
 				class="resizer"
-				use:tippy={{ content: "resize", delay: [500, 0] }}
+				use:tooltip={["resize", 500]}
 				on:mousedown={resizePointerDown}
 			>
 				<img

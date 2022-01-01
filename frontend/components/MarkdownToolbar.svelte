@@ -14,7 +14,7 @@ export type ActionName =
 </script>
 
 <script lang="ts">
-import tippy from "sveltejs-tippy"
+import { tooltip } from "../actions"
 import { createEventDispatcher } from "svelte"
 const dispatch = createEventDispatcher()
 
@@ -25,7 +25,7 @@ const emitAction = (actionName: ActionName) => e =>
 <ul class="toolbar">
 	<li>
 		<button
-			use:tippy={{ content: "Bold" }}
+			use:tooltip={"Bold"}
 			data-variant="none"
 			on:click={emitAction("bold")}
 			><img src="/assets/icon-bold.svg" alt="bold" class="icon" /></button
@@ -33,7 +33,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Italic" }}
+			use:tooltip={"Italic"}
 			data-variant="none"
 			on:click={emitAction("italic")}
 			><img
@@ -45,7 +45,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Heading" }}
+			use:tooltip={"Heading"}
 			data-variant="none"
 			on:click={emitAction("heading")}
 			><img
@@ -57,7 +57,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Code" }}
+			use:tooltip={"Code"}
 			data-variant="none"
 			on:click={emitAction("code")}
 			><img src="/assets/icon-code.svg" alt="code" class="icon" /></button
@@ -65,7 +65,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Block of code" }}
+			use:tooltip={"Block of code"}
 			data-variant="none"
 			on:click={emitAction("code-block")}
 			><img
@@ -77,7 +77,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Insert media" }}
+			use:tooltip={"Insert media"}
 			data-variant="none"
 			on:click={emitAction("media")}
 			><img
@@ -89,7 +89,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Link" }}
+			use:tooltip={"Link"}
 			data-variant="none"
 			on:click={emitAction("link")}
 			><img src="/assets/icon-link.svg" alt="link" class="icon" /></button
@@ -97,7 +97,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Bullet list" }}
+			use:tooltip={"Bullet list"}
 			data-variant="none"
 			on:click={emitAction("list-bullets")}
 			><img
@@ -109,7 +109,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "Numbered list" }}
+			use:tooltip={"Numbered list"}
 			data-variant="none"
 			on:click={emitAction("list-numbered")}
 			><img
@@ -121,7 +121,7 @@ const emitAction = (actionName: ActionName) => e =>
 	</li>
 	<li>
 		<button
-			use:tippy={{ content: "List of definitions" }}
+			use:tooltip={"List of definitions"}
 			data-variant="none"
 			on:click={emitAction("list-definitions")}
 			><img
