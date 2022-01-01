@@ -1,9 +1,19 @@
 <script lang="ts">
 import MetadataField from "./MetadataField.svelte"
+import colorNameToHex from "colornames"
+import { createEventDispatcher } from "svelte"
+const dispatch = createEventDispatcher()
+
+function toHex(value: string) {
+	return (colorNameToHex(value) || "").replace("#", "") || value
+}
 
 export let value: string
 export let key: string
 export let partOfObject: boolean = false
+
+let hexCode: string
+$: hexCode = toHex(value)
 
 function reset(e) {
 	e.preventDefault()
@@ -16,11 +26,16 @@ function reset(e) {
 		class="swatch"
 		class:unset={!value}
 		style={value
-			? `background-color: #${value};border-color: #${value};`
+			? `background-color: #${hexCode};border-color: #${hexCode};`
 			: ""}
 		on:dblclick={reset}
 	/>
-	<input type="text" bind:value placeholder="unset" />
+	<input
+		type="text"
+		value={hexCode}
+		on:input={e => dispatch("input", value = e.target.value)}
+		placeholder="unset"
+	/>
 </MetadataField>
 
 <style>
