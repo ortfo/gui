@@ -33,7 +33,7 @@ function reset(e) {
 	<input
 		type="text"
 		value={hexCode}
-		on:input={e => dispatch("input", value = e.target.value)}
+		on:input={e => dispatch("input", (value = e.target.value))}
 		placeholder="unset"
 	/>
 </MetadataField>
