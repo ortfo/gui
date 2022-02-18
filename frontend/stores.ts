@@ -58,8 +58,8 @@ export async function fillEditorMetadataState(
 ): Promise<State["editor"]["metadata"]> {
     const metadata = work.metadata
     return {
-        tags: metadata.tags,
-        madewith: metadata.madewith,
+        tags: metadata.tags || [],
+        madewith: metadata.madewith || [],
         created: new Date(metadata.created),
         colors: metadata.colors,
         aliases: metadata?.aliases || [],
