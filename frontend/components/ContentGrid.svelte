@@ -18,8 +18,10 @@ let items: ContentBlock[] = []
 let operationsStacks: Record<ItemID, ActionName[]> = {}
 let activeBlock: number | null = null
 
+export let work: WorkOneLang
+
 async function initialize() {
-	const _ = await makeBlocks($editorWork)
+	const _ = await makeBlocks(work)
 	blocks = _.blocks
 	numberOfColumns = _.numberOfColumns
 	cols = [[400, numberOfColumns]]

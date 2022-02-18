@@ -114,10 +114,9 @@ let editingTitle = false
 				bind:value={$state.editor.metadata.pagebackground}
 			/>
 		</dl>
+		<JSONTree value={$state.editor} />
 	</section>
 </Split>
-
-<JSONTree data={$state.editor} />
 
 <style>
 .title {
