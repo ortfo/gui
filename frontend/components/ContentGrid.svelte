@@ -226,6 +226,7 @@ h2 {
 
 :global(.block:not(.active) .toolbar) {
 	opacity: 0;
+	pointer-events: none;
 }
 
 :global(.block .toolbar) {
