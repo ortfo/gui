@@ -56,7 +56,7 @@ const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 			data: {
 				type,
 				raw: "",
-				display: type === "paragraph" ? "Enter some text…" : "",
+				display: "",
 			},
 		},
 	]
@@ -116,6 +116,7 @@ function pushToOpStack(id: number, action: ActionName) {
 						on:focus={() => (activeBlock = item.id)}
 						bind:operationsStack={operationsStacks[item.id]}
 						itemID={item.id}
+						placeholder="write some text here"
 					/>
 				{:else if item.data.type === "link"}
 					<input

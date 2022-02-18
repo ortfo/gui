@@ -4,11 +4,13 @@ import { Editor } from "@tiptap/core"
 import StarterKit from "@tiptap/starter-kit"
 // import BubbleMenu from "@tiptap/extension-bubble-menu"
 import Link from "@tiptap/extension-link"
+import Placeholder from "@tiptap/extension-placeholder"
 import type { ActionName } from "./MarkdownToolbar.svelte"
 
 export let value: string
 export let operationsStack: ActionName[]
 export let itemID: number
+export let placeholder: string = ""
 
 let element
 let editor: Editor
@@ -41,7 +43,7 @@ const dispatch = createEventDispatcher()
 onMount(() => {
 	editor = new Editor({
 		element,
-		extensions: [StarterKit, Link],
+		extensions: [StarterKit, Link, Placeholder.configure({ placeholder })],
 		content: value,
 		onTransaction: () => {
 			editor = editor
@@ -80,5 +82,11 @@ $: while (operationsStack?.length) {
 <style>
 :global(.markdown-editor ul, .markdown-editor ol) {
 	padding-left: 1em;
+}
+
+/* Placeholder */
+:global(.markdown-editor p.is-editor-empty):first-child::before {
+	content: attr(data-placeholder);
+	color: var(--gray);
 }
 </style>
