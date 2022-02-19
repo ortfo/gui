@@ -121,7 +121,6 @@ function pushToOpStack(id: number, action: ActionName) {
 							willDeactivateBlock = false
 						}}
 						bind:operationsStack={operationsStacks[item.id]}
-						itemID={item.id}
 						placeholder="write some text here"
 					/>
 				{:else if item.data.type === "link"}

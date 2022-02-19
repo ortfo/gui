@@ -9,7 +9,6 @@ import type { ActionName } from "./MarkdownToolbar.svelte"
 
 export let value: string
 export let operationsStack: ActionName[]
-export let itemID: number
 export let placeholder: string = ""
 
 let element
