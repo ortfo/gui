@@ -17,6 +17,7 @@ let cols: number[][] = []
 let items: ContentBlock[] = []
 let operationsStacks: Record<ItemID, ActionName[]> = {}
 let activeBlock: number | null = null
+let willDeactivateBlock: boolean = false
 
 export let work: WorkOneLang
 
@@ -114,8 +115,19 @@ function pushToOpStack(id: number, action: ActionName) {
 						on:input={({ detail }) => {
 							items[index(item)].data.display = detail
 						}}
-						on:blur={() => (activeBlock = null)}
-						on:focus={() => (activeBlock = item.id)}
+						on:blur={() => {
+							willDeactivateBlock = true
+							setTimeout(() => {
+								if (willDeactivateBlock) {
+									activeBlock = null
+									willDeactivateBlock = false
+								}
+							}, 150)
+						}}
+						on:focus={() => {
+							activeBlock = item.id
+							willDeactivateBlock = false
+						}}
 						bind:operationsStack={operationsStacks[item.id]}
 						itemID={item.id}
 						placeholder="write some text here"
