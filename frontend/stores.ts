@@ -1,5 +1,5 @@
 import { writable, derived } from "svelte/store"
-import type { Writable, Derived } from "svelte/store"
+import type { Writable, Readable } from "svelte/store"
 import type {
     DatabaseOneLang,
     Database,
@@ -118,7 +118,7 @@ export const database = derived(
     }
 )
 
-export const editorWork: Derived<WorkOneLang> = derived(
+export const editorWork: Readable<WorkOneLang> = derived(
     [databaseLanguages, state],
     ([$databaseLanguages, $state]) => {
         if ("works" in $databaseLanguages) {
