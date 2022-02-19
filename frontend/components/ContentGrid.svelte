@@ -231,9 +231,12 @@ h2 {
 }
 
 :global(.svlt-grid-item) {
+	display: flex;
+}
+.block {
 	border: 0.175em solid var(--gray);
 	border-radius: 0.5em;
-	display: flex;
+	transition: border-color 0.4s ease-in-out;
 }
 
 :global(.block:not(.active) .toolbar) {
@@ -284,6 +287,10 @@ h2 {
 
 .block[data-type="media"]:not(:hover):not(.active) input {
 	opacity: 0;
+}
+
+.block.active {
+	border-color: var(--ortforange);
 }
 
 .block,
