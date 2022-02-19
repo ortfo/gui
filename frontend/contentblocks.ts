@@ -1,6 +1,7 @@
 import type { WorkOneLang, Paragraph, Media, Link } from "./ortfo"
 import { backend } from "./backend"
 import gridHelp from "svelte-grid/build/helper"
+import type { OrtfoMkLayout } from "./layout"
 
 export type ContentBlock = {
     id: number

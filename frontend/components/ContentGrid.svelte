@@ -8,12 +8,19 @@ import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
 import { tooltip } from "../actions"
 import { scale } from "svelte/transition"
+import { createEventDispatcher } from "svelte"
+import type { SvelteGridItem } from "../layout"
+import { editor } from "../stores"
+import rfdc from "rfdc"
+
+const dispatch = createEventDispatcher()
+const clone = rfdc()
 
 type ItemID = number
 let blocks: ContentBlock[] = []
 let numberOfColumns: number = 0
 let cols: number[][] = []
-let items: ContentBlock[] = []
+let items: SvelteGridItem[] = []
 let operationsStacks: Record<ItemID, ActionName[]> = {}
 let activeBlock: number | null = null
 let willDeactivateBlock: boolean = false
@@ -29,6 +36,7 @@ async function initialize(work) {
 	items.forEach(item => {
 		operationsStacks[item.id] = []
 	})
+	$editor.items = clone(items)
 }
 
 const addBlock = (type: ContentBlock["data"]["type"]) => e => {
@@ -66,7 +74,7 @@ const removeBlock = (item: ContentBlock) => e => {
 }
 
 function index(item: { id: number }): number {
-	return items.findIndex(it => it.id === item.id)
+	return items.findIndex(it => parseInt(it.id) === item.id)
 }
 
 function pushToOpStack(id: number, action: ActionName) {
@@ -75,6 +83,8 @@ function pushToOpStack(id: number, action: ActionName) {
 		[id]: [...(operationsStacks[id] || []), action],
 	}
 }
+
+$: dispatch("edit", { items, numberOfColumns })
 </script>
 
 {#await initialize(work)}

@@ -9,6 +9,7 @@ import {
 	fillEditorMetadataState,
 	databaseLanguages,
 	editorWork,
+	editor,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
 import equal from "deep-equal"
@@ -17,24 +18,34 @@ import FieldList from "../components/FieldList.svelte"
 import FieldColors from "../components/FieldColors.svelte"
 import ContentGrid from "../components/ContentGrid.svelte"
 import { Split } from "@geoffcox/svelte-splitter"
+import type { ContentBlock } from "../contentblocks"
+import { diff, Operation } from "just-diff"
+import tinykeys from "tinykeys"
+import { SvelteGridItem, toLayout } from "../layout"
 
 onMount(async () => {
-	$state.editor.metadata = await fillEditorMetadataState(
-		$editorWork,
-		$settings
-	)
+	$editor.metadata = await fillEditorMetadataState($editorWork, $settings)
+	tinykeys(window, {
+		"$mod+s": saveToDisk,
+	})
 })
 
-function diffWithSaved() {
-	const current = $state.editor.metadata
-	const saved = $editorWork.metadata
-	return (
-		current.aliases !== (saved?.aliases || []) ||
-		!equal(current.colors, saved.colors) ||
-		current.created.toISOString() !== saved.created.toISOString() ||
-		current.titlestyle !== saved?.titlestyle
-		// TODO pagebackground
-	)
+function updateContentBlocks({
+	items,
+	columnSize,
+}: {
+	items: SvelteGridItem[]
+	columnSize: number
+}) {
+	contentBlocksColumnSize = columnSize
+	differenceWithDisk = diff($editor.items, items)
+}
+
+function saveToDisk() {
+	if (layoutChanged) {
+		const updatedLayout = toLayout($editor.items, contentBlocksColumnSize)
+	}
+	differenceWithDisk.forEach(difference => {})
 }
 
 function editTitle(e) {
@@ -43,20 +54,31 @@ function editTitle(e) {
 		document.getElementById("title").focus()
 	} else {
 		editingTitle = false
-		$state.editor.title = e.target.textContent
+		$editor.title = e.target.textContent
 	}
 }
 
 let editingTitle = false
+let layoutChanged = false
+let contentBlocksColumnSize = 0
+let differenceWithDisk: {
+	op: Operation
+	path: (string | number)[]
+	value: any
+}[] = []
 
-// $: $state.editor.unsavedChanges = diffWithSaved()
+$: $editor.unsavedChanges = differenceWithDisk.length >= 1
+$: layoutChanged =
+	differenceWithDisk.filter(d =>
+		d.path.some(k => ["x", "y", "w", "h"].includes(k.toString()))
+	).length >= 1
 </script>
 
-<Split initialPrimarySize="{100 - $state.editor.metadataPaneSplitRatio * 100}%">
+<Split initialPrimarySize="{100 - $editor.metadataPaneSplitRatio * 100}%">
 	<section class="layout" slot="primary">
 		<SwitchButton
-			bind:value={$state.editor.language}
-			on:change={e => ($state.editor.language = e.detail)}
+			bind:value={$state.editingLanguage}
+			on:change={e => ($state.editingLanguage = e.detail)}
 			options={{ en: "english", fr: "français" }}
 			showCodes
 		/>
@@ -64,9 +86,9 @@ let editingTitle = false
 
 		<div class="title" id="title">
 			<h1
-				on:blur={() => {
+				on:blur={e => {
 					editingTitle = false
-					$state.editor.title = e.target.textContent
+					$editor.title = e.target.textContent
 				}}
 				contenteditable={editingTitle}
 			>
@@ -84,7 +106,10 @@ let editingTitle = false
 			</p>
 		{/if}
 
-		<ContentGrid work={$editorWork} />
+		<ContentGrid
+			work={$editorWork}
+			on:edit={e => updateContentBlocks(e.detail)}
+		/>
 	</section>
 
 	<section class="metadata" slot="secondary">
@@ -100,21 +125,14 @@ let editingTitle = false
 		{/if}
 
 		<dl>
-			<FieldList key="tags" bind:value={$state.editor.metadata.tags} />
-			<FieldList
-				key="madewith"
-				bind:value={$state.editor.metadata.madewith}
-			/>
-			<FieldColors
-				key="colors"
-				bind:value={$state.editor.metadata.colors}
-			/>
+			<FieldList key="tags" bind:value={$editor.metadata.tags} />
+			<FieldList key="madewith" bind:value={$editor.metadata.madewith} />
+			<FieldColors key="colors" bind:value={$editor.metadata.colors} />
 			<FieldImage
 				key="pagebackground"
-				bind:value={$state.editor.metadata.pagebackground}
+				bind:value={$editor.metadata.pagebackground}
 			/>
 		</dl>
-		<JSONTree value={$state.editor} />
 	</section>
 </Split>
 

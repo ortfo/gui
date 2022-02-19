@@ -1,6 +1,6 @@
 <script lang="ts">
 import { tooltip } from "../actions"
-import { settings, state } from "../stores"
+import { editor, settings, state } from "../stores"
 import type { PageName } from "../stores"
 import { summon } from "../modals"
 import { backend } from "../backend"
@@ -34,7 +34,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			href="#editor"
 			class:current={$state.openTab === "editor"}>{$state.editingWork}</a
 		>
-		{#if $state.editor.unsavedChanges}
+		{#if $editor.unsavedChanges}
 			<span
 				class="unsaved-changes"
 				use:tooltip={"You have unsaved changes"}>&bull;</span

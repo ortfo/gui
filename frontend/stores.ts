@@ -6,8 +6,10 @@ import type {
     WorkMetadata,
     WorkOneLang,
 } from "./ortfo"
+import type { ContentBlock } from "./contentblocks"
 import { backend, Base64WithFiletype } from "./backend"
 import { inLanguage } from "./ortfo"
+import type { SvelteGridItem } from "./layout"
 
 export type Settings = {
     theme: string
@@ -31,31 +33,33 @@ export type State = {
     openTab: PageName
     rebuildingDatabase: boolean
     editingWork: WorkID | null
-    editor: {
-        language: "en" | "fr"
-        metadataPaneSplitRatio: number
-        metadata: {
-            tags: string[]
-            madewith: string[]
-            created: Date
-            colors: {
-                primary: string
-                secondary: string
-                tertiary: string
-            }
-            aliases: string[]
-            titlestyle: "filled" | "outlined"
-            pagebackground: Base64WithFiletype
+    editingLanguage: "en" | "fr"
+}
+
+export type EditorState = {
+    metadataPaneSplitRatio: number
+    items: SvelteGridItem[]
+    metadata: {
+        tags: string[]
+        madewith: string[]
+        created: Date
+        colors: {
+            primary: string
+            secondary: string
+            tertiary: string
         }
-        title: string
-        unsavedChanges: boolean
+        aliases: string[]
+        titlestyle: "filled" | "outlined"
+        pagebackground: Base64WithFiletype
     }
+    title: string
+    unsavedChanges: boolean
 }
 
 export async function fillEditorMetadataState(
     work: WorkOneLang,
     settings: Settings
-): Promise<State["editor"]["metadata"]> {
+): Promise<EditorState["metadata"]> {
     const metadata = work.metadata
     return {
         tags: metadata.tags || [],
@@ -84,21 +88,23 @@ export const state: Writable<State> = writable({
     openTab: "editor",
     rebuildingDatabase: false,
     editingWork: "humanr",
-    editor: {
-        language: "en",
-        metadataPaneSplitRatio: 0.333,
-        metadata: {
-            tags: [],
-            madewith: [],
-            colors: {
-                primary: "",
-                secondary: "",
-                tertiary: "",
-            },
-        } as State["editor"]["metadata"],
-        unsavedChanges: false,
-        title: "",
-    },
+    editingLanguage: "en",
+})
+
+export const editor: Writable<EditorState> = writable({
+    metadataPaneSplitRatio: 0.333,
+    items: [],
+    metadata: {
+        tags: [],
+        madewith: [],
+        colors: {
+            primary: "",
+            secondary: "",
+            tertiary: "",
+        },
+    } as EditorState["metadata"],
+    unsavedChanges: false,
+    title: "",
 })
 
 export const databaseLanguages: Writable<Database> = writable({} as Database)
@@ -122,7 +128,7 @@ export const editorWork: Readable<WorkOneLang> = derived(
     [databaseLanguages, state],
     ([$databaseLanguages, $state]) => {
         if ("works" in $databaseLanguages) {
-            return inLanguage($state.editor.language)(
+            return inLanguage($state.editingLanguage)(
                 $databaseLanguages.works.find(w => w.id === $state.editingWork)
             )
         }
