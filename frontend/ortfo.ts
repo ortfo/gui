@@ -83,22 +83,24 @@ export const inLanguage = (language: string) => (work: Work) => {
 }
 
 export interface WorkMetadata {
-    created: string
-    started: string
-    finished: string
-    tags: string[]
+    created?: string
+    started?: string
+    finished?: string
+    tags?: string[]
     layout: any[]
     layoutproper: string[][]
-    madewith: string[]
-    colors: {
+    madewith?: string[]
+    colors?: {
         primary: string
         secondary: string
         tertiary: string
     }
-    pagebackground: string
+    pagebackground?: string
     title: string
-    wip: boolean
+    wip?: boolean
     thumbnails: { [key: string]: { [key: number]: string } }
+    aliases?: string[]
+    titlestyle?: "filled" | "outlined"
 }
 
 export const metadataReadableNames = {
