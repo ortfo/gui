@@ -89,13 +89,13 @@ function pushToOpStack(id: number, action: ActionName) {
 		let:resizePointerDown
 	>
 		<div
+			transition:scale
 			class="block"
 			data-type={item.data.type}
 			class:active={activeBlock === item.id}
 			style={item.data.type === "media"
 				? `background-image: url("${item.data.raw}")`
 				: ""}
-			transition:scale
 		>
 			<div class="content">
 				{#if item.data.type === "paragraph"}
