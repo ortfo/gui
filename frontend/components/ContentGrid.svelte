@@ -3,7 +3,6 @@ import Grid from "svelte-grid"
 import gridHelp from "svelte-grid/build/helper"
 import { ContentBlock, makeBlocks } from "../contentblocks"
 import type { WorkOneLang } from "../ortfo"
-import { editorWork } from "../stores"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
@@ -21,7 +20,7 @@ let willDeactivateBlock: boolean = false
 
 export let work: WorkOneLang
 
-async function initialize() {
+async function initialize(work) {
 	const _ = await makeBlocks(work)
 	blocks = _.blocks
 	numberOfColumns = _.numberOfColumns
@@ -31,13 +30,6 @@ async function initialize() {
 		operationsStacks[item.id] = []
 	})
 }
-
-editorWork.subscribe(async _ => {
-	await initialize()
-	items.forEach(
-		item => (operationsStacks[item.id] = ["set-content-to-value"])
-	)
-})
 
 const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 	const geometry = {
@@ -85,7 +77,7 @@ function pushToOpStack(id: number, action: ActionName) {
 }
 </script>
 
-{#await initialize()}
+{#await initialize(work)}
 	Loading...
 {:then}
 	<Grid
