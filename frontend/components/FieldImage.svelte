@@ -9,7 +9,7 @@ import MetadataField from "./MetadataField.svelte"
 const emit = createEventDispatcher()
 
 export let value: Base64WithFiletype
-let files: FileList = [] as FileList
+let files = [] as unknown as FileList
 export let key: string
 
 async function getBase64d() {
