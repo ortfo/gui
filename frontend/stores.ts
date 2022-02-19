@@ -122,9 +122,9 @@ export const editorWork: Derived<WorkOneLang> = derived(
     [databaseLanguages, state],
     ([$databaseLanguages, $state]) => {
         if ("works" in $databaseLanguages) {
-            return $databaseLanguages.works
-                .map(inLanguage($state.editor.language))
-                .find(w => w.id === $state.editingWork)
+            return inLanguage($state.editor.language)(
+                $databaseLanguages.works.find(w => w.id === $state.editingWork)
+            )
         }
     }
 )
