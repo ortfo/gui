@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/mapstructure"
+	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
 	"github.com/webview/webview"
 )
@@ -47,6 +48,14 @@ func main() {
 		var work ortfomk.WorkOneLang
 		mapstructure.Decode(workUntyped, &work)
 		return Layout(work)
+	})
+	w.Bind("backend__writeback", func(work ortfodb.Work) error {
+		settings, err := LoadSettings()
+		if err != nil {
+			return fmt.Errorf("while loading settings: %w", err)
+		}
+
+		return writeback(settings, work)
 	})
 	w.Run()
 }

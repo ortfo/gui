@@ -1,3 +1,13 @@
+import type {
+    Link,
+    Media,
+    Paragraph,
+    UnanalyzedMedia,
+    Work,
+    WorkOneLang,
+} from "./ortfo"
+import { completeWith, range, repeat } from "./utils"
+
 export type SvelteGridItem<Data = any> = {
     [k: number]: {
         fixed: boolean
@@ -21,14 +31,110 @@ export type OrtfoMkLayout = (`${"p" | "m" | "l"}${number}` | null)[][]
 
 // toLayout transforms an array of grid of svelte-grid items into a ortfomk layout
 export function toLayout(
-    items: SvelteGridItem[],
-    columnSize: number
-): OrtfoMkLayout {
+    items: SvelteGridItem<
+        | {
+              type: "link" | "paragraph"
+              raw: string
+              display: string
+          }
+        | { type: "media"; raw: string; display: string; path: string }
+    >[],
+    columnSize: number,
+    language: "fr" | "en"
+): WorkOneLang {
     let layout: OrtfoMkLayout = []
+    let contentBlocks: {
+        paragraphs: Paragraph[]
+        media: UnanalyzedMedia[]
+        links: Link[]
+    } = {
+        paragraphs: [],
+        media: [],
+        links: [],
+    }
+    const position = item => item[columnSize]
+    const y = item => position(item).y
+    const x = item => position(item).x
+    const height = item => position(item).h
+    const width = item => position(item).w
+    const row = index =>
+        items.filter(item =>
+            range(y(item), y(item) + height(item)).includes(index)
+        )
+    const lastRow = Math.max(...items.map(y))
+    const blocksOfSameType = item =>
+        contentBlocks[
+            { media: "media", paragraph: "paragraphs", link: "links" }[
+                item.data.type
+            ]
+        ]
+    const isAlreadyInBlocks = item =>
+        blocksOfSameType(item).some(block => block.id === item.id)
+
     items = items
         .map(i => ({ ...i, position: i[columnSize] }))
-        .sort(
-            (a, b) => (a.position.y - b.position.y, a.position.x - b.position.x)
-        )
-    console.info(items.map(i => i.data.display))
+        .sort((a, b) => (y(a) - y(b), x(a) - x(b)))
+
+    const rowIndices = range(0, lastRow + 1)
+
+    for (const rowIndex of rowIndices) {
+        let layoutRow = []
+        for (const item of row(rowIndex)) {
+            const { type, display, raw } = item.data
+            const layoutCell =
+                type[0] /* first character of type name */ +
+                (blocksOfSameType(item).length + 1)
+            layoutRow.push(...repeat(width(item), layoutCell))
+            if (!isAlreadyInBlocks(item)) {
+                switch (item.data.type) {
+                    case "paragraph":
+                        contentBlocks.paragraphs.push({
+                            id: item.id,
+                            content: display,
+                        })
+                        break
+
+                    case "media":
+                        contentBlocks.media.push({
+                            id: item.id,
+                            alt: display,
+                            source: raw,
+                            title: "", // TODO allow user to set title
+                            attributes: {
+                                // TODO allow user to set attributes
+                                looped: false,
+                                autoplay: false,
+                                muted: false,
+                                playsinline: false,
+                                controls: true,
+                            },
+                        })
+                        break
+
+                    case "link":
+                        contentBlocks.links.push({
+                            id: item.id,
+                            name: display,
+                            title: "", // TODO allow user to set title
+                            url: raw,
+                        })
+                        break
+
+                    default:
+                        break
+                }
+            }
+        }
+        layoutRow = completeWith(columnSize, null, layoutRow)
+        layout.push(layoutRow)
+    }
+
+    return {
+        metadata: {
+            layout,
+        },
+        ...Object.fromEntries(
+            Object.entries(contentBlocks).map((b, k) => [{ [language]: b }, k])
+        ),
+    }
 }

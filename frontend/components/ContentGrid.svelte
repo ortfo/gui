@@ -84,7 +84,7 @@ function pushToOpStack(id: number, action: ActionName) {
 	}
 }
 
-$: dispatch("edit", { items, numberOfColumns })
+$: dispatch("edit", { items, columnSize: numberOfColumns })
 </script>
 
 {#await initialize(work)}

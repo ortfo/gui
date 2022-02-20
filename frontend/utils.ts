@@ -20,3 +20,12 @@ export const noSpacesKeys = transformKeys(key => key.replace(/\s/g, ""))
 export const lowercaseNoSpacesKeys = transformKeys(key =>
     key.replace(/\s/g, "").toLowerCase()
 )
+
+export const range = (start: number, end: number) =>
+    [...Array(end - start).keys()].map(i => i + start)
+
+export const repeat = (n: number, value: any) => range(0, n).map(() => value)
+
+export function completeWith<V>(n: number, value: V, arr: V[]): V[] {
+    return [...arr, ...repeat(n - arr.length, value)]
+}

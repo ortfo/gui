@@ -1,5 +1,11 @@
 import type { Settings, State } from "./stores"
-import { Database, DatabaseOneLang, inLanguage } from "./ortfo"
+import {
+    Database,
+    DatabaseOneLang,
+    inLanguage,
+    Work,
+    WorkOneLang,
+} from "./ortfo"
 import { lowercaseNoSpacesKeys, transformKeys } from "./utils"
 
 /*
@@ -20,6 +26,7 @@ type Backend = {
     rebuildDatabase: () => Promise<null | string>
     getMedia: (path: string) => Promise<Base64WithFiletype>
     layout: (work: WorkOneLang) => Promise<LayedOutElement[]>
+    writeToDisk: (work: Work) => Promise<null | string>
 }
 
 export const backend: Backend = {
@@ -51,5 +58,8 @@ export const backend: Backend = {
     layout: async (work: string) => {
         const data = await backend__layout(work)
         return data.map(lowercaseNoSpacesKeys)
+    },
+    writeToDisk: async (work: Work) => {
+        return await backend__writeback(work)
     },
 }

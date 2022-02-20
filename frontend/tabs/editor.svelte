@@ -21,7 +21,8 @@ import { Split } from "@geoffcox/svelte-splitter"
 import type { ContentBlock } from "../contentblocks"
 import { diff, Operation } from "just-diff"
 import tinykeys from "tinykeys"
-import { SvelteGridItem, toLayout } from "../layout"
+import { SvelteGridItem, toLayout as workFromItems } from "../layout"
+import { backend } from "../backend"
 
 onMount(async () => {
 	$editor.metadata = await fillEditorMetadataState($editorWork, $settings)
@@ -37,15 +38,28 @@ function updateContentBlocks({
 	items: SvelteGridItem[]
 	columnSize: number
 }) {
+	console.log(columnSize)
 	contentBlocksColumnSize = columnSize
 	differenceWithDisk = diff($editor.items, items)
 }
 
-function saveToDisk() {
-	if (layoutChanged) {
-		const updatedLayout = toLayout($editor.items, contentBlocksColumnSize)
+async function saveToDisk() {
+	console.log($editor.items, contentBlocksColumnSize)
+	let newWork = workFromItems(
+		$editor.items,
+		contentBlocksColumnSize,
+		$state.editingLanguage
+	)
+	// if (layoutChanged) {
+	// 	const updatedLayout = toLayout($editor.items, contentBlocksColumnSize)
+	// }
+	newWork.metadata = {
+		...$editor.metadata,
+		...newWork.metadata,
 	}
-	differenceWithDisk.forEach(difference => {})
+	newWork.title = { [$state.editingLanguage]: $editor.metadata.title }
+	newWork.id = $editorWork.id
+	await backend.writeToDisk(newWork)
 }
 
 function editTitle(e) {
