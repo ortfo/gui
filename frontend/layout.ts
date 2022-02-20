@@ -89,16 +89,16 @@ export function toLayout(
                 switch (item.data.type) {
                     case "paragraph":
                         contentBlocks.paragraphs.push({
-                            id: item.id,
+                            id: item.id.toString(),
                             content: display,
                         })
                         break
 
                     case "media":
                         contentBlocks.media.push({
-                            id: item.id,
+                            id: item.id.toString(),
                             alt: display,
-                            source: raw,
+                            source: item.data.path,
                             title: "", // TODO allow user to set title
                             attributes: {
                                 // TODO allow user to set attributes
@@ -113,7 +113,7 @@ export function toLayout(
 
                     case "link":
                         contentBlocks.links.push({
-                            id: item.id,
+                            id: item.id.toString(),
                             name: display,
                             title: "", // TODO allow user to set title
                             url: raw,
@@ -133,8 +133,7 @@ export function toLayout(
         metadata: {
             layout,
         },
-        ...Object.fromEntries(
-            Object.entries(contentBlocks).map((b, k) => [{ [language]: b }, k])
-        ),
+        ...contentBlocks,
+        language: language,
     }
 }

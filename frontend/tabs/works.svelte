@@ -4,7 +4,7 @@ import { getContext } from "svelte"
 import Card from "../components/Card.svelte"
 import CardWork from "../components/CardWork.svelte"
 import NewWork from "../modals/NewWork.svelte"
-import { settings, database } from "../stores"
+import { settings, currentLanguageDatabase } from "../stores"
 const { open: openModal } = getContext("simple-modal")
 </script>
 
@@ -18,7 +18,7 @@ const { open: openModal } = getContext("simple-modal")
 	<li id="create">
 		<Card creates hasIcon on:click={() => openModal(NewWork)}>+</Card>
 	</li>
-	{#each $database.works as work}
+	{#each $currentLanguageDatabase.works as work}
 		<li id={`work-${work.id}`}>
 			<CardWork {work} />
 		</li>

@@ -1,15 +1,16 @@
 <script lang="ts">
 import { onMount } from "svelte"
-import { inLanguage, WorkOneLang } from "../ortfo"
+import { fromLanguages, inLanguage, WorkOneLang } from "../ortfo"
 import SwitchButton from "../components/SwitchButton.svelte"
 import {
 	state,
 	settings,
-	database,
+	currentLanguageDatabase,
 	fillEditorMetadataState,
-	databaseLanguages,
+	database,
 	editorWork,
 	editor,
+	databaseLanguages,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
 import equal from "deep-equal"
@@ -23,6 +24,7 @@ import { diff, Operation } from "just-diff"
 import tinykeys from "tinykeys"
 import { SvelteGridItem, toLayout as workFromItems } from "../layout"
 import { backend } from "../backend"
+import { except } from "../utils"
 
 onMount(async () => {
 	$editor.metadata = await fillEditorMetadataState($editorWork, $settings)
@@ -38,27 +40,38 @@ function updateContentBlocks({
 	items: SvelteGridItem[]
 	columnSize: number
 }) {
-	console.log(columnSize)
 	contentBlocksColumnSize = columnSize
 	differenceWithDisk = diff($editor.items, items)
 }
 
 async function saveToDisk() {
-	console.log($editor.items, contentBlocksColumnSize)
-	let newWork = workFromItems(
+	let newWorkCurrentLanguage = workFromItems(
 		$editor.items,
 		contentBlocksColumnSize,
 		$state.editingLanguage
 	)
-	// if (layoutChanged) {
-	// 	const updatedLayout = toLayout($editor.items, contentBlocksColumnSize)
-	// }
-	newWork.metadata = {
+	newWorkCurrentLanguage.metadata = except(
+		"thumbnails",
+		"layoutproper"
+	)({
 		...$editor.metadata,
-		...newWork.metadata,
-	}
-	newWork.title = { [$state.editingLanguage]: $editor.metadata.title }
-	newWork.id = $editorWork.id
+		...newWorkCurrentLanguage.metadata,
+	})
+	newWorkCurrentLanguage.title = $editor.title
+	newWorkCurrentLanguage.id = $editorWork.id
+	const newWork = fromLanguages(
+		...Array.from($databaseLanguages)
+			.filter(l => l !== $state.editingLanguage)
+			.map(l =>
+				inLanguage(l)(
+					$database.works.find(
+						w => w.id === newWorkCurrentLanguage.id
+					)
+				)
+			),
+		newWorkCurrentLanguage
+	)
+	console.info("Writing to disk", newWork)
 	await backend.writeToDisk(newWork)
 }
 

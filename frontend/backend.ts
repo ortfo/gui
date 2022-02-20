@@ -2,6 +2,7 @@ import type { Settings, State } from "./stores"
 import {
     Database,
     DatabaseOneLang,
+    dbWork,
     inLanguage,
     Work,
     WorkOneLang,
@@ -26,7 +27,7 @@ type Backend = {
     rebuildDatabase: () => Promise<null | string>
     getMedia: (path: string) => Promise<Base64WithFiletype>
     layout: (work: WorkOneLang) => Promise<LayedOutElement[]>
-    writeToDisk: (work: Work) => Promise<null | string>
+    writeToDisk: (work: dbWork) => Promise<null | string>
 }
 
 export const backend: Backend = {

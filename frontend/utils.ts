@@ -29,3 +29,12 @@ export const repeat = (n: number, value: any) => range(0, n).map(() => value)
 export function completeWith<V>(n: number, value: V, arr: V[]): V[] {
     return [...arr, ...repeat(n - arr.length, value)]
 }
+
+export function except<V>(
+    ...keys: string[]
+): (obj: { [key: string]: V }) => { [key: string]: V } {
+    return obj =>
+        Object.fromEntries(
+            Object.entries(obj).filter(([key]) => !keys.includes(key))
+        )
+}

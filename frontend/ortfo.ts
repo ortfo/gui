@@ -69,6 +69,11 @@ export interface Work extends dbWork {
     metadata: WorkMetadata
 }
 
+/**
+ * Currified function to return a work in a single language.
+ * @param language the target language to extract from the given work
+ * @returns An extractor that will return a work in the given language
+ */
 export const inLanguage = (language: string) => (work: Work) => {
     const access = prop => work[prop][language] || work[prop]["default"]
     return {
@@ -80,6 +85,38 @@ export const inLanguage = (language: string) => (work: Work) => {
         language: language,
         title: access("title") || "",
     } as WorkOneLang
+}
+
+/**
+ * Turn multiple single-language works into a full work.
+ * Can be thought of as the opposite of `inLanguage`.
+ * @param singleLanguageWorks single-language works to merge
+ * @returns the merged work
+ */
+export const fromLanguages = (...singleLanguageWorks: WorkOneLang[]) => {
+    const multiLanguage = propertyName =>
+        Object.fromEntries(
+            singleLanguageWorks.map(work => [work.language, work[propertyName]])
+        )
+
+    if (new Set(singleLanguageWorks.map(w => w.id)).size !== 1) {
+        throw new Error(
+            "fromLanguages: cannot merge single-language works with different ids"
+        )
+    }
+
+    return {
+        id: singleLanguageWorks[0].id,
+        metadata: Object.assign(
+            {},
+            ...singleLanguageWorks.map(w => w.metadata)
+        ),
+        title: multiLanguage("title"),
+        paragraphs: multiLanguage("paragraphs"),
+        media: multiLanguage("media"),
+        links: multiLanguage("links"),
+        footnotes: multiLanguage("footnotes"),
+    } as Work
 }
 
 export interface WorkMetadata {

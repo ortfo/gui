@@ -1,8 +1,8 @@
 <script lang="ts">
 import Navbar from "./components/Navbar.svelte"
 import {
+	currentLanguageDatabase,
 	database,
-	databaseLanguages,
 	settings,
 	state,
 	editorWork,
@@ -52,7 +52,7 @@ function applyTheme(themeName: string) {
 }
 
 async function loadDatabase() {
-	$databaseLanguages = await backend.databaseRead()
+	$database = await backend.databaseRead()
 	console.info(`Loaded database from backend`)
 }
 

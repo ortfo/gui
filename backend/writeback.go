@@ -11,7 +11,7 @@ import (
 
 func writeback(settings Settings, work ortfodb.Work) error {
 	description, err := ortfodb.ReplicateDescription(work)
-	println("Replicated description:", description)
+	// println("Replicated description:", description)
 	if err != nil {
 		return fmt.Errorf("while replicating description: %w", err)
 	}

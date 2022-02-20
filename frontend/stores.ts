@@ -85,9 +85,9 @@ export const settings: Writable<Settings> = writable({
 })
 
 export const state: Writable<State> = writable({
-    openTab: "editor",
+    openTab: "works",
     rebuildingDatabase: false,
-    editingWork: "humanr",
+    editingWork: "",
     editingLanguage: "en",
 })
 
@@ -107,10 +107,21 @@ export const editor: Writable<EditorState> = writable({
     title: "",
 })
 
-export const databaseLanguages: Writable<Database> = writable({} as Database)
+export const database: Writable<Database> = writable({} as Database)
 
-export const database = derived(
-    [databaseLanguages, settings],
+export const databaseLanguages: Readable<Set<string>> = derived(
+    [database],
+    ([$database]) =>
+        new Set(
+            $database.works
+                .map(w => Object.keys(w.title))
+                .flat()
+                .filter(l => l !== "default")
+        )
+)
+
+export const currentLanguageDatabase = derived(
+    [database, settings],
     ([$databaseLanguages, $settings]) => {
         if (Object.keys($databaseLanguages).length) {
             return {
@@ -125,11 +136,11 @@ export const database = derived(
 )
 
 export const editorWork: Readable<WorkOneLang> = derived(
-    [databaseLanguages, state],
-    ([$databaseLanguages, $state]) => {
-        if ("works" in $databaseLanguages) {
+    [database, state],
+    ([$database, $state]) => {
+        if ("works" in $database) {
             return inLanguage($state.editingLanguage)(
-                $databaseLanguages.works.find(w => w.id === $state.editingWork)
+                $database.works.find(w => w.id === $state.editingWork)
             )
         }
     }
