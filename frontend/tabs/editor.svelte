@@ -8,9 +8,11 @@ import {
 	currentLanguageDatabase,
 	fillEditorMetadataState,
 	database,
-	editorWork,
+	workOnDiskCurrentLanguage,
 	editor,
 	databaseLanguages,
+	workInEditorCurrentLanguage,
+	workOnDisk,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
 import equal from "deep-equal"
@@ -22,54 +24,27 @@ import { Split } from "@geoffcox/svelte-splitter"
 import type { ContentBlock } from "../contentblocks"
 import { diff, Operation } from "just-diff"
 import tinykeys from "tinykeys"
-import { SvelteGridItem, toLayout as workFromItems } from "../layout"
+import { SvelteGridItem, workFromItems } from "../layout"
 import { backend } from "../backend"
 import { except } from "../utils"
 
 onMount(async () => {
-	$editor.metadata = await fillEditorMetadataState($editorWork, $settings)
+	$editor.metadata = await fillEditorMetadataState(
+		$workOnDiskCurrentLanguage,
+		$settings
+	)
+	$editor.title = $workOnDiskCurrentLanguage.title
 	tinykeys(window, {
 		"$mod+s": saveToDisk,
 	})
 })
 
-function updateContentBlocks({
-	items,
-	columnSize,
-}: {
-	items: SvelteGridItem[]
-	columnSize: number
-}) {
-	contentBlocksColumnSize = columnSize
-	differenceWithDisk = diff($editor.items, items)
-}
-
 async function saveToDisk() {
-	let newWorkCurrentLanguage = workFromItems(
-		$editor.items,
-		contentBlocksColumnSize,
-		$state.editingLanguage
-	)
-	newWorkCurrentLanguage.metadata = except(
-		"thumbnails",
-		"layoutproper"
-	)({
-		...$editor.metadata,
-		...newWorkCurrentLanguage.metadata,
-	})
-	newWorkCurrentLanguage.title = $editor.title
-	newWorkCurrentLanguage.id = $editorWork.id
 	const newWork = fromLanguages(
 		...Array.from($databaseLanguages)
 			.filter(l => l !== $state.editingLanguage)
-			.map(l =>
-				inLanguage(l)(
-					$database.works.find(
-						w => w.id === newWorkCurrentLanguage.id
-					)
-				)
-			),
-		newWorkCurrentLanguage
+			.map(l => inLanguage(l)($workOnDisk)),
+		$workInEditorCurrentLanguage
 	)
 	console.info("Writing to disk", newWork)
 	await backend.writeToDisk(newWork)
@@ -88,17 +63,15 @@ function editTitle(e) {
 let editingTitle = false
 let layoutChanged = false
 let contentBlocksColumnSize = 0
-let differenceWithDisk: {
+let diffWithDisk: {
 	op: Operation
 	path: (string | number)[]
 	value: any
 }[] = []
 
-$: $editor.unsavedChanges = differenceWithDisk.length >= 1
-$: layoutChanged =
-	differenceWithDisk.filter(d =>
-		d.path.some(k => ["x", "y", "w", "h"].includes(k.toString()))
-	).length >= 1
+$: diffWithDisk = diff($workInEditorCurrentLanguage, $workOnDiskCurrentLanguage)
+$: $editor.unsavedChanges = diffWithDisk.length > 0
+$: layoutChanged = diffWithDisk.some(d => d.path.includes("layout"))
 </script>
 
 <Split initialPrimarySize="{100 - $editor.metadataPaneSplitRatio * 100}%">
@@ -109,7 +82,7 @@ $: layoutChanged =
 			options={{ en: "english", fr: "français" }}
 			showCodes
 		/>
-		<p class="url">/{$editorWork.id}</p>
+		<p class="url">/{$workOnDiskCurrentLanguage.id}</p>
 
 		<div class="title" id="title">
 			<h1
@@ -119,7 +92,7 @@ $: layoutChanged =
 				}}
 				contenteditable={editingTitle}
 			>
-				{$editorWork.title}
+				{$workOnDiskCurrentLanguage.title}
 			</h1>
 			<button data-variant="inline" on:click={editTitle}
 				>{#if editingTitle}finish editing{:else}edit{/if}</button
@@ -134,8 +107,8 @@ $: layoutChanged =
 		{/if}
 
 		<ContentGrid
-			work={$editorWork}
-			on:edit={e => updateContentBlocks(e.detail)}
+			work={$workOnDiskCurrentLanguage}
+			on:edit={e => ($editor.items = e.detail)}
 		/>
 	</section>
 
@@ -160,6 +133,7 @@ $: layoutChanged =
 				bind:value={$editor.metadata.pagebackground}
 			/>
 		</dl>
+		<JSONTree value={diffWithDisk} />
 	</section>
 </Split>
 

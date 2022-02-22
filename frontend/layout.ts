@@ -29,8 +29,8 @@ export type SvelteGridItem<Data = any> = {
 
 export type OrtfoMkLayout = (`${"p" | "m" | "l"}${number}` | null)[][]
 
-// toLayout transforms an array of grid of svelte-grid items into a ortfomk layout
-export function toLayout(
+// toLayout transforms an array of grid of svelte-grid items into a ortfomk layout and content blocks
+export function workFromItems(
     items: SvelteGridItem<
         | {
               type: "link" | "paragraph"
@@ -40,8 +40,17 @@ export function toLayout(
         | { type: "media"; raw: string; display: string; path: string }
     >[],
     columnSize: number,
-    language: "fr" | "en"
-): WorkOneLang {
+    language: string,
+    workOnDisk: WorkOneLang
+): {
+    layout: OrtfoMkLayout
+    paragraphs: Paragraph[]
+    links: Link[]
+    media: UnanalyzedMedia[]
+} {
+    if (items.length === 0) {
+        return { layout: [[]], paragraphs: [], links: [], media: [] }
+    }
     let layout: OrtfoMkLayout = []
     let contentBlocks: {
         paragraphs: Paragraph[]
@@ -75,7 +84,12 @@ export function toLayout(
         .map(i => ({ ...i, position: i[columnSize] }))
         .sort((a, b) => (y(a) - y(b), x(a) - x(b)))
 
-    const rowIndices = range(0, lastRow + 1)
+    let rowIndices
+    try {
+        rowIndices = range(0, lastRow + 1)
+    } catch (e) {
+        debugger
+    }
 
     for (const rowIndex of rowIndices) {
         let layoutRow = []
@@ -129,11 +143,5 @@ export function toLayout(
         layout.push(layoutRow)
     }
 
-    return {
-        metadata: {
-            layout,
-        },
-        ...contentBlocks,
-        language: language,
-    }
+    return { layout, ...contentBlocks }
 }

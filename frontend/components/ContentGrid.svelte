@@ -18,7 +18,6 @@ const clone = rfdc()
 
 type ItemID = number
 let blocks: ContentBlock[] = []
-let numberOfColumns: number = 0
 let cols: number[][] = []
 let items: SvelteGridItem[] = []
 let operationsStacks: Record<ItemID, ActionName[]> = {}
@@ -30,8 +29,8 @@ export let work: WorkOneLang
 async function initialize(work) {
 	const _ = await makeBlocks(work)
 	blocks = _.blocks
-	numberOfColumns = _.numberOfColumns
-	cols = [[400, numberOfColumns]]
+	$editor.columnsCount = _.numberOfColumns
+	cols = [[400, $editor.columnsCount]]
 	items = blocks.map(gridHelp.item)
 	items.forEach(item => {
 		operationsStacks[item.id] = []
@@ -41,9 +40,9 @@ async function initialize(work) {
 
 const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 	const geometry = {
-		x: Math.min(...blocks.map(block => block[numberOfColumns].x)),
-		y: Math.max(...blocks.map(block => block[numberOfColumns].y)) + 1,
-		w: numberOfColumns,
+		x: Math.min(...blocks.map(block => block[$editor.columnsCount].x)),
+		y: Math.max(...blocks.map(block => block[$editor.columnsCount].y)) + 1,
+		w: $editor.columnsCount,
 		h: 1,
 	}
 	const id = Math.max(...blocks.map(block => block.id)) + 1
@@ -51,7 +50,7 @@ const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 		...blocks,
 		{
 			id,
-			[numberOfColumns]: {
+			[$editor.columnsCount]: {
 				...gridHelp.item(geometry),
 				customDragger: true,
 				customResizer: true,
@@ -84,7 +83,7 @@ function pushToOpStack(id: number, action: ActionName) {
 	}
 }
 
-$: dispatch("edit", { items, columnSize: numberOfColumns })
+$: dispatch("edit", items); console.log("fired edit")
 </script>
 
 {#await initialize(work)}

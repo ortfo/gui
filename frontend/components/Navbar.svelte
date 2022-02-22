@@ -25,14 +25,14 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 	>
 		works
 	</a>
-	{#if $state.editingWork}
+	{#if $state.editingWorkID}
 		<span class="separator">/</span>
 		<a
 			on:click={() => {
 				$state.openTab = "editor"
 			}}
 			href="#editor"
-			class:current={$state.openTab === "editor"}>{$state.editingWork}</a
+			class:current={$state.openTab === "editor"}>{$state.editingWorkID}</a
 		>
 		{#if $editor.unsavedChanges}
 			<span

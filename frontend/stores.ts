@@ -1,15 +1,18 @@
 import { writable, derived } from "svelte/store"
 import type { Writable, Readable } from "svelte/store"
-import type {
+import {
     DatabaseOneLang,
     Database,
     WorkMetadata,
     WorkOneLang,
+    Work,
+    freezeMetadata,
+    Footnote,
 } from "./ortfo"
 import type { ContentBlock } from "./contentblocks"
 import { backend, Base64WithFiletype } from "./backend"
 import { inLanguage } from "./ortfo"
-import type { SvelteGridItem } from "./layout"
+import { SvelteGridItem, workFromItems } from "./layout"
 
 export type Settings = {
     theme: string
@@ -32,7 +35,7 @@ export type WorkID = string
 export type State = {
     openTab: PageName
     rebuildingDatabase: boolean
-    editingWork: WorkID | null
+    editingWorkID: WorkID | null
     editingLanguage: "en" | "fr"
 }
 
@@ -42,7 +45,7 @@ export type EditorState = {
     metadata: {
         tags: string[]
         madewith: string[]
-        created: Date
+        created: Date | null
         colors: {
             primary: string
             secondary: string
@@ -50,10 +53,15 @@ export type EditorState = {
         }
         aliases: string[]
         titlestyle: "filled" | "outlined"
-        pagebackground: Base64WithFiletype
+        pagebackground: { data: Base64WithFiletype; path: string }
+        thumbnails: {
+            [size: number]: { data: Base64WithFiletype; path: string }
+        }
     }
     title: string
+    footnotes: Work["footnotes"]
     unsavedChanges: boolean
+    columnsCount: number
 }
 
 export async function fillEditorMetadataState(
@@ -61,18 +69,21 @@ export async function fillEditorMetadataState(
     settings: Settings
 ): Promise<EditorState["metadata"]> {
     const metadata = work.metadata
+    const pagebackgroundPath = `${settings.projectsfolder}/${work.id}/.portfoliodb/${metadata?.pagebackground}`
     return {
         tags: metadata.tags || [],
         madewith: metadata.madewith || [],
-        created: new Date(metadata.created),
+        created: metadata.created ? new Date(metadata.created) : null,
         colors: metadata.colors,
         aliases: metadata?.aliases || [],
         titlestyle: metadata?.titlestyle || "filled",
-        pagebackground: metadata?.pagebackground
-            ? await backend.getMedia(
-                  `${settings.projectsfolder}/${work.id}/.portfoliodb/${metadata?.pagebackground}`
-              )
-            : "",
+        pagebackground: {
+            data: metadata?.pagebackground
+                ? await backend.getMedia(pagebackgroundPath)
+                : "",
+            path: pagebackgroundPath,
+        },
+        thumbnails: {}, // TODO
     }
 }
 
@@ -85,9 +96,9 @@ export const settings: Writable<Settings> = writable({
 })
 
 export const state: Writable<State> = writable({
-    openTab: "works",
+    openTab: "editor",
     rebuildingDatabase: false,
-    editingWork: "",
+    editingWorkID: "ideaseed",
     editingLanguage: "en",
 })
 
@@ -105,6 +116,8 @@ export const editor: Writable<EditorState> = writable({
     } as EditorState["metadata"],
     unsavedChanges: false,
     title: "",
+    footnotes: {},
+    columnsCount: 2,
 })
 
 export const database: Writable<Database> = writable({} as Database)
@@ -135,13 +148,46 @@ export const currentLanguageDatabase = derived(
     }
 )
 
-export const editorWork: Readable<WorkOneLang> = derived(
+export const workOnDisk: Readable<Work> = derived(
     [database, state],
     ([$database, $state]) => {
         if ("works" in $database) {
-            return inLanguage($state.editingLanguage)(
-                $database.works.find(w => w.id === $state.editingWork)
-            )
+            return $database.works.find(w => w.id === $state.editingWorkID)
         }
+    }
+)
+
+export const workOnDiskCurrentLanguage: Readable<WorkOneLang> = derived(
+    [workOnDisk, state],
+    ([$currentWorkOnDisk, $state]) =>
+        inLanguage($state.editingLanguage)($currentWorkOnDisk)
+)
+
+export const workInEditorCurrentLanguage: Readable<WorkOneLang> = derived(
+    [editor, workOnDiskCurrentLanguage],
+    ([$editor, $workInEditorCurrentLanguage]) => {
+        const { links, media, paragraphs, layout } = workFromItems(
+            $editor.items,
+            $editor.columnsCount,
+            $workInEditorCurrentLanguage.language,
+            $workInEditorCurrentLanguage
+        )
+        return {
+            metadata: {
+                ...$workInEditorCurrentLanguage.metadata,
+                ...freezeMetadata($editor.metadata),
+                layout: layout,
+            },
+            title: $editor.title || $workInEditorCurrentLanguage.title,
+            id: $workInEditorCurrentLanguage.id,
+            footnotes: {
+                ...$workInEditorCurrentLanguage.footnotes,
+                ...$editor.footnotes,
+            },
+            language: $workInEditorCurrentLanguage.language,
+            links,
+            media,
+            paragraphs,
+        } as WorkOneLang
     }
 )

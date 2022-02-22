@@ -1,3 +1,5 @@
+import type { EditorState } from "./stores"
+
 export interface Abbreviation {
     name: string
     definition: string
@@ -119,13 +121,29 @@ export const fromLanguages = (...singleLanguageWorks: WorkOneLang[]) => {
     } as Work
 }
 
+export function freezeMetadata(
+    aliveMetadata: EditorState["metadata"]
+): WorkMetadata {
+    return {
+        ...aliveMetadata,
+        created: aliveMetadata?.created?.toISOString(),
+        pagebackground: aliveMetadata.pagebackground?.path,
+        thumbnails: aliveMetadata.thumbnails
+            ? Object.fromEntries(
+                  Object.entries(aliveMetadata.thumbnails).map(
+                      ([key, value]) => [key, value.path]
+                  )
+              )
+            : {},
+    }
+}
+
 export interface WorkMetadata {
     created?: string
     started?: string
     finished?: string
     tags?: string[]
-    layout: any[]
-    layoutproper: string[][]
+    layout?: any[]
     madewith?: string[]
     colors?: {
         primary: string
@@ -133,7 +151,6 @@ export interface WorkMetadata {
         tertiary: string
     }
     pagebackground?: string
-    title: string
     wip?: boolean
     thumbnails: { [key: string]: { [key: number]: string } }
     aliases?: string[]

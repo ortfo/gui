@@ -20,7 +20,7 @@ async function loadThumb() {
 }
 
 function editWork() {
-	$state.editingWork = work.id
+	$state.editingWorkID = work.id
 	$state.openTab = "editor"
 }
 export let work: WorkOneLang

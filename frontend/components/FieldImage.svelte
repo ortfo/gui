@@ -2,13 +2,11 @@
 import type { Base64WithFiletype } from "../backend"
 import { encode as bufferBase64encode } from "base64-arraybuffer"
 import { createEventDispatcher } from "svelte"
-import { metadataReadableNames } from "../ortfo"
-import { state } from "../stores"
 import MetadataField from "./MetadataField.svelte"
 
 const emit = createEventDispatcher()
 
-export let value: Base64WithFiletype
+export let value: { data: Base64WithFiletype; path: string }
 let files = [] as unknown as FileList
 export let key: string
 
@@ -18,9 +16,12 @@ async function getBase64d() {
 		return
 	}
 
-	value =
-		`data:${files[0].type};base64,` +
-		bufferBase64encode(await files[0].arrayBuffer())
+	value = {
+		data:
+			`data:${files[0].type};base64,` +
+			bufferBase64encode(await files[0].arrayBuffer()),
+		path: files[0].name,
+	}
 	emit("change", value)
 	return value
 }
@@ -34,12 +35,12 @@ async function getBase64d() {
 		id="input-{key}"
 		bind:files
 	/>
-	{#if files.length || value}
+	{#if files.length || value?.data}
 		<div class="preview">
 			{#await getBase64d()}
 				<p>Loading...</p>
 			{:then}
-				<img class="preview" src={value} alt="chosen image for {key}" />
+				<img class="preview" src={value.data} alt="chosen image for {key}" />
 				<button
 					class="remove"
 					on:click={() => {

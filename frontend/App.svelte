@@ -5,7 +5,7 @@ import {
 	database,
 	settings,
 	state,
-	editorWork,
+	workOnDiskCurrentLanguage,
 } from "./stores"
 import { backend } from "./backend"
 import Works from "./tabs/works.svelte"
