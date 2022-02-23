@@ -18,6 +18,7 @@ specifiers:
   concurrently: ^6.5.1
   fast-deep-equal: ^3.1.3
   just-diff: ^5.0.1
+  nanoid: ^3.3.1
   nodemon: ^2.0.15
   prettier: ^2.5.1
   prettier-plugin-svelte: ^2.6.0
@@ -52,6 +53,7 @@ dependencies:
   colornames: 1.1.1
   fast-deep-equal: 3.1.3
   just-diff: 5.0.1
+  nanoid: 3.3.1
   rfdc: 1.3.0
   rollup: 2.68.0
   rollup-plugin-node-builtins: 2.1.2
@@ -1799,6 +1801,11 @@ packages:
   /ms/2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
     dev: true
+
+  /nanoid/3.3.1:
+    resolution: {integrity: sha512-n6Vs/3KGyxPQd6uO0eH4Bv0ojGSUvuLlIHtC3Y0kEO23YRge8H9x1GCzLn28YX0H66pMkxuaeESFq4tKISKwdw==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
 
   /nodemon/2.0.15:
     resolution: {integrity: sha512-gdHMNx47Gw7b3kWxJV64NI+Q5nfl0y5DgDbiVtShiwa7Z0IZ07Ll4RLFo6AjrhzMtoEZn5PDE3/c2AbVsiCkpA==}
