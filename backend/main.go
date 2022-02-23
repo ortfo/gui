@@ -14,7 +14,7 @@ func main() {
 	defer w.Destroy()
 	w.SetTitle("ortfo")
 	w.SetSize(800, 600, webview.HintNone)
-	w.Navigate("http://localhost:5000")
+	w.Navigate("http://localhost:3000")
 	w.Bind("backend__initializeConfigurationDirectory", InitializeConfigurationDirectory)
 	w.Bind("backend__settingsRead", func() (Settings, error) {
 		return LoadSettings()
