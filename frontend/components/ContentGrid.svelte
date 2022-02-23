@@ -26,12 +26,14 @@ let willDeactivateBlock: boolean = false
 
 export let work: WorkOneLang
 
-async function initialize(work) {
+async function initialize(work: WorkOneLang) {
 	const _ = await makeBlocks(work)
 	blocks = _.blocks
+    console.log("🚀 ~ file: ContentGrid.svelte ~ line 32 ~ initialize ~ blocks", blocks)
 	$editor.columnsCount = _.numberOfColumns
 	cols = [[400, $editor.columnsCount]]
 	items = blocks.map(gridHelp.item)
+    console.log("🚀 ~ file: ContentGrid.svelte ~ line 35 ~ initialize ~ items", items)
 	items.forEach(item => {
 		operationsStacks[item.id] = []
 	})

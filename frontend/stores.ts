@@ -59,7 +59,7 @@ export type EditorState = {
         }
     }
     title: string
-    footnotes: Work["footnotes"]
+    footnotes: Footnote[]
     unsavedChanges: boolean
     columnsCount: number
 }
@@ -68,23 +68,18 @@ export async function fillEditorMetadataState(
     work: WorkOneLang,
     settings: Settings
 ): Promise<EditorState["metadata"]> {
-    const metadata = work.metadata
+    const metadata = work.metadata as unknown as EditorState["metadata"]
     const pagebackgroundPath = `${settings.projectsfolder}/${work.id}/.portfoliodb/${metadata?.pagebackground}`
-    return {
-        tags: metadata.tags || [],
-        madewith: metadata.madewith || [],
-        created: metadata.created ? new Date(metadata.created) : null,
-        colors: metadata.colors,
-        aliases: metadata?.aliases || [],
-        titlestyle: metadata?.titlestyle || "filled",
-        pagebackground: {
-            data: metadata?.pagebackground
-                ? await backend.getMedia(pagebackgroundPath)
-                : "",
-            path: pagebackgroundPath,
-        },
-        thumbnails: {}, // TODO
+    if (metadata?.created) {
+        metadata.created = new Date(metadata.created)
     }
+    if (metadata?.pagebackground) {
+        metadata.pagebackground = {
+            data: await backend.getMedia(pagebackgroundPath),
+            path: pagebackgroundPath,
+        }
+    }
+    return metadata
 }
 
 export const settings: Writable<Settings> = writable({
@@ -96,9 +91,9 @@ export const settings: Writable<Settings> = writable({
 })
 
 export const state: Writable<State> = writable({
-    openTab: "editor",
+    openTab: "works",
     rebuildingDatabase: false,
-    editingWorkID: "ideaseed",
+    editingWorkID: "",
     editingLanguage: "en",
 })
 
@@ -116,7 +111,7 @@ export const editor: Writable<EditorState> = writable({
     } as EditorState["metadata"],
     unsavedChanges: false,
     title: "",
-    footnotes: {},
+    footnotes: [],
     columnsCount: 2,
 })
 
@@ -159,8 +154,27 @@ export const workOnDisk: Readable<Work> = derived(
 
 export const workOnDiskCurrentLanguage: Readable<WorkOneLang> = derived(
     [workOnDisk, state],
-    ([$currentWorkOnDisk, $state]) =>
-        inLanguage($state.editingLanguage)($currentWorkOnDisk)
+    ([$workOnDisk, $state]) => {
+        const work = inLanguage($state.editingLanguage)($workOnDisk)
+
+        work.metadata.aliases ||= []
+        work.metadata.colors ||= {
+            primary: "",
+            secondary: "",
+            tertiary: "",
+        }
+        work.metadata.created ||= null
+        work.metadata.finished ||= null
+        work.metadata.layout ||= null
+        work.metadata.madewith ||= []
+        work.metadata.pagebackground ||= ""
+        work.metadata.started ||= null
+        work.metadata.tags ||= []
+        work.metadata.thumbnails ||= {}
+        work.metadata.titlestyle ||= "filled"
+        work.metadata.wip ||= false
+        return work
+    }
 )
 
 export const workInEditorCurrentLanguage: Readable<WorkOneLang> = derived(
@@ -172,6 +186,7 @@ export const workInEditorCurrentLanguage: Readable<WorkOneLang> = derived(
             $workInEditorCurrentLanguage.language,
             $workInEditorCurrentLanguage
         )
+        console.log("🚀 ~ file: stores.ts ~ line 209 ~ layout", layout)
         return {
             metadata: {
                 ...$workInEditorCurrentLanguage.metadata,
@@ -180,10 +195,10 @@ export const workInEditorCurrentLanguage: Readable<WorkOneLang> = derived(
             },
             title: $editor.title || $workInEditorCurrentLanguage.title,
             id: $workInEditorCurrentLanguage.id,
-            footnotes: {
+            footnotes: [
                 ...$workInEditorCurrentLanguage.footnotes,
                 ...$editor.footnotes,
-            },
+            ],
             language: $workInEditorCurrentLanguage.language,
             links,
             media,

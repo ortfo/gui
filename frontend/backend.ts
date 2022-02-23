@@ -1,9 +1,12 @@
+import { nanoid } from "nanoid"
 import type { Settings, State } from "./stores"
 import {
+    addInternalIDs,
     Database,
     DatabaseOneLang,
     dbWork,
     inLanguage,
+    LayedOutElement,
     Work,
     WorkOneLang,
 } from "./ortfo"
@@ -47,8 +50,8 @@ export const backend: Backend = {
     databaseRead: async () => {
         const data = lowercaseNoSpacesKeys(
             (await backend__databaseRead()) || {}
-        )
-        return data
+        ) as Database
+        return { ...data, works: data.works.map(addInternalIDs) }
     },
     rebuildDatabase: async () => {
         return await backend__rebuildDatabase()
@@ -56,9 +59,50 @@ export const backend: Backend = {
     getMedia: async (path: string) => {
         return await backend__getMedia(path)
     },
-    layout: async (work: string) => {
-        const data = await backend__layout(work)
-        return data.map(lowercaseNoSpacesKeys)
+    layout: async (work: WorkOneLang) => {
+        console.log(
+            "🚀 ~ file: backend.ts ~ line 66 ~ layout: ~         work",
+            work
+        )
+        // the backend will discard internalID since it does not exist there, so we append it to "real" IDs of every parargaph/media/link.
+        const internalIDsLengths = new Set(
+            [...work.paragraphs, ...work.media, ...work.links].map(
+                e => e.internalID.length
+            )
+        )
+        if (internalIDsLengths.size !== 1) {
+            throw Error(
+                "internal IDs should all have the same length, but internal IDs are " +
+                    JSON.stringify(
+                        [...work.paragraphs, ...work.media, ...work.links].map(
+                            e =>
+                                `${e.internalID} (length ${e.internalID.length})`
+                        )
+                    )
+            )
+        }
+        const internalIDsLength = internalIDsLengths.values().next().value
+        const appendInternalIDs = element => ({
+            ...element,
+            id: element.internalID + (element.id || ""),
+        })
+
+        work.paragraphs = work.paragraphs.map(appendInternalIDs)
+        work.media = work.media.map(appendInternalIDs)
+        work.links = work.links.map(appendInternalIDs)
+        console.log("🚀 ~ file: backend.ts ~ line 92 ~ layout: ~ work", work)
+        const data = (await backend__layout(work)).map(lowercaseNoSpacesKeys)
+        console.log("🚀 ~ file: backend.ts ~ line 94 ~ layout: ~ data", data)
+
+        // After processing, we get the internalIDs back into their spots.
+        const splitBackInternalIDs = element => {
+            console.log(element?.id?.slice(0, internalIDsLength))
+            return {
+            ...element,
+            internalID: element.id.slice(0, internalIDsLength),
+            id: element.id.slice(internalIDsLength),
+        }}
+        return data.map(splitBackInternalIDs)
     },
     writeToDisk: async (work: Work) => {
         return await backend__writeback(work)

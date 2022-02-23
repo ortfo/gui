@@ -9,6 +9,9 @@ import (
 	"github.com/webview/webview"
 )
 
+type layoutElementWithID struct{ortfomk.LayedOutElement; ResolvedID string `json:"id"`}
+type layoutWithIDs []layoutElementWithID
+
 func main() {
 	w := webview.New(true)
 	defer w.Destroy()
@@ -44,10 +47,22 @@ func main() {
 	w.Bind("backend__getMedia", func(path string) (string, error) {
 		return GetMedia(path)
 	})
-	w.Bind("backend__layout", func(workUntyped interface{}) (ortfomk.Layout, error) {
+	w.Bind("backend__layout", func(workUntyped interface{}) (layoutWithIDs, error) {
 		var work ortfomk.WorkOneLang
+		var layoutWithIDs layoutWithIDs
 		mapstructure.Decode(workUntyped, &work)
-		return Layout(work)
+		layedout, err := Layout(work)
+		if err != nil {
+			return nil, fmt.Errorf("while laying out %s (in %s): %w", work.ID, work.Language, err)
+		}
+		
+		for i := range layedout {
+			layoutWithIDs = append(layoutWithIDs, layoutElementWithID{
+				LayedOutElement: layedout[i],
+				ResolvedID:      layedout[i].ID(),
+			})
+		}
+		return layoutWithIDs, nil
 	})
 	w.Bind("backend__writeback", func(work ortfodb.Work) error {
 		settings, err := LoadSettings()

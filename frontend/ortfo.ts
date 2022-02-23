@@ -1,4 +1,7 @@
+import { nanoid } from "nanoid"
 import type { EditorState } from "./stores"
+
+export type Translated<T> = { [langage: string]: T }
 
 export interface Abbreviation {
     name: string
@@ -11,11 +14,13 @@ export interface Footnote {
 }
 
 export interface Paragraph {
+    internalID: string // Used to keep track of paragraphs as they are moved around in the layout
     id: string
     content: string
 }
 
 export interface Link {
+    internalID: string // Used to keep track of paragraphs as they are moved around in the layout
     id: string
     name: string
     title: string
@@ -24,12 +29,12 @@ export interface Link {
 
 export interface dbWork {
     id: string
-    metadata: { [key: string]: any }
-    title: { [key: string]: string }
-    paragraphs: { [key: string]: Paragraph[] }
-    media: { [key: string]: Media[] }
-    links: { [key: string]: Link[] }
-    footnotes: { [key: string]: Footnote[] }
+    metadata: Translated<any>
+    title: Translated<string>
+    paragraphs: Translated<Paragraph[]>
+    links: Translated<Link[]>
+    media: Translated<Media[]>
+    footnotes: Translated<Footnote[]>
 }
 
 export interface MediaEmbedDeclaration {
@@ -48,12 +53,12 @@ export interface MediaAttributes {
 }
 
 export interface ParsedDescription {
-    metadata: { [key: string]: any }
-    title: { [key: string]: string }
-    paragraphs: { [key: string]: Paragraph[] }
-    mediaembeddeclarations: { [key: string]: MediaEmbedDeclaration[] }
-    links: { [key: string]: Link[] }
-    footnotes: { [key: string]: Footnote[] }
+    metadata: Translated<any>
+    title: Translated<string>
+    paragraphs: Translated<Paragraph[]>
+    mediaembeddeclarations: Translated<MediaEmbedDeclaration[]>
+    links: Translated<Footnote[]>
+    footnotes: Translated<Footnote[]>
 }
 
 export interface WorkOneLang {
@@ -138,6 +143,27 @@ export function freezeMetadata(
     }
 }
 
+export function addInternalIDs(work: Work): Work {
+    function _putInternalIDTo<T extends Paragraph | Media | Link>(
+        contentBlock: Translated<T[]>
+    ): Translated<T[]> {
+        const modified = Object.fromEntries(
+            Object.entries(contentBlock).map(([language, content]) => [
+                language,
+                content.map(c => ({ ...c, internalID: nanoid() })),
+            ])
+        )
+        return modified
+    }
+
+    return {
+        ...work,
+        paragraphs: _putInternalIDTo<Paragraph>(work.paragraphs),
+        media: _putInternalIDTo<Media>(work.media),
+        links: _putInternalIDTo<Link>(work.links),
+    }
+}
+
 export interface WorkMetadata {
     created?: string
     started?: string
@@ -202,6 +228,7 @@ export interface Technology {
 }
 
 export interface Media {
+    internalID: string
     id: string
     alt: string
     title: string
@@ -218,6 +245,7 @@ export interface Media {
 }
 
 export interface UnanalyzedMedia {
+    internalID: string
     id: string
     alt: string
     title: string
@@ -229,4 +257,12 @@ export interface ImageDimensions {
     width: number
     height: number
     aspectratio: number
+}
+
+export interface LayedOutElement extends Media, Paragraph, Link {
+    type: "media" | "paragraph" | "link"
+    layoutindex: number
+    positions: number[][]
+    generalcontenttype: string
+    metadata: WorkMetadata
 }

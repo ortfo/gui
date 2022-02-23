@@ -30,13 +30,15 @@ export async function makeBlocks(
           )
         : 1
     const elements = await backend.layout(work)
+    console.log("🚀 ~ file: contentblocks.ts ~ line 33 ~ elements", elements)
     return {
         numberOfColumns,
         blocks: await Promise.all(
             elements.map(async (element, index) => {
+                console.log("🚀 ~ file: contentblocks.ts ~ line 37 ~ elements.map ~ element", element)
                 let block: ContentBlock = {
-                    id: index,
-                } as ContentBlock
+                    id: element.internalID,
+                } as unknown as ContentBlock
                 block[numberOfColumns] = gridHelp.item({
                     // We assume that the element's positions are contiguous.
                     x: Math.min(...element.positions.map(pos => pos[1])),

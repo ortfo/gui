@@ -15,7 +15,7 @@ import {
 	workOnDisk,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
-import equal from "deep-equal"
+import equal from "fast-deep-equal"
 import FieldImage from "../components/FieldImage.svelte"
 import FieldList from "../components/FieldList.svelte"
 import FieldColors from "../components/FieldColors.svelte"
@@ -27,6 +27,7 @@ import tinykeys from "tinykeys"
 import { SvelteGridItem, workFromItems } from "../layout"
 import { backend } from "../backend"
 import { except } from "../utils"
+import ObjectDiffTable from "../components/ObjectDiffTable.svelte";
 
 onMount(async () => {
 	$editor.metadata = await fillEditorMetadataState(
@@ -69,12 +70,16 @@ let diffWithDisk: {
 	value: any
 }[] = []
 
+$: console.log("🚀 ~ file: editor.svelte ~ line 74 ~ $workInEditorCurrentLanguage", $workInEditorCurrentLanguage)
+$: console.log("🚀 ~ file: editor.svelte ~ line 74 ~ $workOnDiskCurrentLanguage", $workOnDiskCurrentLanguage)
+$: console.log("🚀 ~ file: editor.svelte ~ line 75 ~ $editor.items", $editor.items)
 $: diffWithDisk = diff($workInEditorCurrentLanguage, $workOnDiskCurrentLanguage)
 $: $editor.unsavedChanges = diffWithDisk.length > 0
 $: layoutChanged = diffWithDisk.some(d => d.path.includes("layout"))
 </script>
 
-<Split initialPrimarySize="{100 - $editor.metadataPaneSplitRatio * 100}%">
+<!-- <Split initialPrimarySize="{100 - $editor.metadataPaneSplitRatio * 100}%"> -->
+<Split initialPrimarySize="10%">
 	<section class="layout" slot="primary">
 		<SwitchButton
 			bind:value={$state.editingLanguage}
@@ -133,7 +138,10 @@ $: layoutChanged = diffWithDisk.some(d => d.path.includes("layout"))
 				bind:value={$editor.metadata.pagebackground}
 			/>
 		</dl>
-		<JSONTree value={diffWithDisk} />
+		<ObjectDiffTable a={$workOnDiskCurrentLanguage} b={$workInEditorCurrentLanguage} aLabel="on disk" bLabel="in editor" />
+		on disk <JSONTree value={$workOnDiskCurrentLanguage} />
+		in editor <JSONTree value={$workInEditorCurrentLanguage} />
+		items <JSONTree value={$editor.items} />
 	</section>
 </Split>
 

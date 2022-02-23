@@ -84,12 +84,7 @@ export function workFromItems(
         .map(i => ({ ...i, position: i[columnSize] }))
         .sort((a, b) => (y(a) - y(b), x(a) - x(b)))
 
-    let rowIndices
-    try {
-        rowIndices = range(0, lastRow + 1)
-    } catch (e) {
-        debugger
-    }
+    let rowIndices = range(0, lastRow + 1)
 
     for (const rowIndex of rowIndices) {
         let layoutRow = []
@@ -103,14 +98,20 @@ export function workFromItems(
                 switch (item.data.type) {
                     case "paragraph":
                         contentBlocks.paragraphs.push({
-                            id: item.id.toString(),
+                            id: workOnDisk.paragraphs.find(
+                                p => p.internalID === item.id
+                            ).id,
+                            internalID: item.id,
                             content: display,
                         })
                         break
 
                     case "media":
                         contentBlocks.media.push({
-                            id: item.id.toString(),
+                            id: workOnDisk.media.find(
+                                m => m.internalID === item.id
+                            ).id,
+                            internalID: item.id,
                             alt: display,
                             source: item.data.path,
                             title: "", // TODO allow user to set title
@@ -127,7 +128,10 @@ export function workFromItems(
 
                     case "link":
                         contentBlocks.links.push({
-                            id: item.id.toString(),
+                            id: workOnDisk.links.find(
+                                p => p.internalID === item.id
+                            ).id,
+                            internalID: item.id,
                             name: display,
                             title: "", // TODO allow user to set title
                             url: raw,
