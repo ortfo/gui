@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "front",
+			"type": "shell",
+			"command": "pnpm frontend-dev",
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"presentation": {
+				"group": "dev"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "back",
+			"type": "shell",
+			"command": "pnpm backend-dev",
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"presentation": {
+				"group": "dev"
+			}
+		}
+	]
+}
