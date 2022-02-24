@@ -46,7 +46,7 @@ export function workFromItems(
     layout: OrtfoMkLayout
     paragraphs: Paragraph[]
     links: Link[]
-    media: UnanalyzedMedia[]
+    media: Media[]
 } {
     if (items.length === 0) {
         return { layout: [[]], paragraphs: [], links: [], media: [] }
@@ -54,7 +54,7 @@ export function workFromItems(
     let layout: OrtfoMkLayout = []
     let contentBlocks: {
         paragraphs: Paragraph[]
-        media: UnanalyzedMedia[]
+        media: Media[]
         links: Link[]
     } = {
         paragraphs: [],
@@ -107,22 +107,23 @@ export function workFromItems(
                         break
 
                     case "media":
-                        contentBlocks.media.push({
-                            id: workOnDisk.media.find(
+                        const onDiskMedia = workOnDisk.media.find(
                                 m => m.internalID === item.id
-                            ).id,
+                            )
+                        contentBlocks.media.push({
+                            ...onDiskMedia, // TODO analyze new media from backend when path changed
                             internalID: item.id,
                             alt: display,
                             source: item.data.path,
-                            title: "", // TODO allow user to set title
-                            attributes: {
-                                // TODO allow user to set attributes
-                                looped: false,
-                                autoplay: false,
-                                muted: false,
-                                playsinline: false,
-                                controls: true,
-                            },
+                            // title: "", // TODO allow user to set title
+                            // attributes: {
+                            //     // TODO allow user to set attributes
+                            //     looped: false,
+                            //     autoplay: false,
+                            //     muted: false,
+                            //     playsinline: false,
+                            //     controls: true,
+                            // },
                         })
                         break
 

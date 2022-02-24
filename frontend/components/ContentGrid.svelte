@@ -1,4 +1,5 @@
 <script lang="ts">
+import JSONTree from "svelte-json-tree"
 import Grid from "svelte-grid"
 import gridHelp from "svelte-grid/build/helper"
 import { ContentBlock, makeBlocks } from "../contentblocks"
@@ -74,8 +75,8 @@ const removeBlock = (item: ContentBlock) => e => {
 	delete operationsStacks[item.id]
 }
 
-function index(item: { id: number }): number {
-	return items.findIndex(it => parseInt(it.id) === item.id)
+function index(item: { id: string }): number {
+	return items.findIndex(it => it.id === item.id)
 }
 
 function pushToOpStack(id: number, action: ActionName) {
