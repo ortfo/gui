@@ -94,7 +94,9 @@ export function workFromItems(
             const layoutCell =
                 type[0] /* first character of type name */ +
                 (blocksOfSameType(item).length + 1)
+
             layoutRow.push(...repeat(width(item), layoutCell))
+
             if (!isAlreadyInBlocks(item)) {
                 switch (item.data.type) {
                     case "paragraph":
@@ -115,7 +117,8 @@ export function workFromItems(
                             ...onDiskMedia, // TODO analyze new media from backend when path changed
                             internalID: item.id,
                             alt: display,
-                            source: item.data.path,
+                            source: onDiskMedia.source, // FIXME
+                            path: item.data.path,
                             // title: "", // TODO allow user to set title
                             // attributes: {
                             //     // TODO allow user to set attributes
