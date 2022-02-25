@@ -132,7 +132,7 @@ export function freezeMetadata(
     return {
         ...aliveMetadata,
         // created: aliveMetadata?.created?.toISOString(),
-        pagebackground: aliveMetadata.pagebackground?.path,
+        pagebackground: aliveMetadata.pagebackground?.path || "",
         // thumbnails: aliveMetadata.thumbnails
         //     ? Object.fromEntries(
         //           Object.entries(aliveMetadata.thumbnails).map(
