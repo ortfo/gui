@@ -145,6 +145,8 @@ export function workFromItems(
                 }
             }
         }
+        // FIXME fills with undefineds for some reason
+        // FIXME does not work if there are spacers in the middle or before the first item
         layoutRow = completeWith(columnSize, null, layoutRow)
         //
         layout.push(layoutRow)
@@ -179,7 +181,7 @@ export function normalizeLayout(
     const cellType = cell => (cell === null ? null : cell.slice(0, 1))
 
     const consecutiveRepeats = row => {
-        let lastSeen = null
+        let lastSeen = undefined // null is taken by spacers
         let repeats = []
         for (const cell of row) {
             // Previous cell was the same as this one.
@@ -218,7 +220,11 @@ export function normalizeLayout(
 
     const compressed = layout.map(row => {
         if (Array.isArray(row) && compressible(row)) return compress(row)
+        return row
     })
+    if (compressed.some(row => row === undefined)) {
+        throw Error("undefineds in compressed layout!!!!")
+    }
     console.log("🚀 ~ file: layout.ts ~ line 218 ~ compressed", compressed)
 
     let latestCounts: { p: number; l: number; m: number } = {
