@@ -20,6 +20,7 @@ import FieldImage from "../components/FieldImage.svelte"
 import FieldList from "../components/FieldList.svelte"
 import FieldColors from "../components/FieldColors.svelte"
 import ContentGrid from "../components/ContentGrid.svelte"
+// @ts-ignore don't know why ts thinks Split does not exist, it does
 import { Split } from "@geoffcox/svelte-splitter"
 import type { ContentBlock } from "../contentblocks"
 import { diff, Operation } from "just-diff"

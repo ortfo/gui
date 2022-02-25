@@ -137,7 +137,7 @@ export const databaseLanguages: Readable<Set<string>> = derived(
         )
 )
 
-export const currentLanguageDatabase = derived(
+export const currentLanguageDatabase: Readable<DatabaseOneLang> = derived(
     [database, settings],
     ([$databaseLanguages, $settings]) => {
         if (Object.keys($databaseLanguages).length) {
@@ -148,7 +148,7 @@ export const currentLanguageDatabase = derived(
                 ),
             }
         }
-        return {}
+        throw Error("No database")
     }
 )
 

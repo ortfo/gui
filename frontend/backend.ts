@@ -35,28 +35,35 @@ type Backend = {
 
 export const backend: Backend = {
     initializeConfigurationDirectory: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         return await backend__initializeConfigurationDirectory()
     },
     settingsRead: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         const data = await backend__settingsRead()
         return lowercaseNoSpacesKeys(!!data ? data : {})
     },
     settingsWrite: async (settings: Settings) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         return await backend__settingsWrite(settings)
     },
     quit: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         return await backend__quit()
     },
     databaseRead: async () => {
         const data = lowercaseNoSpacesKeys(
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
             (await backend__databaseRead()) || {}
         ) as Database
         return { ...data, works: data.works.map(addInternalIDs) }
     },
     rebuildDatabase: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         return await backend__rebuildDatabase()
     },
     getMedia: async (path: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         return await backend__getMedia(path)
     },
     layout: async (work: WorkOneLang) => {
@@ -86,18 +93,21 @@ export const backend: Backend = {
         work.paragraphs = work.paragraphs.map(appendInternalIDs)
         work.media = work.media.map(appendInternalIDs)
         work.links = work.links.map(appendInternalIDs)
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         const data = (await backend__layout(work)).map(lowercaseNoSpacesKeys)
 
         // After processing, we get the internalIDs back into their spots.
         const splitBackInternalIDs = element => {
             return {
-            ...element,
-            internalID: element.id.slice(0, internalIDsLength),
-            id: element.id.slice(internalIDsLength),
-        }}
+                ...element,
+                internalID: element.id.slice(0, internalIDsLength),
+                id: element.id.slice(internalIDsLength),
+            }
+        }
         return data.map(splitBackInternalIDs)
     },
     writeToDisk: async (work: Work) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
         return await backend__writeback(work)
     },
 }
