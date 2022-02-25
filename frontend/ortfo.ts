@@ -131,7 +131,7 @@ export function freezeMetadata(
 ): WorkMetadata {
     return {
         ...aliveMetadata,
-        created: aliveMetadata?.created?.toISOString(),
+        // created: aliveMetadata?.created?.toISOString(),
         pagebackground: aliveMetadata.pagebackground?.path,
         // thumbnails: aliveMetadata.thumbnails
         //     ? Object.fromEntries(

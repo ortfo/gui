@@ -50,7 +50,7 @@ export type EditorState = {
     metadata: {
         tags: string[]
         madewith: string[]
-        created: Date | null
+        created: string
         colors: {
             primary: string
             secondary: string
@@ -75,9 +75,9 @@ export async function fillEditorMetadataState(
 ): Promise<EditorState["metadata"]> {
     const metadata = work.metadata as unknown as EditorState["metadata"]
     const pagebackgroundPath = `${settings.projectsfolder}/${work.id}/.portfoliodb/${metadata?.pagebackground}`
-    if (metadata?.created) {
-        metadata.created = new Date(metadata.created)
-    }
+    // if (metadata?.created) {
+    //     metadata.created = new Date(metadata.created)
+    // }
     if (metadata?.pagebackground) {
         try {
             metadata.pagebackground = {
