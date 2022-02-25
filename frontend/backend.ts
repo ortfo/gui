@@ -60,10 +60,6 @@ export const backend: Backend = {
         return await backend__getMedia(path)
     },
     layout: async (work: WorkOneLang) => {
-        console.log(
-            "🚀 ~ file: backend.ts ~ line 66 ~ layout: ~         work",
-            work
-        )
         // the backend will discard internalID since it does not exist there, so we append it to "real" IDs of every parargaph/media/link.
         const internalIDsLengths = new Set(
             [...work.paragraphs, ...work.media, ...work.links].map(
@@ -90,13 +86,10 @@ export const backend: Backend = {
         work.paragraphs = work.paragraphs.map(appendInternalIDs)
         work.media = work.media.map(appendInternalIDs)
         work.links = work.links.map(appendInternalIDs)
-        console.log("🚀 ~ file: backend.ts ~ line 92 ~ layout: ~ work", work)
         const data = (await backend__layout(work)).map(lowercaseNoSpacesKeys)
-        console.log("🚀 ~ file: backend.ts ~ line 94 ~ layout: ~ data", data)
 
         // After processing, we get the internalIDs back into their spots.
         const splitBackInternalIDs = element => {
-            console.log(element?.id?.slice(0, internalIDsLength))
             return {
             ...element,
             internalID: element.id.slice(0, internalIDsLength),

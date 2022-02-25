@@ -201,7 +201,6 @@ export const workInEditorCurrentLanguage: Readable<WorkOneLang> = derived(
             $workInEditorCurrentLanguage.language,
             $workInEditorCurrentLanguage
         )
-        console.log("🚀 ~ file: stores.ts ~ line 209 ~ layout", layout)
         return {
             metadata: {
                 ...$workInEditorCurrentLanguage.metadata,

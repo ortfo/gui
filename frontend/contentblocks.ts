@@ -26,22 +26,16 @@ export async function makeBlocks(
         ? layoutWidth(work.metadata.layout)
         : 1
     let elements
-    console.log("🚀 ~ file: contentblocks.ts ~ line 93 ~ work", work)
     try {
         elements = await backend.layout(work)
     } catch (error) {
         console.error(error)
         return { blocks: [], numberOfColumns }
     }
-    console.log("🚀 ~ file: contentblocks.ts ~ line 33 ~ elements", elements)
     return {
         numberOfColumns,
         blocks: await Promise.all(
             elements.map(async (element, index) => {
-                console.log(
-                    "🚀 ~ file: contentblocks.ts ~ line 37 ~ elements.map ~ element",
-                    element
-                )
                 let block: ContentBlock = {
                     id: element.internalID,
                 } as unknown as ContentBlock

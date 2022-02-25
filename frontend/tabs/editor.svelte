@@ -70,9 +70,6 @@ let diffWithDisk: {
 	value: any
 }[] = []
 
-$: console.log("🚀 ~ file: editor.svelte ~ line 74 ~ $workInEditorCurrentLanguage", $workInEditorCurrentLanguage)
-$: console.log("🚀 ~ file: editor.svelte ~ line 74 ~ $workOnDiskCurrentLanguage", $workOnDiskCurrentLanguage)
-$: console.log("🚀 ~ file: editor.svelte ~ line 75 ~ $editor.items", $editor.items)
 $: diffWithDisk = diff($workInEditorCurrentLanguage, $workOnDiskCurrentLanguage)
 $: $editor.unsavedChanges = diffWithDisk.length > 0
 $: layoutChanged = diffWithDisk.some(d => d.path.includes("layout"))

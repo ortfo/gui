@@ -225,7 +225,6 @@ export function normalizeLayout(
     if (compressed.some(row => row === undefined)) {
         throw Error("undefineds in compressed layout!!!!")
     }
-    console.log("🚀 ~ file: layout.ts ~ line 218 ~ compressed", compressed)
 
     let latestCounts: { p: number; l: number; m: number } = {
         p: 0,

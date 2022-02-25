@@ -30,11 +30,9 @@ export let work: WorkOneLang
 async function initialize(work: WorkOneLang) {
 	const _ = await makeBlocks(work)
 	blocks = _.blocks
-    console.log("🚀 ~ file: ContentGrid.svelte ~ line 32 ~ initialize ~ blocks", blocks)
 	$editor.columnsCount = _.numberOfColumns
 	cols = [[400, $editor.columnsCount]]
 	items = blocks.map(gridHelp.item)
-    console.log("🚀 ~ file: ContentGrid.svelte ~ line 35 ~ initialize ~ items", items)
 	items.forEach(item => {
 		operationsStacks[item.id] = []
 	})
@@ -86,7 +84,7 @@ function pushToOpStack(id: number, action: ActionName) {
 	}
 }
 
-$: dispatch("edit", items); console.log("fired edit")
+$: dispatch("edit", items)
 </script>
 
 {#await initialize(work)}
