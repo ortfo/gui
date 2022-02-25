@@ -76,8 +76,7 @@ $: $editor.unsavedChanges = diffWithDisk.length > 0
 $: layoutChanged = diffWithDisk.some(d => d.path.includes("layout"))
 </script>
 
-<!-- <Split initialPrimarySize="{100 - $editor.metadataPaneSplitRatio * 100}%"> -->
-<Split initialPrimarySize="10%">
+<Split initialPrimarySize="{100 - $editor.metadataPaneSplitRatio * 100}%">
 	<section class="layout" slot="primary">
 		<SwitchButton
 			bind:value={$state.editingLanguage}
