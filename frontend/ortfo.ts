@@ -147,11 +147,20 @@ export function addInternalIDs(work: Work): Work {
     function _putInternalIDTo<T extends Paragraph | Media | Link>(
         contentBlock: Translated<T[]>
     ): Translated<T[]> {
+        // Have the same internal ID shared by every language for the same paragraph
+        const internalIDmap = {}
         const modified = Object.fromEntries(
-            Object.entries(contentBlock).map(([language, content]) => [
-                language,
-                content.map(c => ({ ...c, internalID: nanoid() })),
-            ])
+            Object.entries(contentBlock).map(([language, content]) => {
+                return [
+                    language,
+                    content.map((c, index) => ({
+                        ...c,
+                        internalID: internalIDmap?.[index]
+                            ? internalIDmap[index]
+                            : (internalIDmap[index] = nanoid()),
+                    })),
+                ]
+            })
         )
         return modified
     }
