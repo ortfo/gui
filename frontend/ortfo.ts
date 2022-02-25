@@ -133,13 +133,13 @@ export function freezeMetadata(
         ...aliveMetadata,
         created: aliveMetadata?.created?.toISOString(),
         pagebackground: aliveMetadata.pagebackground?.path,
-        thumbnails: aliveMetadata.thumbnails
-            ? Object.fromEntries(
-                  Object.entries(aliveMetadata.thumbnails).map(
-                      ([key, value]) => [key, value.path]
-                  )
-              )
-            : {},
+        // thumbnails: aliveMetadata.thumbnails
+        //     ? Object.fromEntries(
+        //           Object.entries(aliveMetadata.thumbnails).map(
+        //               ([key, value]) => [key, value.path]
+        //           )
+        //       )
+        //     : {},
     }
 }
 
@@ -178,7 +178,7 @@ export interface WorkMetadata {
     }
     pagebackground?: string
     wip?: boolean
-    thumbnails: { [key: string]: { [key: number]: string } }
+    thumbnails: { [image: string]: { [resolution: number]: string } }
     aliases?: string[]
     titlestyle?: "filled" | "outlined"
 }

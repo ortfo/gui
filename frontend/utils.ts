@@ -38,3 +38,27 @@ export function except<V>(
             Object.entries(obj).filter(([key]) => !keys.includes(key))
         )
 }
+
+export function lcm(...integers: number[]): number {
+    if (integers.length < 2) {
+        return integers[0]
+    }
+    let greater = integers[0]
+    // choose the greater number
+    if (integers[0] > integers[1]) {
+        greater = integers[0]
+    } else {
+        greater = integers[1]
+    }
+
+    while (true) {
+        if (greater % integers[0] == 0 && greater % integers[1] == 0) {
+            break
+        }
+        greater += 1
+    }
+    if (integers.length == 2) {
+        return greater
+    }
+    return lcm(greater, ...integers.slice(2))
+}

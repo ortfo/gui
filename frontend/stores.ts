@@ -12,7 +12,12 @@ import {
 import type { ContentBlock } from "./contentblocks"
 import { backend, Base64WithFiletype } from "./backend"
 import { inLanguage } from "./ortfo"
-import { SvelteGridItem, workFromItems } from "./layout"
+import {
+    layoutWidth,
+    normalizeLayout,
+    SvelteGridItem,
+    workFromItems,
+} from "./layout"
 
 export type Settings = {
     theme: string
@@ -74,9 +79,13 @@ export async function fillEditorMetadataState(
         metadata.created = new Date(metadata.created)
     }
     if (metadata?.pagebackground) {
-        metadata.pagebackground = {
-            data: await backend.getMedia(pagebackgroundPath),
-            path: pagebackgroundPath,
+        try {
+            metadata.pagebackground = {
+                data: await backend.getMedia(pagebackgroundPath),
+                path: pagebackgroundPath,
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
     return metadata
@@ -173,6 +182,12 @@ export const workOnDiskCurrentLanguage: Readable<WorkOneLang> = derived(
         work.metadata.thumbnails ||= {}
         work.metadata.titlestyle ||= "filled"
         work.metadata.wip ||= false
+        work.metadata.layout = work.metadata?.layout
+            ? normalizeLayout(
+                  work.metadata.layout,
+                  layoutWidth(work.metadata.layout)
+              )
+            : work.metadata?.layout
         return work
     }
 )

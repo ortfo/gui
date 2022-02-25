@@ -1,7 +1,7 @@
 import type { WorkOneLang, Paragraph, Media, Link } from "./ortfo"
 import { backend } from "./backend"
 import gridHelp from "svelte-grid/build/helper"
-import type { OrtfoMkLayout } from "./layout"
+import { layoutWidth, OrtfoMkLayout } from "./layout"
 
 export type ContentBlock = {
     id: number
@@ -23,19 +23,25 @@ export async function makeBlocks(
     work: WorkOneLang
 ): Promise<{ blocks: ContentBlock[]; numberOfColumns: number }> {
     const numberOfColumns = work.metadata.layout
-        ? Math.max(
-              ...work.metadata.layout.map(
-                  row => (Array.isArray(row) ? row : [row]).length
-              )
-          )
+        ? layoutWidth(work.metadata.layout)
         : 1
-    const elements = await backend.layout(work)
+    let elements
+    console.log("🚀 ~ file: contentblocks.ts ~ line 93 ~ work", work)
+    try {
+        elements = await backend.layout(work)
+    } catch (error) {
+        console.error(error)
+        return { blocks: [], numberOfColumns }
+    }
     console.log("🚀 ~ file: contentblocks.ts ~ line 33 ~ elements", elements)
     return {
         numberOfColumns,
         blocks: await Promise.all(
             elements.map(async (element, index) => {
-                console.log("🚀 ~ file: contentblocks.ts ~ line 37 ~ elements.map ~ element", element)
+                console.log(
+                    "🚀 ~ file: contentblocks.ts ~ line 37 ~ elements.map ~ element",
+                    element
+                )
                 let block: ContentBlock = {
                     id: element.internalID,
                 } as unknown as ContentBlock
