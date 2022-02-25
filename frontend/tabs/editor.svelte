@@ -28,7 +28,7 @@ import tinykeys from "tinykeys"
 import { SvelteGridItem, workFromItems } from "../layout"
 import { backend } from "../backend"
 import { except } from "../utils"
-import ObjectDiffTable from "../components/ObjectDiffTable.svelte";
+import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 
 onMount(async () => {
 	$editor.metadata = await fillEditorMetadataState(
@@ -136,7 +136,12 @@ $: layoutChanged = diffWithDisk.some(d => d.path.includes("layout"))
 				bind:value={$editor.metadata.pagebackground}
 			/>
 		</dl>
-		<ObjectDiffTable a={$workOnDiskCurrentLanguage} b={$workInEditorCurrentLanguage} aLabel="on disk" bLabel="in editor" />
+		<ObjectDiffTable
+			a={$workOnDiskCurrentLanguage}
+			b={$workInEditorCurrentLanguage}
+			aLabel="on disk"
+			bLabel="in editor"
+		/>
 		on disk <JSONTree value={$workOnDiskCurrentLanguage} />
 		in editor <JSONTree value={$workInEditorCurrentLanguage} />
 		items <JSONTree value={$editor.items} />

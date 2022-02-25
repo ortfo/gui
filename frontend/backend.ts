@@ -53,7 +53,7 @@ export const backend: Backend = {
     },
     databaseRead: async () => {
         const data = lowercaseNoSpacesKeys(
-        // @ts-ignore backend__* functions are injected by webview (from the backend)
+            // @ts-ignore backend__* functions are injected by webview (from the backend)
             (await backend__databaseRead()) || {}
         ) as Database
         return { ...data, works: data.works.map(addInternalIDs) }

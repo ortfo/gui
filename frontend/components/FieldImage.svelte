@@ -40,7 +40,11 @@ async function getBase64d() {
 			{#await getBase64d()}
 				<p>Loading...</p>
 			{:then}
-				<img class="preview" src={value.data} alt="chosen image for {key}" />
+				<img
+					class="preview"
+					src={value.data}
+					alt="chosen image for {key}"
+				/>
 				<button
 					class="remove"
 					on:click={() => {

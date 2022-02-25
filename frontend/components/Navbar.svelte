@@ -32,7 +32,8 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 				$state.openTab = "editor"
 			}}
 			href="#editor"
-			class:current={$state.openTab === "editor"}>{$state.editingWorkID}</a
+			class:current={$state.openTab === "editor"}
+			>{$state.editingWorkID}</a
 		>
 		{#if $editor.unsavedChanges}
 			<span
