@@ -13,6 +13,7 @@ import { createEventDispatcher } from "svelte"
 import type { SvelteGridItem } from "../layout"
 import { editor } from "../stores"
 import rfdc from "rfdc"
+import { nanoid } from "nanoid";
 
 const dispatch = createEventDispatcher()
 const clone = rfdc()
@@ -46,7 +47,7 @@ const addBlock = (type: ContentBlock["data"]["type"]) => e => {
 		w: $editor.columnsCount,
 		h: 1,
 	}
-	const id = Math.max(...blocks.map(block => block.id)) + 1
+	const id = nanoid()
 	blocks = [
 		...blocks,
 		{

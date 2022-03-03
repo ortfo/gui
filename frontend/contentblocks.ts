@@ -4,7 +4,7 @@ import gridHelp from "svelte-grid/build/helper"
 import { layoutWidth, OrtfoMkLayout } from "./layout"
 
 export type ContentBlock = {
-    id: number
+    id: string
     [col: number]: {
         x: number
         y: number
