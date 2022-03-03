@@ -39,3 +39,7 @@ public/build/
 
 # Link to my personal .config/ortfo for convinience (I recommend it, it can be quite useful)
 .config
+
+mock-projects/
+!mock-projects/*/.portfoliodb/
+!mock-projects/neptune/cover-arts/renders/square.png
