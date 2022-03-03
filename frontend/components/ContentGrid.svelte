@@ -135,6 +135,7 @@ $: dispatch("edit", items)
 						placeholder="write some text here"
 					/>
 				{:else if item.data.type === "link"}
+					<span class="type">Link</span>
 					<input
 						class="name"
 						bind:value={items[index(item)].data.display}
@@ -268,6 +269,20 @@ h2 {
 }
 .block .url {
 	color: var(--gray);
+}
+
+.block .type {
+	color: var(--gray);
+	/* position: absolute;
+	z-index: -1; */
+	margin: 0;
+	padding: 0;
+	font-size: 10em;
+	height: .5em;
+	line-height: 0.1;
+	font-weight: bold;
+	opacity: 0.5;
+	pointer-events: none;
 }
 
 .block input {
