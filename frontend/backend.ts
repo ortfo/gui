@@ -22,7 +22,7 @@ import { lowercaseNoSpacesKeys, transformKeys } from "./utils"
 export type Base64WithFiletype = string
 
 type Backend = {
-    initializeConfigurationDirectory: () => Promise<null | string>
+    initialize: () => Promise<null | string>
     settingsRead: () => Promise<Settings>
     settingsWrite: (settings: Settings) => Promise<null | string>
     quit: () => Promise<void>
@@ -34,9 +34,9 @@ type Backend = {
 }
 
 export const backend: Backend = {
-    initializeConfigurationDirectory: async () => {
+    initialize: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return await backend__initializeConfigurationDirectory()
+        return await backend__initialize()
     },
     settingsRead: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)

@@ -9,7 +9,10 @@ import (
 	"github.com/webview/webview"
 )
 
-type layoutElementWithID struct{ortfomk.LayedOutElement; ResolvedID string `json:"id"`}
+type layoutElementWithID struct {
+	ortfomk.LayedOutElement
+	ResolvedID string `json:"id"`
+}
 type layoutWithIDs []layoutElementWithID
 
 func main() {
@@ -18,14 +21,14 @@ func main() {
 	w.SetTitle("ortfo")
 	w.SetSize(800, 600, webview.HintNone)
 	w.Navigate("http://localhost:3000")
-	w.Bind("backend__initializeConfigurationDirectory", InitializeConfigurationDirectory)
+	w.Bind("backend__initialize", Initialize)
 	w.Bind("backend__settingsRead", func() (Settings, error) {
 		return LoadSettings()
 	})
 	w.Bind("backend__settingsWrite", func(newSettings interface{}) error {
 		settings, _ := LoadSettings()
 		mapstructure.Decode(newSettings, &settings)
-		fmt.Printf("Writing settings %s\n", settings)
+		fmt.Printf("Writing settings %#v\n", settings)
 		return SaveSettings(settings)
 	})
 	w.Bind("backend__quit", func() error {
@@ -55,7 +58,7 @@ func main() {
 		if err != nil {
 			return nil, fmt.Errorf("while laying out %s (in %s): %w", work.ID, work.Language, err)
 		}
-		
+
 		for i := range layedout {
 			layoutWithIDs = append(layoutWithIDs, layoutElementWithID{
 				LayedOutElement: layedout[i],
@@ -73,4 +76,22 @@ func main() {
 		return writeback(settings, work)
 	})
 	w.Run()
+}
+
+func Initialize() error {
+	err := InitializeConfigurationDirectory()
+	if err != nil {
+		return err
+	}
+
+	ortfomk.WarmUp(ortfomk.GlobalData{
+		Flags: ortfomk.Flags{
+			ProgressFile: ConfigurationDirectory(".progress.json"),
+			Silent:       true,
+		},
+		OutputDirectory:    ConfigurationDirectory("built"),
+		TemplatesDirectory: ConfigurationDirectory("templates"),
+		HTTPLinks:          make(map[string][]string),
+	})
+	return nil
 }

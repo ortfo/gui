@@ -17,7 +17,7 @@ import Modal from "svelte-simple-modal"
 import ModalButtonClose from "./components/ModalButtonClose.svelte"
 
 async function loadSettings() {
-	await backend.initializeConfigurationDirectory()
+	await backend.initialize()
 	$settings = await backend.settingsRead()
 	console.info(`Loaded settings from backend: ${JSON.stringify($settings)}`)
 	if (!$settings.surname) {
