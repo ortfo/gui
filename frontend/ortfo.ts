@@ -1,5 +1,4 @@
 import { nanoid } from "nanoid"
-import type { EditorState } from "./stores"
 
 export type Translated<T> = { [langage: string]: T }
 
@@ -14,20 +13,18 @@ export interface Footnote {
 }
 
 export interface Paragraph {
-    internalID: string // Used to keep track of paragraphs as they are moved around in the layout
     id: string
     content: string
 }
 
 export interface Link {
-    internalID: string // Used to keep track of paragraphs as they are moved around in the layout
     id: string
     name: string
     title: string
     url: string
 }
 
-export interface dbWork {
+export interface ortfodbWork {
     id: string
     metadata: Translated<any>
     title: Translated<string>
@@ -57,7 +54,7 @@ export interface ParsedDescription {
     title: Translated<string>
     paragraphs: Translated<Paragraph[]>
     mediaembeddeclarations: Translated<MediaEmbedDeclaration[]>
-    links: Translated<Footnote[]>
+    links: Translated<Link[]>
     footnotes: Translated<Footnote[]>
 }
 
@@ -72,7 +69,7 @@ export interface WorkOneLang {
     language: string
 }
 
-export interface Work extends dbWork {
+export interface Work extends ortfodbWork {
     metadata: WorkMetadata
 }
 
@@ -124,23 +121,6 @@ export const fromLanguages = (...singleLanguageWorks: WorkOneLang[]) => {
         links: multiLanguage("links"),
         footnotes: multiLanguage("footnotes"),
     } as Work
-}
-
-export function freezeMetadata(
-    aliveMetadata: EditorState["metadata"]
-): WorkMetadata {
-    return {
-        ...aliveMetadata,
-        // created: aliveMetadata?.created?.toISOString(),
-        pagebackground: aliveMetadata.pagebackground?.path || "",
-        // thumbnails: aliveMetadata.thumbnails
-        //     ? Object.fromEntries(
-        //           Object.entries(aliveMetadata.thumbnails).map(
-        //               ([key, value]) => [key, value.path]
-        //           )
-        //       )
-        //     : {},
-    }
 }
 
 export function addInternalIDs(work: Work): Work {
@@ -268,7 +248,11 @@ export interface ImageDimensions {
     aspectratio: number
 }
 
-export interface LayedOutElement extends Media, Paragraph, Link {
+// Not exactly like ortfomk.Layout, as we don't send analyzed media but embed declarations
+export interface LayedOutElement
+    extends MediaEmbedDeclaration,
+        Paragraph,
+        Link {
     type: "media" | "paragraph" | "link"
     layoutindex: number
     positions: number[][]

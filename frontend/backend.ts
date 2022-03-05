@@ -4,13 +4,20 @@ import {
     addInternalIDs,
     Database,
     DatabaseOneLang,
-    dbWork,
+    ortfodbWork,
     inLanguage,
     LayedOutElement,
     Work,
     WorkOneLang,
+    MediaEmbedDeclaration,
+    Media,
+    ParsedDescription,
+    Paragraph,
+    Link,
+    Translated,
 } from "./ortfo"
-import { lowercaseNoSpacesKeys, transformKeys } from "./utils"
+import { lowercaseNoSpacesKeys, mapToTranslated, transformKeys } from "./utils"
+import type { OrtfoMkLayout } from "./layout"
 
 /*
  * Strings that represent binary files, with a filetype at the start.
@@ -21,35 +28,25 @@ import { lowercaseNoSpacesKeys, transformKeys } from "./utils"
  */
 export type Base64WithFiletype = string
 
-type Backend = {
-    initialize: () => Promise<null | string>
-    settingsRead: () => Promise<Settings>
-    settingsWrite: (settings: Settings) => Promise<null | string>
-    quit: () => Promise<void>
-    databaseRead: () => Promise<Database>
-    rebuildDatabase: () => Promise<null | string>
-    getMedia: (path: string) => Promise<Base64WithFiletype>
-    layout: (work: WorkOneLang) => Promise<LayedOutElement[]>
-    writeToDisk: (work: dbWork) => Promise<null | string>
-}
+export type MaybeError = string | null
 
-export const backend: Backend = {
+export const backend = {
     initialize: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return await backend__initialize()
+        return (await backend__initialize()) as MaybeError
     },
     settingsRead: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         const data = await backend__settingsRead()
-        return lowercaseNoSpacesKeys(!!data ? data : {})
+        return lowercaseNoSpacesKeys(!!data ? data : {}) as Settings
     },
     settingsWrite: async (settings: Settings) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return await backend__settingsWrite(settings)
+        return (await backend__settingsWrite(settings)) as MaybeError
     },
     quit: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return await backend__quit()
+        return (await backend__quit()) as void
     },
     databaseRead: async () => {
         const data = lowercaseNoSpacesKeys(
@@ -60,54 +57,24 @@ export const backend: Backend = {
     },
     rebuildDatabase: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return await backend__rebuildDatabase()
+        return (await backend__rebuildDatabase()) as MaybeError
     },
     getMedia: async (path: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return await backend__getMedia(path)
+        return (await backend__getMedia(path)) as Base64WithFiletype
     },
-    layout: async (work: WorkOneLang) => {
-        // the backend will discard internalID since it does not exist there, so we append it to "real" IDs of every parargaph/media/link.
-        const internalIDsLengths = new Set(
-            [...work.paragraphs, ...work.media, ...work.links].map(
-                e => e.internalID.length
-            )
+    layout: async (work: ParsedDescription) => {
+        const data = Object.fromEntries(
+            Object.entries(
+                // @ts-ignore backend__* functions are injected by webview (from the backend)
+                (await backend__layout(work)) as Translated<unknown[]>
+            ).map(([lang, val]) => [lang, val.map(lowercaseNoSpacesKeys)])
         )
-        if (internalIDsLengths.size !== 1) {
-            throw Error(
-                "internal IDs should all have the same length, but internal IDs are " +
-                    JSON.stringify(
-                        [...work.paragraphs, ...work.media, ...work.links].map(
-                            e =>
-                                `${e.internalID} (length ${e.internalID.length})`
-                        )
-                    )
-            )
-        }
-        const internalIDsLength = internalIDsLengths.values().next().value
-        const appendInternalIDs = element => ({
-            ...element,
-            id: element.internalID + (element.id || ""),
-        })
 
-        work.paragraphs = work.paragraphs.map(appendInternalIDs)
-        work.media = work.media.map(appendInternalIDs)
-        work.links = work.links.map(appendInternalIDs)
-        // @ts-ignore backend__* functions are injected by webview (from the backend)
-        const data = (await backend__layout(work)).map(lowercaseNoSpacesKeys)
-
-        // After processing, we get the internalIDs back into their spots.
-        const splitBackInternalIDs = element => {
-            return {
-                ...element,
-                internalID: element.id.slice(0, internalIDsLength),
-                id: element.id.slice(internalIDsLength),
-            }
-        }
-        return data.map(splitBackInternalIDs)
+        return data as Translated<LayedOutElement[]>
     },
-    writeToDisk: async (work: Work) => {
+    writeToDisk: async (work: ParsedDescription, workID: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return await backend__writeback(work)
+        return (await backend__writeback(work, workID)) as MaybeError
     },
 }

@@ -35,7 +35,7 @@ func ValidateSettings(settings Settings) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Invalid theme name %q, valid theme names are %v", settings.Theme, ThemeNames)
+	return fmt.Errorf("invalid theme name %q, valid theme names are %v", settings.Theme, ThemeNames)
 }
 
 func SaveSettings(settings Settings) error {
@@ -103,21 +103,6 @@ func InitializeConfigurationDirectory() error {
 	err = WriteIfNotExist(ConfigurationDirectory("ortfodb.yaml"), []byte(""))
 	if err != nil {
 		return fmt.Errorf("couldn't initialize database settings file: %w", err)
-	}
-
-	settings, err := LoadSettings()
-	if err != nil {
-		return fmt.Errorf("couldn't save default settings: %w", err)
-	}
-
-	err = SaveSettings(settings)
-	if err != nil {
-		return fmt.Errorf("couldn't save default settings: %w", err)
-	}
-
-	err = settings.InitializeDatabase()
-	if err != nil {
-		return fmt.Errorf("couldn't initialize portfolio database: %w", err)
 	}
 
 	return nil

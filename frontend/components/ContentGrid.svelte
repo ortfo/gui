@@ -2,80 +2,96 @@
 import JSONTree from "svelte-json-tree"
 import Grid from "svelte-grid"
 import gridHelp from "svelte-grid/build/helper"
-import { ContentBlock, makeBlocks } from "../contentblocks"
-import type { WorkOneLang } from "../ortfo"
+import {
+	ContentBlock,
+	emptyContentUnit,
+	eachLanguage,
+	fromBlocksToParsedDescription,
+	ItemID,
+	toBlocks,
+} from "../contentblocks"
+import type { LayedOutElement, ParsedDescription, Translated } from "../ortfo"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import MarkdownToolbar from "./MarkdownToolbar.svelte"
 import type { ActionName } from "./MarkdownToolbar.svelte"
 import { tooltip } from "../actions"
 import { scale } from "svelte/transition"
 import { createEventDispatcher } from "svelte"
-import type { SvelteGridItem } from "../layout"
-import { editor } from "../stores"
-import rfdc from "rfdc"
-import { nanoid } from "nanoid";
+import type { Base64WithFiletype } from "../backend"
 
 const dispatch = createEventDispatcher()
-const clone = rfdc()
 
-type ItemID = number
-let blocks: ContentBlock[] = []
+export let work: ParsedDescription
+export let language: string
+
+let blocks: Translated<ContentBlock[]> = {}
+let base64images: Translated<{ [id: ItemID]: Base64WithFiletype }> = {}
 let cols: number[][] = []
-let items: SvelteGridItem[] = []
+let rowCapacity: number = 0
 let operationsStacks: Record<ItemID, ActionName[]> = {}
 let activeBlock: number | null = null
 let willDeactivateBlock: boolean = false
 
-export let work: WorkOneLang
-
-async function initialize(work: WorkOneLang) {
-	const _ = await makeBlocks(work)
-	blocks = _.blocks
-	$editor.columnsCount = _.numberOfColumns
-	cols = [[400, $editor.columnsCount]]
-	items = blocks.map(gridHelp.item)
-	items.forEach(item => {
-		operationsStacks[item.id] = []
-	})
-	$editor.items = clone(items)
+async function initialize(work: ParsedDescription) {
+	;[blocks, rowCapacity] = await toBlocks(work)
+	console.log(
+		"🚀 ~ file: ContentGrid.svelte ~ line 38 ~ initialize ~ blocks[language] ",
+		blocks[language]
+	)
+	cols = [[400, rowCapacity]]
+	Object.entries(blocks).forEach(([_, items]) =>
+		items.forEach(item => {
+			operationsStacks[item.id] = []
+		})
+	)
 }
 
-const addBlock = (type: ContentBlock["data"]["type"]) => e => {
-	const geometry = {
-		x: Math.min(...blocks.map(block => block[$editor.columnsCount].x)),
-		y: Math.max(...blocks.map(block => block[$editor.columnsCount].y)) + 1,
-		w: $editor.columnsCount,
-		h: 1,
-	}
-	const id = nanoid()
-	blocks = [
-		...blocks,
-		{
-			id,
-			[$editor.columnsCount]: {
-				...gridHelp.item(geometry),
-				customDragger: true,
-				customResizer: true,
+const addBlock = (type: LayedOutElement["type"]) => e => {
+	Object.entries(blocks).forEach(([lang, blocksOneLang]) => {
+		const geometry = {
+			x: Math.min(...blocksOneLang.map(block => block[rowCapacity].x)),
+			y:
+				Math.max(...blocksOneLang.map(block => block[rowCapacity].y)) +
+				1,
+			w: rowCapacity,
+			h: 1,
+		}
+		const id = `${type}:${
+			Math.max(
+				...blocksOneLang
+					.map(b => b.id.split(":"))
+					.filter(([bType, _]) => bType === type)
+					.map(([_, id]) => parseInt(id))
+			) + 1
+		}` as ItemID
+
+		blocks[lang] = [
+			...blocks[lang],
+			{
+				id,
+				[rowCapacity]: {
+					...gridHelp.item(geometry),
+					customDragger: true,
+					customResizer: true,
+				},
+				data: emptyContentUnit(type),
 			},
-			data: {
-				type,
-				raw: "",
-				display: "",
-			},
-		},
-	]
-	items = blocks.map(gridHelp.item)
-	operationsStacks[id] = []
+		]
+		blocks[lang] = blocks[lang].map(gridHelp.item)
+		operationsStacks[id] = []
+	})
 }
 
 const removeBlock = (item: ContentBlock) => e => {
-	blocks = blocks.filter(block => block.id !== item.id)
-	items = blocks.map(gridHelp.item)
-	delete operationsStacks[item.id]
+	eachLanguage(blocks).do((language, blocksOneLang) => {
+		blocks[language] = blocksOneLang.filter(block => block.id !== item.id)
+		blocks[language] = blocksOneLang.map(gridHelp.item)
+		delete operationsStacks[item.id]
+	})
 }
 
 function index(item: { id: string }): number {
-	return items.findIndex(it => it.id === item.id)
+	return blocks[language].findIndex(it => it.id === item.id)
 }
 
 function pushToOpStack(id: number, action: ActionName) {
@@ -85,14 +101,14 @@ function pushToOpStack(id: number, action: ActionName) {
 	}
 }
 
-$: dispatch("edit", items)
+$: works = fromBlocksToParsedDescription(blocks)
 </script>
 
 {#await initialize(work)}
 	Loading...
 {:then}
 	<Grid
-		bind:items
+		bind:items={blocks[language]}
 		{cols}
 		rowHeight={400}
 		let:dataItem={item}
@@ -105,7 +121,7 @@ $: dispatch("edit", items)
 			data-type={item.data.type}
 			class:active={activeBlock === item.id}
 			style={item.data.type === "media"
-				? `background-image: url("${item.data.raw}")`
+				? `background-image: url("${base64images[item.id]}")`
 				: ""}
 		>
 			<div class="content">
@@ -114,9 +130,9 @@ $: dispatch("edit", items)
 						on:action={e => pushToOpStack(item.id, e.detail)}
 					/>
 					<MarkdownEditor
-						value={items[index(item)].data.display}
+						value={item.data.content}
 						on:input={({ detail }) => {
-							items[index(item)].data.display = detail
+							blocks[language][index(item)].data.content = detail
 						}}
 						on:blur={() => {
 							willDeactivateBlock = true
@@ -138,14 +154,14 @@ $: dispatch("edit", items)
 					<span class="type">Link</span>
 					<input
 						class="name"
-						bind:value={items[index(item)].data.display}
+						bind:value={blocks[language][index(item)].data.name}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
 						placeholder="name your link"
 					/>
 					<input
 						class="url"
-						bind:value={items[index(item)].data.raw}
+						bind:value={blocks[language][index(item)].data.url}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
 						placeholder="put the url here"
@@ -153,14 +169,14 @@ $: dispatch("edit", items)
 				{:else if item.data.type === "media"}
 					<input
 						class="name"
-						bind:value={items[index(item)].data.display}
+						bind:value={blocks[language][index(item)].data.alt}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
 						placeholder="describe your media"
 					/>
 					<input
 						class="url"
-						bind:value={items[index(item)].data.path}
+						bind:value={blocks[language][index(item)].data.source}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
 						placeholder="put the path or url to the media here"
@@ -278,7 +294,7 @@ h2 {
 	margin: 0;
 	padding: 0;
 	font-size: 10em;
-	height: .5em;
+	height: 0.5em;
 	line-height: 0.1;
 	font-weight: bold;
 	opacity: 0.5;

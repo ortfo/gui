@@ -9,12 +9,6 @@ import (
 	"github.com/webview/webview"
 )
 
-type layoutElementWithID struct {
-	ortfomk.LayedOutElement
-	ResolvedID string `json:"id"`
-}
-type layoutWithIDs []layoutElementWithID
-
 func main() {
 	w := webview.New(true)
 	defer w.Destroy()
@@ -50,30 +44,22 @@ func main() {
 	w.Bind("backend__getMedia", func(path string) (string, error) {
 		return GetMedia(path)
 	})
-	w.Bind("backend__layout", func(workUntyped interface{}) (layoutWithIDs, error) {
-		var work ortfomk.WorkOneLang
-		var layoutWithIDs layoutWithIDs
-		mapstructure.Decode(workUntyped, &work)
-		layedout, err := Layout(work)
+	w.Bind("backend__layout", func(workUntyped interface{}) (map[string]ortfomk.Layout, error) {
+		var description ortfodb.ParsedDescription
+		mapstructure.Decode(workUntyped, &description)
+		layedout, err := Layout(description)
 		if err != nil {
-			return nil, fmt.Errorf("while laying out %s (in %s): %w", work.ID, work.Language, err)
+			return nil, fmt.Errorf("while laying out: %w", err)
 		}
-
-		for i := range layedout {
-			layoutWithIDs = append(layoutWithIDs, layoutElementWithID{
-				LayedOutElement: layedout[i],
-				ResolvedID:      layedout[i].ID(),
-			})
-		}
-		return layoutWithIDs, nil
+		return layedout, nil
 	})
-	w.Bind("backend__writeback", func(work ortfodb.Work) error {
+	w.Bind("backend__writeback", func(description ortfodb.ParsedDescription, workID string) error {
 		settings, err := LoadSettings()
 		if err != nil {
 			return fmt.Errorf("while loading settings: %w", err)
 		}
 
-		return writeback(settings, work)
+		return Writeback(settings, description, workID)
 	})
 	w.Run()
 }
@@ -84,12 +70,29 @@ func Initialize() error {
 		return err
 	}
 
+	settings, err := LoadSettings()
+	if err != nil {
+		return fmt.Errorf("couldn't save default settings: %w", err)
+	}
+
+	err = SaveSettings(settings)
+	if err != nil {
+		return fmt.Errorf("couldn't save default settings: %w", err)
+	}
+
+	err = settings.InitializeDatabase()
+	if err != nil {
+		return fmt.Errorf("couldn't initialize portfolio database: %w", err)
+	}
+
 	ortfomk.WarmUp(ortfomk.GlobalData{
 		Flags: ortfomk.Flags{
 			ProgressFile: ConfigurationDirectory(".progress.json"),
 			Silent:       true,
 		},
-		OutputDirectory:    ConfigurationDirectory("built"),
+		// TODO make configurable
+		OutputDirectory: ConfigurationDirectory("built"),
+		// TODO make configurable
 		TemplatesDirectory: ConfigurationDirectory("templates"),
 		HTTPLinks:          make(map[string][]string),
 	})

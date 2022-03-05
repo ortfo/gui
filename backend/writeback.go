@@ -9,8 +9,8 @@ import (
 	ortfodb "github.com/ortfo/db"
 )
 
-func writeback(settings Settings, work ortfodb.Work) error {
-	description, err := ortfodb.ReplicateDescription(work.ParsedDescription())
+func Writeback(settings Settings, parsedDescription ortfodb.ParsedDescription, workID string) error {
+	description, err := ortfodb.ReplicateDescription(parsedDescription)
 	// println("Replicated description:", description)
 	if err != nil {
 		return fmt.Errorf("while replicating description: %w", err)
@@ -20,5 +20,5 @@ func writeback(settings Settings, work ortfodb.Work) error {
 		return fmt.Errorf("while expanding home directory in projects path %q: %w", settings.ProjectsFolder, err)
 	}
 
-	return ioutil.WriteFile(filepath.Join(expandedProjectsFolder, work.ID, ".portfoliodb", "description.md"), []byte(description), 0644)
+	return ioutil.WriteFile(filepath.Join(expandedProjectsFolder, workID, ".portfoliodb", "description.md"), []byte(description), 0644)
 }

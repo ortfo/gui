@@ -1,12 +1,6 @@
 <script lang="ts">
 import Navbar from "./components/Navbar.svelte"
-import {
-	currentLanguageDatabase,
-	database,
-	settings,
-	state,
-	workOnDiskCurrentLanguage,
-} from "./stores"
+import { database, settings, state } from "./stores"
 import { backend } from "./backend"
 import Works from "./tabs/works.svelte"
 import Tags from "./tabs/tags.svelte"

@@ -1,3 +1,5 @@
+import type { Translated } from "./ortfo"
+
 export const transformKeys =
     (transformer: (input: string) => string) => (obj: any) => {
         if (Object.prototype.toString.call(obj) !== "[object Object]") {
@@ -20,6 +22,14 @@ export const noSpacesKeys = transformKeys(key => key.replace(/\s/g, ""))
 export const lowercaseNoSpacesKeys = transformKeys(key =>
     key.replace(/\s/g, "").toLowerCase()
 )
+
+export const first = <T>(arr: T[]) => arr[0]
+export const second = <T>(arr: T[]) => arr[1]
+
+/**
+ * @returns max(arr) - min(arr)
+ */
+export const distance = (arr: number[]) => Math.max(...arr) - Math.min(...arr)
 
 export const range = (start: number, end: number) =>
     [...Array(end - start).keys()].map(i => i + start)
@@ -61,4 +71,24 @@ export function lcm(...integers: number[]): number {
         return greater
     }
     return lcm(greater, ...integers.slice(2))
+}
+
+export function mapToTranslated<I, O>(
+    map: (item: I) => O,
+    data: Translated<I[]>
+): Translated<O[]> {
+    return Object.fromEntries(
+        Object.entries(data).map(([lang, data]) => [lang, data.map(map)])
+    )
+}
+
+export async function mapToTranslatedAsync<I, O>(
+    map: (item: I) => Promise<O>,
+    data: Translated<I[]>
+): Promise<Translated<O[]>> {
+    const output = {}
+    for (const [language, items] of Object.entries(data)) {
+        output[language] = await Promise.all(items.map(map))
+    }
+    return output
 }
