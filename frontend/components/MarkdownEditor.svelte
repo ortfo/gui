@@ -35,7 +35,7 @@ const actions = editor => ({
 			return false
 		},
 	},
-	"set-content-to-value": editor.chain().setContent(value),
+	"set-content-to-value": editor.chain().setContent(value).blur(),
 })
 const dispatch = createEventDispatcher()
 

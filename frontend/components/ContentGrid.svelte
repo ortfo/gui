@@ -256,6 +256,7 @@ h2 {
 	border: 0.175em solid var(--gray);
 	border-radius: 0.5em;
 	transition: border-color 0.4s ease-in-out;
+	transition-delay: 100ms;
 }
 
 :global(.block:not(.active) .toolbar) {
@@ -265,6 +266,7 @@ h2 {
 
 :global(.block .toolbar) {
 	transition: all 0.2s ease-in-out;
+	transition-delay: 110ms;
 }
 
 :global(.toolbar) {
