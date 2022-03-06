@@ -123,36 +123,6 @@ export const fromLanguages = (...singleLanguageWorks: WorkOneLang[]) => {
     } as Work
 }
 
-export function addInternalIDs(work: Work): Work {
-    function _putInternalIDTo<T extends Paragraph | Media | Link>(
-        contentBlock: Translated<T[]>
-    ): Translated<T[]> {
-        // Have the same internal ID shared by every language for the same paragraph
-        const internalIDmap = {}
-        const modified = Object.fromEntries(
-            Object.entries(contentBlock).map(([language, content]) => {
-                return [
-                    language,
-                    content.map((c, index) => ({
-                        ...c,
-                        internalID: internalIDmap?.[index]
-                            ? internalIDmap[index]
-                            : (internalIDmap[index] = nanoid()),
-                    })),
-                ]
-            })
-        )
-        return modified
-    }
-
-    return {
-        ...work,
-        paragraphs: _putInternalIDTo<Paragraph>(work.paragraphs),
-        media: _putInternalIDTo<Media>(work.media),
-        links: _putInternalIDTo<Link>(work.links),
-    }
-}
-
 export interface WorkMetadata {
     created?: string
     started?: string
@@ -217,7 +187,6 @@ export interface Technology {
 }
 
 export interface Media {
-    internalID: string
     id: string
     alt: string
     title: string
@@ -234,7 +203,6 @@ export interface Media {
 }
 
 export interface UnanalyzedMedia {
-    internalID: string
     id: string
     alt: string
     title: string

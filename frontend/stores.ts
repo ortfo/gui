@@ -48,8 +48,8 @@ export const settings: Writable<Settings> = writable({
 export const state: Writable<State> = writable({
     openTab: "editor",
     rebuildingDatabase: false,
-    editingWorkID: "neptune",
-    editingLanguage: "en",
+    editingWorkID: "illiimité",
+    lang: "en",
     metadataPaneSplitRatio: 0.333,
 })
 
@@ -62,18 +62,21 @@ export const workInEditor: Writable<ParsedDescription> = writable(
 export const workOnDisk: Readable<Work | null> = derived(
     [database, state],
     ([$database, $state]) =>
-        $state.editingWorkID
-            ? $database.works.find(w => w.id === $state.editingWorkID)
-            : null
+        // FIXME #5 everything breaks down if the work is not found
+        // (try setting the state to a non-existent work)
+        $database?.works.find(w => w.id === $state.editingWorkID) ?? null
 )
 
 export const unsavedChanges: Readable<
     { op: Operation; path: (string | number)[]; value: any }[]
-> = derived([workInEditor, workOnDisk], ([workInEditor, workOnDisk]) =>
-    workOnDisk && workInEditor
-        ? diff(toParsedDescription(workOnDisk), workInEditor)
-        : []
-)
+> = derived([workInEditor, workOnDisk], ([workInEditor, workOnDisk]) => {
+    try {
+        return diff(toParsedDescription(workOnDisk), workInEditor)
+    } catch (err) {
+        console.log(err)
+        return []
+    }
+})
 
 export const hasUnsavedChanges: Readable<boolean> = derived(
     [unsavedChanges],

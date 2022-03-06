@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/mapstructure"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
@@ -16,7 +15,6 @@ func Layout(description ortfodb.ParsedDescription) (layouts map[string]ortfomk.L
 	// and I won't make two separate .LayedOut(), it's too much of a hassle
 	// (looked into it, not feasible without duplicating code))
 	layouts = make(map[string]ortfomk.Layout)
-	spew.Dump(description)
 	for _, language := range LanguagesIn(description) {
 		layout, err := StubOutWorkOneLang(description, language).LayedOut()
 		if err != nil {
@@ -24,18 +22,22 @@ func Layout(description ortfodb.ParsedDescription) (layouts map[string]ortfomk.L
 		}
 		layouts[language] = layout
 	}
-	spew.Dump(layouts)
 	return
 }
 
 func StubOutWorkOneLang(description ortfodb.ParsedDescription, language string) ortfomk.WorkOneLang {
 	var structuredMetadata ortfomk.WorkMetadata
-	mapstructure.Decode(description.Metadata, structuredMetadata)
+	err := mapstructure.Decode(description.Metadata, &structuredMetadata)
 
-	stubbedOutMedia := make([]ortfodb.Media, len(description.MediaEmbedDeclarations[language]))
+	if err != nil {
+		panic(err)
+	}
+	
+	
+
+	stubbedOutMedia := make([]ortfodb.Media, 0, len(description.MediaEmbedDeclarations[language]))
 	for _, media := range description.MediaEmbedDeclarations[language] {
 		stubbedOutMedia = append(stubbedOutMedia, ortfodb.Media{
-			ID:         "sus",
 			Alt:        media.Alt,
 			Title:      media.Title,
 			Source:     media.Source,

@@ -35,7 +35,6 @@ export let work: WorkOneLang
 	<div class="text">
 		<h2>{work.title || work.id}</h2>
 		<!-- {@html work.paragraphs[0]?.content || ""} -->
-		<!-- <JSONTree value={work} /> -->
 		<p class="path">
 			{$settings.projectsfolder.replaceAll("\\", "/")}/{work.id}
 		</p>

@@ -14,6 +14,7 @@ import { backend } from "./backend"
 import gridHelp from "svelte-grid/build/helper"
 import { layoutWidth, OrtfoMkLayout } from "./layout"
 import { distance, first, range, second } from "./utils"
+import type { element } from "svelte/internal"
 
 export type ContentBlock = {
     id: ItemID
@@ -51,7 +52,7 @@ export function eachLanguage<I, O>(blocks: Translated<I[]>) {
                 Object.entries(blocks)[using](([language, onelang]) => [
                     language,
                     // @ts-ignore: can't narrow down the type of f, see https://github.com/microsoft/TypeScript/issues/18422
-                    { 1: f(onelang), 2: f(language, onelang) }[f.length],
+                    f.length === 1 ? f(onelang) : f(language, onelang),
                 ])
             )
         }
@@ -85,10 +86,9 @@ export async function toBlocks(
         console.error(error)
         return [{}, 0]
     }
-    console.log(layouts)
     return [
-        eachLanguage<LayedOutElement, ContentBlock>(layouts).map(layout =>
-            layout.map(element => {
+        eachLanguage<LayedOutElement, ContentBlock>(layouts).map(layout => {
+            return layout.map(element => {
                 const {
                     type,
                     layoutindex,
@@ -101,8 +101,8 @@ export async function toBlocks(
                     id: `${type}:${layoutindex}` as ItemID,
                     [rowCapacity]: gridHelp.item({
                         // We assume that the element's positions are contiguous.
-                        x: Math.min(...positions.map(first)),
-                        y: Math.min(...positions.map(second)),
+                        x: Math.min(...positions.map(second)),
+                        y: Math.min(...positions.map(first)),
                         w: distance(positions.map(second)) + 1,
                         h: distance(positions.map(first)) + 1,
                         customDragger: true,
@@ -115,7 +115,7 @@ export async function toBlocks(
                 }
                 return block
             })
-        ),
+        }),
         rowCapacity,
     ]
 }
@@ -136,11 +136,18 @@ export function fromBlocksToParsedDescription(
         links: {},
     }
 
+    if (Object.keys(blocks).length === 0) {
+        return description
+    }
+
     const anyLanguage = Object.keys(blocks)[0]
 
     description.metadata.layout = blocks[anyLanguage].map(block => {
+        console.log("jgreojg")
         const [_, layoutindex] = block.id.split(":", 2)
+        console.log("🚀 ~ file: contentblocks.ts ~ line 147 ~ layoutindex]", layoutindex)
         const { type, ...contentunit } = block.data
+        console.log("🚀 ~ file: contentblocks.ts ~ line 149 ~ contentunit", contentunit)
         const { x, y, w, h } = block[rowCapacity]
         return {
             positions: range(x, x + w - 1).map(x =>

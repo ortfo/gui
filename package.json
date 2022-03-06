@@ -11,7 +11,7 @@
     "backend-build": "cd backend && go build",
     "backend-dev": "cd backend && nodemon --signal SIGINT --exec 'go run . || exit 1' -e go",
     "dev": "concurrently npm:frontend-dev npm:backend-dev",
-    "format": "pnpm prettier frontend/ --write --plugin-search-dir=."
+    "format": "pnpm prettier frontend/ --write --plugin-search-dir=. && cd backend && gofmt -s -w *.go"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.37",

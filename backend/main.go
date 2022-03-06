@@ -92,7 +92,7 @@ func Initialize() error {
 		},
 		// TODO make configurable
 		OutputDirectory: ConfigurationDirectory("built"),
-		// TODO make configurable
+		// TODO #4 make configurable
 		TemplatesDirectory: ConfigurationDirectory("templates"),
 		HTTPLinks:          make(map[string][]string),
 	})

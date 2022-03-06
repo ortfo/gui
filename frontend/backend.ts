@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid"
 import type { Settings, State } from "./stores"
 import {
-    addInternalIDs,
     Database,
     DatabaseOneLang,
     ortfodbWork,
@@ -49,11 +48,10 @@ export const backend = {
         return (await backend__quit()) as void
     },
     databaseRead: async () => {
-        const data = lowercaseNoSpacesKeys(
+        return lowercaseNoSpacesKeys(
             // @ts-ignore backend__* functions are injected by webview (from the backend)
             (await backend__databaseRead()) || {}
         ) as Database
-        return { ...data, works: data.works.map(addInternalIDs) }
     },
     rebuildDatabase: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)

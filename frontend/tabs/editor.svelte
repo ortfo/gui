@@ -29,8 +29,12 @@ onMount(async () => {
 })
 
 function initialize() {
-	$workInEditor = toParsedDescription($workOnDisk)
-	$state.lang ||= "en"
+	if ($workOnDisk === null) {
+		throw Error(`Work ${$state.editingWorkID} not found.`)
+	} else {
+		$workInEditor = toParsedDescription($workOnDisk)
+		$state.lang ||= "en"
+	}
 }
 
 function editTitle(e) {
@@ -44,8 +48,6 @@ function editTitle(e) {
 }
 
 let editingTitle = false
-
-$: console.log($workInEditor)
 </script>
 
 {#await initialize() then}
@@ -53,7 +55,6 @@ $: console.log($workInEditor)
 		<section class="layout" slot="primary">
 			<SwitchButton
 				bind:value={$state.lang}
-				on:change={e => ($state.lang = e.detail)}
 				options={{ en: "english", fr: "français" }}
 				showCodes
 			/>

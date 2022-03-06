@@ -18,6 +18,7 @@ import { tooltip } from "../actions"
 import { scale } from "svelte/transition"
 import { createEventDispatcher } from "svelte"
 import type { Base64WithFiletype } from "../backend"
+import { state, workInEditor } from "../stores"
 
 const dispatch = createEventDispatcher()
 
@@ -34,10 +35,6 @@ let willDeactivateBlock: boolean = false
 
 async function initialize(work: ParsedDescription) {
 	;[blocks, rowCapacity] = await toBlocks(work)
-	console.log(
-		"🚀 ~ file: ContentGrid.svelte ~ line 38 ~ initialize ~ blocks[language] ",
-		blocks[language]
-	)
 	cols = [[400, rowCapacity]]
 	Object.entries(blocks).forEach(([_, items]) =>
 		items.forEach(item => {
@@ -83,9 +80,11 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 }
 
 const removeBlock = (item: ContentBlock) => e => {
-	eachLanguage(blocks).do((language, blocksOneLang) => {
-		blocks[language] = blocksOneLang.filter(block => block.id !== item.id)
-		blocks[language] = blocksOneLang.map(gridHelp.item)
+	Object.keys(blocks).forEach(lang => {
+		blocks[language] = blocks[language].filter(
+			block => block.id !== item.id
+		)
+		blocks[language] = blocks[language].map(gridHelp.item)
 		delete operationsStacks[item.id]
 	})
 }
@@ -94,14 +93,24 @@ function index(item: { id: string }): number {
 	return blocks[language].findIndex(it => it.id === item.id)
 }
 
-function pushToOpStack(id: number, action: ActionName) {
+function pushToOpStack(id: ItemID, action: ActionName) {
 	operationsStacks = {
 		...operationsStacks,
 		[id]: [...(operationsStacks[id] || []), action],
 	}
 }
 
-$: works = fromBlocksToParsedDescription(blocks)
+// $: works = fromBlocksToParsedDescription(
+// 	blocks,
+// 	rowCapacity,
+// 	$workInEditor.metadata,
+// 	$workInEditor.title,
+// 	$workInEditor.footnotes
+// )
+
+$: (blocks[language] || []).forEach(block => {
+	pushToOpStack(block.id, "set-content-to-value")
+})
 </script>
 
 {#await initialize(work)}
