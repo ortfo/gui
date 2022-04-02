@@ -145,6 +145,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 
 :global(button[data-variant="inline"]) {
 	border: 1px solid var(--black);
+	padding: 2px 5px;
 }
 
 :global(h1) {
