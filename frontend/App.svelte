@@ -143,7 +143,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	background-color: var(--ortforange-light);
 }
 
-:global(button)[data-variant="inline"] {
+:global(button[data-variant="inline"]) {
 	border: 1px solid var(--black);
 }
 
