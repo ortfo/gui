@@ -1,26 +1,17 @@
 <script lang="ts">
-import JSONTree from "svelte-json-tree"
 import Grid from "svelte-grid"
 import gridHelp from "svelte-grid/build/helper"
 import {
 	ContentBlock,
 	emptyContentUnit,
-	eachLanguage,
-	fromBlocksToParsedDescription,
 	ItemID,
 	toBlocks,
 } from "../contentblocks"
 import type { LayedOutElement, ParsedDescription, Translated } from "../ortfo"
 import MarkdownEditor from "./MarkdownEditor.svelte"
-import MarkdownToolbar from "./MarkdownToolbar.svelte"
-import type { ActionName } from "./MarkdownToolbar.svelte"
 import { tooltip } from "../actions"
 import { scale } from "svelte/transition"
-import { createEventDispatcher } from "svelte"
 import type { Base64WithFiletype } from "../backend"
-import { state, workInEditor } from "../stores"
-
-const dispatch = createEventDispatcher()
 
 export let work: ParsedDescription
 export let language: string
@@ -29,18 +20,12 @@ let blocks: Translated<ContentBlock[]> = {}
 let base64images: Translated<{ [id: ItemID]: Base64WithFiletype }> = {}
 let cols: number[][] = []
 let rowCapacity: number = 0
-let operationsStacks: Record<ItemID, ActionName[]> = {}
 let activeBlock: number | null = null
 let willDeactivateBlock: boolean = false
 
 async function initialize(work: ParsedDescription) {
 	;[blocks, rowCapacity] = await toBlocks(work)
 	cols = [[400, rowCapacity]]
-	Object.entries(blocks).forEach(([_, items]) =>
-		items.forEach(item => {
-			operationsStacks[item.id] = []
-		})
-	)
 }
 
 const addBlock = (type: LayedOutElement["type"]) => e => {
@@ -75,7 +60,6 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 			},
 		]
 		blocks[lang] = blocks[lang].map(gridHelp.item)
-		operationsStacks[id] = []
 	})
 }
 
@@ -85,32 +69,12 @@ const removeBlock = (item: ContentBlock) => e => {
 			block => block.id !== item.id
 		)
 		blocks[language] = blocks[language].map(gridHelp.item)
-		delete operationsStacks[item.id]
 	})
 }
 
 function index(item: { id: string }): number {
 	return blocks[language].findIndex(it => it.id === item.id)
 }
-
-function pushToOpStack(id: ItemID, action: ActionName) {
-	operationsStacks = {
-		...operationsStacks,
-		[id]: [...(operationsStacks[id] || []), action],
-	}
-}
-
-// $: works = fromBlocksToParsedDescription(
-// 	blocks,
-// 	rowCapacity,
-// 	$workInEditor.metadata,
-// 	$workInEditor.title,
-// 	$workInEditor.footnotes
-// )
-
-$: (blocks[language] || []).forEach(block => {
-	pushToOpStack(block.id, "set-content-to-value")
-})
 </script>
 
 {#await initialize(work)}
@@ -135,9 +99,6 @@ $: (blocks[language] || []).forEach(block => {
 		>
 			<div class="content">
 				{#if item.data.type === "paragraph"}
-					<MarkdownToolbar
-						on:action={e => pushToOpStack(item.id, e.detail)}
-					/>
 					<MarkdownEditor
 						value={item.data.content}
 						on:input={({ detail }) => {
@@ -150,13 +111,12 @@ $: (blocks[language] || []).forEach(block => {
 									activeBlock = null
 									willDeactivateBlock = false
 								}
-							}, 150)
+							}, 500)
 						}}
 						on:focus={() => {
 							activeBlock = item.id
 							willDeactivateBlock = false
 						}}
-						bind:operationsStack={operationsStacks[item.id]}
 						placeholder="write some text here"
 					/>
 				{:else if item.data.type === "link"}

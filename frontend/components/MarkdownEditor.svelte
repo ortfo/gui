@@ -2,27 +2,28 @@
 import { onMount, onDestroy, createEventDispatcher } from "svelte"
 import { Editor } from "@tiptap/core"
 import StarterKit from "@tiptap/starter-kit"
+import { tooltip } from "../actions"
 // import BubbleMenu from "@tiptap/extension-bubble-menu"
 import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
-import type { ActionName } from "./MarkdownToolbar.svelte"
+import type { Writable } from "svelte/store"
 
 export let value: string
-export let operationsStack: ActionName[]
 export let placeholder: string = ""
 
 let element
 let editor: Editor
+let onToolbar: boolean // Whether the mouse is over the toolbar
 
-const actions = editor => ({
-	bold: editor.chain().focus().toggleMark("bold"),
-	italic: editor.chain().focus().toggleMark("italic"),
-	code: editor.chain().focus().toggleMark("code"),
-	link: editor.chain().focus().toggleMark("link"),
-	heading: editor.chain().focus().toggleHeading({ level: 2 }),
-	"code-block": editor.chain().focus().toggleCodeBlock(),
-	"list-bullets": editor.chain().focus().toggleBulletList(),
-	"list-numbered": editor.chain().focus().toggleOrderedList(),
+const actions = (editor: Editor) => ({
+	bold: editor.chain().focus().toggleMark("bold").focus(),
+	italic: editor.chain().focus().toggleMark("italic").focus(),
+	code: editor.chain().focus().toggleMark("code").focus(),
+	link: editor.chain().focus().toggleMark("link").focus(),
+	heading: editor.chain().focus().toggleHeading({ level: 2 }).focus(),
+	"code-block": editor.chain().focus().toggleCodeBlock().focus(),
+	"list-bullets": editor.chain().focus().toggleBulletList().focus(),
+	"list-numbered": editor.chain().focus().toggleOrderedList().focus(),
 	media: {
 		run: () => {
 			console.error("not implemented")
@@ -35,8 +36,9 @@ const actions = editor => ({
 			return false
 		},
 	},
-	"set-content-to-value": editor.chain().setContent(value).blur(),
+	"set-content-to-value": editor.chain().setContent(value),
 })
+
 const dispatch = createEventDispatcher()
 
 onMount(() => {
@@ -65,17 +67,128 @@ onDestroy(() => {
 	}
 })
 
-$: while (operationsStack?.length) {
-	const action = operationsStack.pop()
-	if (editor === undefined) continue
-	try {
-		actions(editor)[action].run()
-	} catch (e) {
-		console.error(`Couldn't run ${action}: ${e}`)
-	}
+// Only update editor's buffer when not editing
+$: if (editor && !editor.isFocused && !onToolbar) {
+	editor.chain().setContent(value).run()
 }
 </script>
 
+<ul
+	class="toolbar"
+	on:mouseenter={_ => (onToolbar = true)}
+	on:focus={_ => (onToolbar = true)}
+	on:mouseleave={_ => (onToolbar = false)}
+	on:blur={_ => (onToolbar = false)}
+>
+	<li>
+		<button
+			use:tooltip={"Bold"}
+			data-variant="none"
+			on:click={actions(editor)["bold"].run}
+			><img src="/assets/icon-bold.svg" alt="bold" class="icon" /></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Italic"}
+			data-variant="none"
+			on:click={actions(editor)["italic"].run}
+			><img
+				src="/assets/icon-italic.svg"
+				alt="italic"
+				class="icon"
+			/></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Heading"}
+			data-variant="none"
+			on:click={actions(editor)["heading"].run}
+			><img
+				src="/assets/icon-heading.svg"
+				alt="heading"
+				class="icon"
+			/></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Code"}
+			data-variant="none"
+			on:click={actions(editor)["code"].run}
+			><img src="/assets/icon-code.svg" alt="code" class="icon" /></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Block of code"}
+			data-variant="none"
+			on:click={actions(editor)["code-block"].run}
+			><img
+				src="/assets/icon-code-block.svg"
+				alt="code block"
+				class="icon"
+			/></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Insert media"}
+			data-variant="none"
+			on:click={actions(editor)["media"].run}
+			><img
+				src="/assets/icon-insert-media.svg"
+				alt="media"
+				class="icon"
+			/></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Link"}
+			data-variant="none"
+			on:click={actions(editor)["link"].run}
+			><img src="/assets/icon-link.svg" alt="link" class="icon" /></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Bullet list"}
+			data-variant="none"
+			on:click={actions(editor)["list-bullets"].run}
+			><img
+				src="/assets/icon-list-bullets.svg"
+				alt="bullet list"
+				class="icon"
+			/></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"Numbered list"}
+			data-variant="none"
+			on:click={actions(editor)["list-numbered"].run}
+			><img
+				src="/assets/icon-list-numbered.svg"
+				alt="numbered list"
+				class="icon"
+			/></button
+		>
+	</li>
+	<li>
+		<button
+			use:tooltip={"List of definitions"}
+			data-variant="none"
+			on:click={actions(editor)["list-definitions"].run}
+			><img
+				src="/assets/icon-list-definitions.svg"
+				alt="definition list"
+				class="icon"
+			/></button
+		>
+	</li>
+</ul>
 <div class="markdown-editor" bind:this={element} />
 
 <style>
@@ -87,5 +200,18 @@ $: while (operationsStack?.length) {
 :global(.markdown-editor p.is-editor-empty):first-child::before {
 	content: attr(data-placeholder);
 	color: var(--gray);
+}
+
+.toolbar {
+	list-style: none;
+	display: flex;
+}
+
+.toolbar li {
+	padding: 0;
+}
+
+.toolbar li + li {
+	margin-left: 1em;
 }
 </style>

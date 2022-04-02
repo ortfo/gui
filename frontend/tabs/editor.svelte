@@ -50,8 +50,6 @@ function editTitle(e) {
 
 let editingTitle = false
 let titleH1: HTMLHeadingElement
-
-$: console.log("current", { editor: $workInEditor, disk: $workOnDisk })
 </script>
 
 {#await initialize() then}
