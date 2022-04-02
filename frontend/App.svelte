@@ -93,12 +93,11 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	<div class="error">
 		<h1>Woops!</h1>
 		<p>Couldn't load your stuff:</p>
-		{JSON.stringify(e)}
-		<!-- <ol>
+		<ol>
 			{#each e.toString().split(": ") as reason}
 				<li>{reason}</li>
 			{/each}
-		</ol> -->
+		</ol>
 	</div>
 {/await}
 
