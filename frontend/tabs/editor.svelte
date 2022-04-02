@@ -126,7 +126,7 @@ let editingTitle = false
 		</section>
 	</Split>
 {:catch error}
-	{#if error.why === "missing work"}
+	{#if error.why === "missing_work"}
 		<h1>Well, this is weird.</h1>
 		<div class="error">
 			<p>
