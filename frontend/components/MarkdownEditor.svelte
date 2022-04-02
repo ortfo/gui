@@ -206,6 +206,11 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	color: var(--gray);
 }
 
+:global(.editor .ProseMirror) {
+	max-height: 260px;
+	overflow-y: scroll;
+}
+
 .toolbar {
 	list-style: none;
 	display: flex;
