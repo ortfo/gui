@@ -21,6 +21,8 @@ async function loadSettings() {
 		$settings.projectsfolder = prompt("Where are your projects stored?", "")
 	}
 	await backend.settingsWrite($settings)
+	$state = await backend.readUIState()
+	console.info(`Loaded UI state save from backend: ${JSON.stringify($state)}`)
 }
 
 function applyTheme(themeName: string) {

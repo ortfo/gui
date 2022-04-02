@@ -61,6 +61,18 @@ func main() {
 
 		return Writeback(settings, description, workID)
 	})
+	w.Bind("backend__saveState", func(stateUntyped interface{}) error {
+		var state UIState
+		mapstructure.Decode(stateUntyped, &state)
+		err := SaveUIState(state)
+		if err != nil {
+			return fmt.Errorf("while saving UI state: %w", err)
+		}
+		return nil
+	})
+	w.Bind("backend__loadState", func() (UIState, error) {
+		return LoadUIState()
+	})
 	w.Run()
 }
 

@@ -15,7 +15,12 @@ import {
     Link,
     Translated,
 } from "./ortfo"
-import { lowercaseNoSpacesKeys, mapToTranslated, transformKeys } from "./utils"
+import {
+    lowercaseNoSpacesKeys,
+    lowercaseFirstCharacter,
+    mapToTranslated,
+    transformKeys,
+} from "./utils"
 import type { OrtfoMkLayout } from "./layout"
 
 /*
@@ -74,5 +79,14 @@ export const backend = {
     writeToDisk: async (work: ParsedDescription, workID: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeback(work, workID)) as MaybeError
+    },
+    saveUIState: async (state: State) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__saveState(state)) as MaybeError
+    },
+    readUIState: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        const data = await backend__loadState()
+        return lowercaseFirstCharacter(!!data ? data : {}) as State
     },
 }

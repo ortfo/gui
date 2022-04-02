@@ -22,6 +22,9 @@ export const noSpacesKeys = transformKeys(key => key.replace(/\s/g, ""))
 export const lowercaseNoSpacesKeys = transformKeys(key =>
     key.replace(/\s/g, "").toLowerCase()
 )
+export const lowercaseFirstCharacter = transformKeys(
+    key => key[0].toLowerCase() + key.slice(1)
+)
 
 export const first = <T>(arr: T[]) => arr[0]
 export const second = <T>(arr: T[]) => arr[1]

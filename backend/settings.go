@@ -16,6 +16,14 @@ type Settings struct {
 	ShowTips       bool   `json:"showTips"`
 }
 
+type UIState struct {
+	OpenTab                string  `json:"openTab"`
+	RebuildingDatabase     bool    `json:"rebuildingDatabase"`
+	EditingWorkID          string  `json:"editingWorkID"`
+	Lang                   string  `json:"lang"`
+	MetadataPaneSplitRatio float64 `json:"metadataPaneSplitRatio"`
+}
+
 func ConfigurationDirectory(segments ...string) string {
 	configDir, err := os.UserConfigDir()
 	if err != nil {
@@ -64,6 +72,14 @@ func DefaultSettings() Settings {
 	return Settings{Theme: "light"}
 }
 
+func DefaultUIState() UIState {
+	return UIState{
+		OpenTab:                "works",
+		Lang:                   "en",
+		MetadataPaneSplitRatio: 0.333333333,
+	}
+}
+
 func LoadSettings() (settings Settings, err error) {
 	// check if file exists
 	if _, err = os.Stat(ConfigurationDirectory("settings.json")); os.IsNotExist(err) {
@@ -94,16 +110,50 @@ func InitializeConfigurationDirectory() error {
 		return fmt.Errorf("couldn't create configuration directory: %w", err)
 	}
 
-	// initialize settings file if it doesn't exist
-	err = WriteIfNotExist(ConfigurationDirectory("settings.json"), []byte("{}"))
-	if err != nil {
-		return fmt.Errorf("couldn't initialize settings file: %w", err)
-	}
-
 	err = WriteIfNotExist(ConfigurationDirectory("ortfodb.yaml"), []byte(""))
 	if err != nil {
 		return fmt.Errorf("couldn't initialize database settings file: %w", err)
 	}
 
 	return nil
+}
+
+func SaveUIState(settings UIState) error {
+	// marshal
+	content, err := json.Marshal(settings)
+	if err != nil {
+		return fmt.Errorf("while turning settings into JSON: %w", err)
+	}
+
+	// write to disk
+	err = os.WriteFile(ConfigurationDirectory("ui_state.json"), content, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func LoadUIState() (state UIState, err error) {
+	// check if file exists
+	if _, err = os.Stat(ConfigurationDirectory("ui_state.json")); os.IsNotExist(err) {
+		// file does not exist, use default settings
+		state = DefaultUIState()
+		err = SaveUIState(state)
+		if err != nil {
+			return state, fmt.Errorf("UI state file not found, but couldn't create one with default values: %w", err)
+		}
+		return
+	}
+
+	// load from file
+	content, err := os.ReadFile(ConfigurationDirectory("ui_state.json"))
+	if err != nil {
+		return state, err
+	}
+
+	// parse
+	err = json.Unmarshal(content, &state)
+
+	return
 }

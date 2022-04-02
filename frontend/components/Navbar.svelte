@@ -65,7 +65,10 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 		use:tooltip={"Quit ortfo"}
 		class="quit"
 		data-variant="a"
-		on:click={() => backend.quit()}>×</button
+		on:click={() => {
+			backend.saveUIState($state)
+			backend.quit()
+		}}>×</button
 	>
 </nav>
 
