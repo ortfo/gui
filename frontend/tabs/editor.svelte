@@ -41,14 +41,17 @@ async function initialize() {
 function editTitle(e) {
 	if (!editingTitle) {
 		editingTitle = true
-		document.getElementById("title").focus()
+		titleH1.focus()
 	} else {
 		editingTitle = false
-		$workInEditor.title[$state.lang] = e.target.textContent
+		$workInEditor.title[$state.lang] = titleH1.textContent
 	}
 }
 
 let editingTitle = false
+let titleH1: HTMLHeadingElement
+
+$: console.log("current", { editor: $workInEditor, disk: $workOnDisk })
 </script>
 
 {#await initialize() then}
@@ -63,10 +66,26 @@ let editingTitle = false
 
 			<div class="title" id="title">
 				<h1
-					on:blur={e => {
-						editingTitle = false
-						$workInEditor.title = e.target.textContent
+					bind:this={titleH1}
+					on:dblclick={_ => {
+						window.getSelection().collapseToStart()
+						editingTitle = true
 					}}
+					on:keypress={e => {
+						switch (e.key) {
+							case "Enter":
+								e.preventDefault()
+								editTitle(e)
+								break
+							case "Escape":
+								e.preventDefault()
+								editingTitle = false
+								titleH1.textContent =
+									$workInEditor.title[$state.lang]
+								break
+						}
+					}}
+					on:blur={editTitle}
 					contenteditable={editingTitle}
 				>
 					{$workInEditor.title[$state.lang]}
