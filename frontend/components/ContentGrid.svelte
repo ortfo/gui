@@ -21,7 +21,6 @@ let base64images: Translated<{ [id: ItemID]: Base64WithFiletype }> = {}
 let cols: number[][] = []
 let rowCapacity: number = 0
 let activeBlock: number | null = null
-let willDeactivateBlock: boolean = false
 
 async function initialize(work: ParsedDescription) {
 	;[blocks, rowCapacity] = await toBlocks(work)
@@ -101,22 +100,12 @@ function index(item: { id: string }): number {
 				{#if item.data.type === "paragraph"}
 					<MarkdownEditor
 						value={item.data.content}
+						active={activeBlock === item.id}
 						on:input={({ detail }) => {
 							blocks[language][index(item)].data.content = detail
 						}}
-						on:blur={() => {
-							willDeactivateBlock = true
-							setTimeout(() => {
-								if (willDeactivateBlock) {
-									activeBlock = null
-									willDeactivateBlock = false
-								}
-							}, 500)
-						}}
-						on:focus={() => {
-							activeBlock = item.id
-							willDeactivateBlock = false
-						}}
+						on:blur={() => (activeBlock = null)}
+						on:focus={() => (activeBlock = item.id)}
 						placeholder="write some text here"
 					/>
 				{:else if item.data.type === "link"}
@@ -226,16 +215,6 @@ h2 {
 	border-radius: 0.5em;
 	transition: border-color 0.4s ease-in-out;
 	transition-delay: 100ms;
-}
-
-:global(.block:not(.active) .toolbar) {
-	opacity: 0;
-	pointer-events: none;
-}
-
-:global(.block .toolbar) {
-	transition: all 0.2s ease-in-out;
-	transition-delay: 110ms;
 }
 
 :global(.toolbar) {

@@ -10,6 +10,7 @@ import type { Writable } from "svelte/store"
 
 export let value: string
 export let placeholder: string = ""
+export let active: boolean = false
 
 let element
 let editor: Editor
@@ -53,7 +54,9 @@ onMount(() => {
 			dispatch("input", editor.getHTML())
 		},
 		onBlur: () => {
-			dispatch("blur")
+			if (!onToolbar) {
+				dispatch("blur")
+			}
 		},
 		onFocus: () => {
 			dispatch("focus")
@@ -75,6 +78,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 
 <ul
 	class="toolbar"
+	class:active={active}
 	on:mouseenter={_ => (onToolbar = true)}
 	on:focus={_ => (onToolbar = true)}
 	on:mouseleave={_ => (onToolbar = false)}
@@ -189,15 +193,15 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 		>
 	</li>
 </ul>
-<div class="markdown-editor" bind:this={element} />
+<div class="editor" bind:this={element} />
 
 <style>
-:global(.markdown-editor ul, .markdown-editor ol) {
+:global(.editor ul, .editor ol) {
 	padding-left: 1em;
 }
 
 /* Placeholder */
-:global(.markdown-editor p.is-editor-empty):first-child::before {
+:global(.editor p.is-editor-empty:first-child::before) {
 	content: attr(data-placeholder);
 	color: var(--gray);
 }
@@ -213,5 +217,14 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 
 .toolbar li + li {
 	margin-left: 1em;
+}
+
+.toolbar:not(.active) {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.toolbar {
+	transition: all 0.2s ease-in-out;
 }
 </style>
