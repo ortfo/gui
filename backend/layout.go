@@ -32,8 +32,6 @@ func StubOutWorkOneLang(description ortfodb.ParsedDescription, language string) 
 	if err != nil {
 		panic(err)
 	}
-	
-	
 
 	stubbedOutMedia := make([]ortfodb.Media, 0, len(description.MediaEmbedDeclarations[language]))
 	for _, media := range description.MediaEmbedDeclarations[language] {
