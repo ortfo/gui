@@ -1,20 +1,17 @@
+import gridHelp from "svelte-grid/build/helper"
+import { backend } from "./backend"
+import { layoutWidth } from "./layout"
 import type {
-    WorkOneLang,
-    Paragraph,
-    Media,
+    Footnote,
+    LayedOutElement,
     Link,
+    MediaEmbedDeclaration,
+    Paragraph,
     ParsedDescription,
     Translated,
-    LayedOutElement,
-    MediaEmbedDeclaration,
     WorkMetadata,
-    Footnote,
 } from "./ortfo"
-import { backend } from "./backend"
-import gridHelp from "svelte-grid/build/helper"
-import { layoutWidth, OrtfoMkLayout } from "./layout"
 import { distance, first, range, second } from "./utils"
-import type { element } from "svelte/internal"
 
 export type ContentBlock = {
     id: ItemID
@@ -145,9 +142,15 @@ export function fromBlocksToParsedDescription(
     description.metadata.layout = blocks[anyLanguage].map(block => {
         console.log("jgreojg")
         const [_, layoutindex] = block.id.split(":", 2)
-        console.log("🚀 ~ file: contentblocks.ts ~ line 147 ~ layoutindex]", layoutindex)
+        console.log(
+            "🚀 ~ file: contentblocks.ts ~ line 147 ~ layoutindex]",
+            layoutindex
+        )
         const { type, ...contentunit } = block.data
-        console.log("🚀 ~ file: contentblocks.ts ~ line 149 ~ contentunit", contentunit)
+        console.log(
+            "🚀 ~ file: contentblocks.ts ~ line 149 ~ contentunit",
+            contentunit
+        )
         const { x, y, w, h } = block[rowCapacity]
         return {
             positions: range(x, x + w - 1).map(x =>

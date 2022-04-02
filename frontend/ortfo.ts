@@ -1,5 +1,3 @@
-import { nanoid } from "nanoid"
-
 export type Translated<T> = { [langage: string]: T }
 
 export interface Abbreviation {

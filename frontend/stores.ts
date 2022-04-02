@@ -1,15 +1,15 @@
-import { writable, derived } from "svelte/store"
-import type { Writable, Readable } from "svelte/store"
+import { diff, Operation } from "just-diff"
+import type { Readable, Writable } from "svelte/store"
+import { derived, writable } from "svelte/store"
+import { toParsedDescription } from "./description"
 import type {
-    DatabaseOneLang,
     Database,
+    DatabaseOneLang,
     ParsedDescription,
     Work,
     WorkOneLang,
 } from "./ortfo"
 import { inLanguage } from "./ortfo"
-import { diff, Operation } from "just-diff"
-import { toParsedDescription } from "./description"
 
 export type Settings = {
     theme: string

@@ -1,12 +1,4 @@
-import type {
-    Link,
-    Media,
-    Paragraph,
-    UnanalyzedMedia,
-    Work,
-    WorkOneLang,
-} from "./ortfo"
-import { completeWith, lcm, range, repeat } from "./utils"
+import { lcm, repeat } from "./utils"
 
 export type SvelteGridItem<Data = any> = {
     [k: number]: {

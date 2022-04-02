@@ -1,27 +1,11 @@
-import { nanoid } from "nanoid"
-import type { Settings, State } from "./stores"
-import {
+import type {
     Database,
-    DatabaseOneLang,
-    ortfodbWork,
-    inLanguage,
     LayedOutElement,
-    Work,
-    WorkOneLang,
-    MediaEmbedDeclaration,
-    Media,
     ParsedDescription,
-    Paragraph,
-    Link,
     Translated,
 } from "./ortfo"
-import {
-    lowercaseNoSpacesKeys,
-    lowercaseFirstCharacter,
-    mapToTranslated,
-    transformKeys,
-} from "./utils"
-import type { OrtfoMkLayout } from "./layout"
+import type { Settings, State } from "./stores"
+import { lowercaseFirstCharacter, lowercaseNoSpacesKeys } from "./utils"
 
 /*
  * Strings that represent binary files, with a filetype at the start.
