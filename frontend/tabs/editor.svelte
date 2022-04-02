@@ -19,6 +19,7 @@ import { Split } from "@geoffcox/svelte-splitter"
 import tinykeys from "tinykeys"
 import { backend } from "../backend"
 import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
+import { MissingWork } from "../errors"
 
 onMount(async () => {
 	tinykeys(window, {
@@ -28,9 +29,9 @@ onMount(async () => {
 	})
 })
 
-function initialize() {
+async function initialize() {
 	if ($workOnDisk === null) {
-		throw Error(`Work ${$state.editingWorkID} not found.`)
+		throw MissingWork(`Work ${$state.editingWorkID} not found.`)
 	} else {
 		$workInEditor = toParsedDescription($workOnDisk)
 		$state.lang ||= "en"
@@ -124,6 +125,23 @@ let editingTitle = false
 			/>
 		</section>
 	</Split>
+{:catch error}
+	{#if error.why === "missing work"}
+		<h1>Well, this is weird.</h1>
+		<div class="error">
+			<p>
+				It looks like <em>{$state.editingWorkID}</em>'s folder has gone
+				missing.
+			</p>
+			<button on:click={_ => ($state.openTab = "works")}
+				>go back to all projects</button
+			>
+		</div>
+	{:else}
+		<h1>??</h1>
+		<p>An unknown error occured. It says:</p>
+		<p>{error}</p>
+	{/if}
 {/await}
 
 <style>
@@ -157,5 +175,17 @@ let editingTitle = false
 .title,
 .url {
 	align-self: flex-start;
+}
+
+.error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.error button {
+	margin-top: 1em;
 }
 </style>
