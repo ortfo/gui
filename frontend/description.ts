@@ -3,10 +3,6 @@ import { except, mapToTranslated } from "./utils"
 
 export function toParsedDescription(work: Work): ParsedDescription {
     if (!work) {
-        console.log(
-            "🚀 ~ file: description.ts ~ line 6 ~ toParsedDescription ~ work",
-            work
-        )
         throw Error("No work given")
     }
     const { media, metadata, ...rest } = work

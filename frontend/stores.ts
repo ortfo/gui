@@ -73,7 +73,6 @@ export const unsavedChanges: Readable<
     try {
         return diff(toParsedDescription(workOnDisk), workInEditor)
     } catch (err) {
-        console.log(err)
         return []
     }
 })
