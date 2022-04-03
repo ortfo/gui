@@ -52,6 +52,14 @@ export function except<V>(
         )
 }
 
+export function pick<T extends object, K extends keyof T>(
+    base: T,
+    ...keys: K[]
+): Pick<T, K> {
+    const entries = keys.map(key => [key, base[key]])
+    return Object.fromEntries(entries)
+}
+
 export function lcm(...integers: number[]): number {
     if (integers.length < 2) {
         return integers[0]

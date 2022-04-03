@@ -1,7 +1,7 @@
 import gridHelp from "svelte-grid/build/helper"
 import { backend } from "./backend"
-import { layoutWidth } from "./layout"
-import type {
+import { fromBlocksToLayout, layoutWidth } from "./layout"
+import {
     Footnote,
     LayedOutElement,
     Link,
@@ -9,9 +9,8 @@ import type {
     Paragraph,
     ParsedDescription,
     Translated,
-    WorkMetadata,
 } from "./ortfo"
-import { distance, first, range, second } from "./utils"
+import { distance, first, pick, second } from "./utils"
 
 export type ContentBlock = {
     id: ItemID
@@ -20,6 +19,19 @@ export type ContentBlock = {
         y: number
         w: number
         h: number
+        fixed: boolean
+        resizable: boolean
+        draggable: boolean
+        customDragger: boolean
+        customResizer: boolean
+        min: {
+            w?: number
+            h?: number
+        }
+        max: {
+            w?: number
+            h?: number
+        }
     }
     data: ContentUnit
 }
@@ -31,8 +43,13 @@ export type ContentUnit =
 
 export type ItemID = `${ContentUnit["type"]}:${number}`
 
+/**
+ *
+ * @param blocks the translated blocks to process
+ * @returns functions to transform the blocks: map, filter or do (forEach) on every I, for every language
+ */
 export function eachLanguage<I, O>(blocks: Translated<I[]>) {
-    type F<o> = ((oneLang: I) => o) | ((language: string, oneLang: I) => o)
+    type F<o> = ((item: I) => o) | ((language: string, item: I) => o)
 
     const createTransformer =
         <o>(using: string) =>
@@ -46,11 +63,15 @@ export function eachLanguage<I, O>(blocks: Translated<I[]>) {
                     ? entries => void entries
                     : Object.fromEntries
             )(
-                Object.entries(blocks)[using](([language, onelang]) => [
-                    language,
-                    // @ts-ignore: can't narrow down the type of f, see https://github.com/microsoft/TypeScript/issues/18422
-                    f.length === 1 ? f(onelang) : f(language, onelang),
-                ])
+                Object.entries(blocks).map(
+                    ([language, onelang]: [string, I[]]) => [
+                        language,
+                        onelang[using](item =>
+                            // @ts-ignore: can't narrow down the type of f, see https://github.com/microsoft/TypeScript/issues/18422
+                            f.length === 1 ? f(item) : f(language, item)
+                        ),
+                    ]
+                )
             )
         }
 
@@ -84,8 +105,8 @@ export async function toBlocks(
         return [{}, 0]
     }
     return [
-        eachLanguage<LayedOutElement, ContentBlock>(layouts).map(layout => {
-            return layout.map(element => {
+        eachLanguage<LayedOutElement, ContentBlock>(layouts).map(
+            (item: LayedOutElement) => {
                 const {
                     type,
                     layoutindex,
@@ -93,7 +114,7 @@ export async function toBlocks(
                     generalcontenttype,
                     metadata,
                     ...contentunit
-                } = element
+                } = item
                 let block = {
                     id: `${type}:${layoutindex}` as ItemID,
                     [rowCapacity]: gridHelp.item({
@@ -105,16 +126,49 @@ export async function toBlocks(
                         customDragger: true,
                         customResizer: true,
                     }),
-                    data: {
-                        ...contentunit,
-                        type,
-                    },
                 }
-                return block
-            })
-        }),
+                let blockData: ContentBlock["data"]
+                switch (type) {
+                    case "media":
+                        blockData = {
+                            type,
+                            ...pick(
+                                contentunit,
+                                "alt",
+                                "title",
+                                "source",
+                                "attributes"
+                            ),
+                        }
+
+                        break
+                    case "link":
+                        blockData = {
+                            type,
+                            ...pick(contentunit, "id", "name", "title", "url"),
+                        }
+                        break
+                    case "paragraph":
+                        blockData = {
+                            type,
+                            ...pick(contentunit, "id", "content"),
+                        }
+                }
+
+                return { ...block, data: blockData }
+            }
+        ),
         rowCapacity,
     ]
+}
+
+function onlyOfType(
+    type: "media" | "link" | "paragraph",
+    blocks: Translated<ContentBlock[]>
+): Translated<ContentBlock[]> {
+    return eachLanguage<ContentBlock, ContentBlock>(blocks).filter(
+        block => block.data.type === type
+    )
 }
 
 export function fromBlocksToParsedDescription(
@@ -139,35 +193,13 @@ export function fromBlocksToParsedDescription(
 
     const anyLanguage = Object.keys(blocks)[0]
 
-    description.metadata.layout = blocks[anyLanguage].map(block => {
-        console.log("jgreojg")
-        const [_, layoutindex] = block.id.split(":", 2)
-        console.log(
-            "🚀 ~ file: contentblocks.ts ~ line 147 ~ layoutindex]",
-            layoutindex
-        )
-        const { type, ...contentunit } = block.data
-        console.log(
-            "🚀 ~ file: contentblocks.ts ~ line 149 ~ contentunit",
-            contentunit
-        )
-        const { x, y, w, h } = block[rowCapacity]
-        return {
-            positions: range(x, x + w - 1).map(x =>
-                range(y, y + h - 1).map(y => [x, y])
-            ),
-            generalcontenttype: "sus",
-            metadata: {} as WorkMetadata,
-            type,
-            layoutindex,
-            ...contentunit,
-        } as unknown as LayedOutElement
-    })
+    description.metadata.layout = fromBlocksToLayout(
+        blocks[anyLanguage],
+        rowCapacity
+    )
 
     description.paragraphs = eachLanguage<ContentBlock, Paragraph>(
-        eachLanguage<ContentBlock, ContentBlock>(blocks).filter(
-            block => block.type === "paragraph"
-        )
+        onlyOfType("paragraph", blocks)
     ).map((block: ContentBlock) => {
         const { content, id } = block.data as Paragraph & { type: "paragraph" }
         return {
@@ -177,9 +209,7 @@ export function fromBlocksToParsedDescription(
     })
 
     description.links = eachLanguage<ContentBlock, Link>(
-        eachLanguage<ContentBlock, ContentBlock>(blocks).filter(
-            block => block.type === "link"
-        )
+        onlyOfType("link", blocks)
     ).map((block: ContentBlock) => {
         const { name, id, title, url } = block.data as Link & { type: "link" }
         return {
@@ -193,9 +223,7 @@ export function fromBlocksToParsedDescription(
     type MediaEmbed = MediaEmbedDeclaration
 
     description.mediaembeddeclarations = eachLanguage<ContentBlock, MediaEmbed>(
-        eachLanguage<ContentBlock, ContentBlock>(blocks).filter(
-            block => block.type === "media"
-        )
+        onlyOfType("media", blocks)
     ).map((block: ContentBlock) => {
         const { alt, attributes, source, title } = block.data as MediaEmbed & {
             type: "media"

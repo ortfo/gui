@@ -1,4 +1,6 @@
-import { lcm, repeat } from "./utils"
+import { groupBy } from "lodash"
+import { ContentBlock } from "./contentblocks"
+import { lcm, range, repeat } from "./utils"
 
 export type SvelteGridItem<Data = any> = {
     [k: number]: {
@@ -21,6 +23,32 @@ export type SvelteGridItem<Data = any> = {
 
 export type OrtfoMkLayoutCell = `${"p" | "m" | "l"}${number}` | null
 export type OrtfoMkLayout = (OrtfoMkLayoutCell[] | OrtfoMkLayoutCell)[]
+
+export function fromBlocksToLayout(
+    blocks: ContentBlock[],
+    size: number
+): OrtfoMkLayout {
+    const layout: OrtfoMkLayout = []
+    const repeated = []
+    for (const block of blocks) {
+        const { x, y, w, h } = block[size]
+        const { type } = block.data
+        for (const current_x of range(x, x + w)) {
+            for (const current_y of range(y, y + h)) {
+                repeated.push([current_x, current_y, type, block.id])
+            }
+        }
+    }
+    for (const row of Object.values(groupBy(repeated, e => e[1]))) {
+        layout.push(
+            row.map(([x, y, type, id]) => {
+                const [_, layoutIndex] = id.split(":")
+                return `${type[0]}${layoutIndex}` as OrtfoMkLayoutCell
+            })
+        )
+    }
+    return normalizeLayout(layout, size)
+}
 
 /**
  * Returns a normalized layout, meaning:
