@@ -78,7 +78,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 
 <ul
 	class="toolbar"
-	class:active={active}
+	class:active
 	on:mouseenter={_ => (onToolbar = true)}
 	on:focus={_ => (onToolbar = true)}
 	on:mouseleave={_ => (onToolbar = false)}

@@ -57,7 +57,6 @@ export const backend = {
                 (await backend__layout(work)) as Translated<unknown[]>
             ).map(([lang, val]) => [lang, val.map(lowercaseNoSpacesKeys)])
         )
-
         return data as Translated<LayedOutElement[]>
     },
     writeToDisk: async (work: ParsedDescription, workID: string) => {
