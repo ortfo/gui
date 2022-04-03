@@ -45,3 +45,5 @@ mock-projects/
 !mock-projects/neptune/cover-arts/renders/square.png
 
 vite.config.ts.js
+coverage
+
