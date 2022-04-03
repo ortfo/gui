@@ -200,14 +200,6 @@ export interface Media {
     hassound: boolean
 }
 
-export interface UnanalyzedMedia {
-    id: string
-    alt: string
-    title: string
-    source: string
-    attributes: MediaAttributes
-}
-
 export interface ImageDimensions {
     width: number
     height: number
