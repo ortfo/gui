@@ -23,6 +23,17 @@
 			"presentation": {
 				"group": "dev"
 			}
+		},
+		{
+			"label": "tests",
+			"type": "shell",
+			"command": "pnpm vitest watch",
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"presentation": {
+				"group": "tdd"
+			}
 		}
 	]
 }
