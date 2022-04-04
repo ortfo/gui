@@ -18,6 +18,8 @@ export type Base64WithFiletype = string
 
 export type MaybeError = string | null
 
+export const local = path => `http://localhost:4444/${path}`
+
 export const backend = {
     initialize: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
@@ -45,10 +47,6 @@ export const backend = {
     rebuildDatabase: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__rebuildDatabase()) as MaybeError
-    },
-    getMedia: async (path: string) => {
-        // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return (await backend__getMedia(path)) as Base64WithFiletype
     },
     layout: async (work: ParsedDescription) => {
         const data = Object.fromEntries(

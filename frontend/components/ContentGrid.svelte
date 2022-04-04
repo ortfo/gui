@@ -1,6 +1,11 @@
 <script lang="ts">
-import Grid from "svelte-grid"
 import gridHelp from "svelte-grid/build/helper"
+import Grid from "svelte-grid"
+import MarkdownEditor from "./MarkdownEditor.svelte"
+import { scale } from "svelte/transition"
+import { tooltip } from "../actions"
+import { Base64WithFiletype, local } from "../backend"
+import { backend } from "../backend"
 import {
 	ContentBlock,
 	emptyContentUnit,
@@ -8,10 +13,7 @@ import {
 	toBlocks,
 } from "../contentblocks"
 import type { LayedOutElement, ParsedDescription, Translated } from "../ortfo"
-import MarkdownEditor from "./MarkdownEditor.svelte"
-import { tooltip } from "../actions"
-import { scale } from "svelte/transition"
-import type { Base64WithFiletype } from "../backend"
+import { state } from "../stores"
 
 export let work: ParsedDescription
 export let language: string
@@ -93,7 +95,9 @@ function index(item: { id: string }): number {
 			data-type={item.data.type}
 			class:active={activeBlock === item.id}
 			style={item.data.type === "media"
-				? `background-image: url("${base64images[item.id]}")`
+				? `background-image: url(${local(
+						`${$state.editingWorkID}/.portfoliodb/${item.data.source}`
+				  )})`
 				: ""}
 		>
 			<div class="content">

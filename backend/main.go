@@ -2,15 +2,33 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
 	"github.com/webview/webview"
 )
 
+var w webview.WebView
+
 func main() {
-	w := webview.New(true)
+	settings, _ := LoadSettings()
+	fmt.Printf("Settings: %#v\n", settings)
+	go startFilesystemServer(settings.ProjectsFolder)
+	startWebview()
+}
+
+func startFilesystemServer(directory string) error {
+	expandedPath, _ := homedir.Expand(directory)
+	err := http.ListenAndServe(":4444", http.FileServer(http.Dir(expandedPath)))
+	fmt.Println(err.Error())
+	return err
+}
+
+func startWebview() {
+	w = webview.New(true)
 	defer w.Destroy()
 	w.SetTitle("ortfo")
 	w.SetSize(800, 600, webview.HintNone)
@@ -40,9 +58,6 @@ func main() {
 	w.Bind("backend__rebuildDatabase", func() error {
 		settings, _ := LoadSettings()
 		return settings.RebuildDatabase()
-	})
-	w.Bind("backend__getMedia", func(path string) (string, error) {
-		return GetMedia(path)
 	})
 	w.Bind("backend__layout", func(workUntyped interface{}) (map[string]ortfomk.Layout, error) {
 		var description ortfodb.ParsedDescription

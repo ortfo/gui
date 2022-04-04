@@ -3,20 +3,17 @@ import type { WorkOneLang } from "../ortfo"
 import JSONTree from "svelte-json-tree"
 import Card from "./Card.svelte"
 import { settings, state } from "../stores"
-import { backend } from "../backend"
+import { backend, local } from "../backend"
 
 let thumbBase64 = ""
 
-async function loadThumb() {
-	const path =
-		work.metadata.thumbnails?.[
-			Object.keys(work.metadata.thumbnails)?.[0]
-		]?.[400]
-	if (path) {
-		thumbBase64 = await backend.getMedia(path)
-	} else {
-		thumbBase64 = ""
-	}
+function thumbPath() {
+	// return work.metadata.thumbnails?.[
+	// 	Object.keys(work.metadata.thumbnails)?.[0]
+	// ]?.[400]
+	console.log(work)
+	// return `${work.id}/.portfoliodb/${work.media[0].source}`
+	return ""
 }
 
 function editWork() {
@@ -27,10 +24,13 @@ export let work: WorkOneLang
 </script>
 
 <Card clickable on:click={editWork}>
-	{#await loadThumb()}
+	{#await thumbPath()}
 		<div class="thumb loading" />
 	{:then _}
-		<div class="thumb" style={`background-image: url(${thumbBase64})`} />
+		<div
+			class="thumb"
+			style={`background-image: url(${local(thumbPath())})`}
+		/>
 	{/await}
 	<div class="text">
 		<h2>{work.title || work.id}</h2>
