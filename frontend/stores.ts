@@ -101,13 +101,14 @@ export const databaseLanguages: Readable<Set<string>> = derived(
 
 export const databaseCurrentLanguage: Readable<DatabaseOneLang> = derived(
     [database, settings],
-    ([$databaseLanguages, $settings]) => {
-        if (Object.keys($databaseLanguages).length) {
+    ([$database, $settings]) => {
+        if (!$settings.language) {
+            throw Error("No language set")
+        }
+        if (Object.keys($database).length) {
             return {
-                ...$databaseLanguages,
-                works: $databaseLanguages.works.map(
-                    inLanguage($settings.language)
-                ),
+                ...$database,
+                works: $database.works.map(inLanguage($settings.language)),
             }
         }
         throw Error("No database")

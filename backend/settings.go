@@ -14,6 +14,7 @@ type Settings struct {
 	Surname        string `json:"surname"`
 	ProjectsFolder string `json:"projectsFolder"`
 	ShowTips       bool   `json:"showTips"`
+	Language       string `json:"language"`
 }
 
 type UIState struct {
@@ -69,7 +70,7 @@ func SaveSettings(settings Settings) error {
 }
 
 func DefaultSettings() Settings {
-	return Settings{Theme: "light"}
+	return Settings{Theme: "light", Language: "en"}
 }
 
 func DefaultUIState() UIState {
