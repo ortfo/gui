@@ -234,7 +234,7 @@ h2 {
 .create-block {
 	border: 0.175em solid var(--ortforange);
 	border-radius: 0.5em;
-	max-width: 300px;
+	max-width: 400px;
 	margin: 0 auto;
 	margin-top: 5em;
 	background-color: var(--ortforange-light);
@@ -355,6 +355,8 @@ h2 {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	width: 7em;
+	transition: all 0.25s ease;
 }
 
 .create-block .types button:hover:not(:active) {
