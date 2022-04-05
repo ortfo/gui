@@ -142,6 +142,10 @@ let titleH1: HTMLHeadingElement
 			/>
 		</section>
 	</Split>
+	<details class="raw-data">
+		<summary>Show raw data for this work</summary>
+		<JSONTree value={$workOnDisk} />
+	</details>
 {:catch error}
 	{#if error.why === "missing_work"}
 		<h1>Well, this is weird.</h1>
@@ -181,6 +185,10 @@ let titleH1: HTMLHeadingElement
 	gap: 1em;
 }
 
+.raw-data {
+	align-self: flex-start;
+	margin-top: 5em;
+}
 .url {
 	font-family: var(--mono);
 }
