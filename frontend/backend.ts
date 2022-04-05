@@ -18,7 +18,9 @@ export type Base64WithFiletype = string
 
 export type MaybeError = string | null
 
-export const local = path => `http://localhost:4444/${path}`
+export const localProjects = path => `http://localhost:4444/projects/${path}`
+export const localDatabase = path => `http://localhost:4444/database/${path}`
+export const relativeToDatabase = path => path.split("portfolio-database/")[1]
 
 export const backend = {
     initialize: async () => {

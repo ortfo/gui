@@ -4,8 +4,7 @@ import Grid from "svelte-grid"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import { scale } from "svelte/transition"
 import { tooltip } from "../actions"
-import { Base64WithFiletype, local } from "../backend"
-import { backend } from "../backend"
+import { localDatabase, localProjects, relativeToDatabase } from "../backend"
 import {
 	ContentBlock,
 	emptyContentUnit,
@@ -13,13 +12,12 @@ import {
 	toBlocks,
 } from "../contentblocks"
 import type { LayedOutElement, ParsedDescription, Translated } from "../ortfo"
-import { state } from "../stores"
+import { state, workOnDisk } from "../stores"
 
 export let work: ParsedDescription
 export let language: string
 
 let blocks: Translated<ContentBlock[]> = {}
-let base64images: Translated<{ [id: ItemID]: Base64WithFiletype }> = {}
 let cols: number[][] = []
 let rowCapacity: number = 0
 let activeBlock: number | null = null
@@ -64,6 +62,14 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 	})
 }
 
+function thumbnailOfSource(source: string): string {
+	return relativeToDatabase(
+		$workOnDisk.metadata.thumbnails?.[
+			$workOnDisk.media[language].find(m => m.source === source)?.path
+		][700]
+	)
+}
+
 const removeBlock = (item: ContentBlock) => e => {
 	Object.keys(blocks).forEach(lang => {
 		blocks[language] = blocks[language].filter(
@@ -95,8 +101,8 @@ function index(item: { id: string }): number {
 			data-type={item.data.type}
 			class:active={activeBlock === item.id}
 			style={item.data.type === "media"
-				? `background-image: url(${local(
-						`${$state.editingWorkID}/.portfoliodb/${item.data.source}`
+				? `background-image: url(${localDatabase(
+						thumbnailOfSource(item.data.source)
 				  )})`
 				: ""}
 		>

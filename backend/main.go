@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
@@ -18,13 +16,6 @@ func main() {
 	fmt.Printf("Settings: %#v\n", settings)
 	go startFilesystemServer(settings.ProjectsFolder)
 	startWebview()
-}
-
-func startFilesystemServer(directory string) error {
-	expandedPath, _ := homedir.Expand(directory)
-	err := http.ListenAndServe(":4444", http.FileServer(http.Dir(expandedPath)))
-	fmt.Println(err.Error())
-	return err
 }
 
 func startWebview() {

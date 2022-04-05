@@ -1,10 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	ortfodb "github.com/ortfo/db"
 )
+
+func prepareQuotedString(message string, a ...interface{}) string {
+	return strings.ReplaceAll(fmt.Sprintf(message, a...), "\"", "\\\"")
+}
+
+func LogToBrowser(message string, a ...interface{}) {
+	w.Eval(`console.info("[backend] ` + prepareQuotedString(message, a...) + `")`)
+}
+func ErrorToBrowser(message string, a ...interface{}) {
+	w.Eval(`console.error("[backend] ` + prepareQuotedString(message, a...) + `")`)
+}
 
 func WriteIfNotExist(filePath string, data []byte) error {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {

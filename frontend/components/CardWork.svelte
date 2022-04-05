@@ -3,17 +3,14 @@ import type { WorkOneLang } from "../ortfo"
 import JSONTree from "svelte-json-tree"
 import Card from "./Card.svelte"
 import { settings, state } from "../stores"
-import { backend, local } from "../backend"
-
-let thumbBase64 = ""
+import { backend, localDatabase, relativeToDatabase } from "../backend"
 
 function thumbPath() {
-	// return work.metadata.thumbnails?.[
-	// 	Object.keys(work.metadata.thumbnails)?.[0]
-	// ]?.[400]
-	console.log(work)
-	// return `${work.id}/.portfoliodb/${work.media[0].source}`
-	return ""
+	return relativeToDatabase(
+		work.metadata.thumbnails?.[
+			Object.keys(work.metadata.thumbnails)?.[0]
+		]?.[400]
+	)
 }
 
 function editWork() {
@@ -29,7 +26,7 @@ export let work: WorkOneLang
 	{:then _}
 		<div
 			class="thumb"
-			style={`background-image: url(${local(thumbPath())})`}
+			style={`background-image: url(${localDatabase(thumbPath())})`}
 		/>
 	{/await}
 	<div class="text">
