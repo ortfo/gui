@@ -188,7 +188,13 @@ let titleH1: HTMLHeadingElement
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding-right: 1em;
 }
+
+.metadata {
+	padding-left: 1em;
+}
+
 .title,
 .url {
 	align-self: flex-start;
