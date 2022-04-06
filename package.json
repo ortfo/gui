@@ -13,6 +13,11 @@
     "dev": "concurrently npm:frontend-dev npm:backend-dev",
     "format": "pnpm prettier frontend/ --write --plugin-search-dir=. && cd backend && gofmt -s -w *.go"
   },
+  "husky": {
+	"hooks": {
+	  "pre-commit": "lint-staged"
+	}
+  },
   "devDependencies": {
     "@faker-js/faker": "^6.1.1",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.40",
@@ -22,6 +27,8 @@
     "c8": "^7.11.0",
     "concurrently": "^6.5.1",
     "eslint": "^8.12.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.2",
     "prettier-plugin-svelte": "^2.6.0",
