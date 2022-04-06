@@ -7,7 +7,7 @@ export function toParsedDescription(work: Work): ParsedDescription {
         throw Error("No work given")
     }
     const { media, metadata, ...rest } = work
-    // XXX: the row capacity should be supplied as an argument, in case the user adds additional rows 
+    // XXX: the row capacity should be supplied as an argument, in case the user adds additional rows
     metadata.layout = normalizeLayout(
         metadata.layout,
         lcm(...metadata.layout.map(row => row.length))

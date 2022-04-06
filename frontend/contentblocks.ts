@@ -1,8 +1,7 @@
 import gridHelp from "svelte-grid/build/helper"
 import { backend } from "./backend"
 import { fromBlocksToLayout, layoutWidth } from "./layout"
-import {
-    Footnote,
+import type {
     LayedOutElement,
     Link,
     MediaEmbedDeclaration,
