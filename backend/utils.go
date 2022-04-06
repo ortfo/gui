@@ -46,3 +46,15 @@ func LanguagesIn(description ortfodb.ParsedDescription) (languages []string) {
 	}
 	return
 }
+
+func ChangeKeys[K string, V any](m map[K]V, replaceMap map[K]K) map[K]V {
+	for oldKey, value := range m {
+		if newKey, ok := replaceMap[oldKey]; ok {
+			if newKey != "" {
+				m[newKey] = value
+			}
+			delete(m, oldKey)
+		}
+	}
+	return m
+}

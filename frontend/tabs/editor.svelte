@@ -25,6 +25,10 @@ onMount(async () => {
 	tinykeys(window, {
 		"$mod+s": async () => {
 			backend.writeToDisk($workInEditor, $workOnDisk.id)
+			backend.rebuildDatabase()
+			backend.saveUIState($state)
+			window.location.reload()
+			// TODO only re-mount components whose was unsaved prior to rebuilding
 		},
 	})
 })
