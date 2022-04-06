@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { ContentBlock } from "./contentblocks"
+import type { ContentBlock } from "./contentblocks"
 import { fromBlocksToLayout } from "./layout"
 
 describe("fromBlocksToLayout", () => {
@@ -28,7 +28,7 @@ describe("fromBlocksToLayout", () => {
 
     it("re-creates correctly a single-cell layout", () => {
         const block = blockGenerator(1)
-        const layout = fromBlocksToLayout([block(0, 0, 1, 1, "link", 1)], 1)
+        const layout = fromBlocksToLayout([block(0, 0, 1, 1, "link", 0)], 1)
 
         expect(layout).toEqual(["l1"])
     })
@@ -45,17 +45,17 @@ describe("fromBlocksToLayout", () => {
 
         */
         const layout = [
-            block(0, 0, 6, 1, "paragraph", 1),
-            block(0, 1, 1, 2, "media", 1),
-            block(1, 1, 1, 1, "media", 2),
-            block(2, 1, 1, 1, "media", 3),
-            block(2, 2, 1, 1, "link", 1),
-            block(0, 3, 1, 1, "link", 2),
-            block(1, 3, 1, 1, "paragraph", 2),
-            block(0, 4, 1, 1, "link", 3),
-            block(1, 4, 1, 1, "link", 4),
-            block(2, 4, 1, 1, "link", 5),
-            block(3, 4, 1, 1, "link", 6),
+            block(0, 0, 6, 1, "paragraph", 0),
+            block(0, 1, 1, 2, "media", 0),
+            block(1, 1, 1, 1, "media", 1),
+            block(2, 1, 1, 1, "media", 2),
+            block(2, 2, 1, 1, "link", 0),
+            block(0, 3, 1, 1, "link", 1),
+            block(1, 3, 1, 1, "paragraph", 1),
+            block(0, 4, 1, 1, "link", 2),
+            block(1, 4, 1, 1, "link", 3),
+            block(2, 4, 1, 1, "link", 4),
+            block(3, 4, 1, 1, "link", 5),
         ]
 
         expect(fromBlocksToLayout(layout, 6)).toEqual([

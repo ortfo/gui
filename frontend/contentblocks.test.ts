@@ -6,7 +6,7 @@ import {
     fromBlocksToParsedDescription,
     toBlocks,
 } from "./contentblocks"
-import { ParsedDescription } from "./ortfo"
+import type { ParsedDescription } from "./ortfo"
 
 const gridItem = (data: { x: number; y: number; w: number; h: number }) =>
     ({
@@ -139,7 +139,14 @@ describe("toBlocks", async () => {
 describe("fromBlocksToParsedDescription", () => {
     it("handles void descriptions", () => {
         expect(
-            fromBlocksToParsedDescription({}, 42, { sth: 3 }, {}, {})
+            fromBlocksToParsedDescription({}, 42, {
+                metadata: { sth: 3 },
+                title: {},
+                paragraphs: {},
+                mediaembeddeclarations: {},
+                links: {},
+                footnotes: {},
+            })
         ).toEqual({
             footnotes: {},
             paragraphs: {},
@@ -164,7 +171,7 @@ describe("fromBlocksToParsedDescription", () => {
                                 content: "あいうえお",
                                 id: "aiueo",
                             },
-                            id: "paragraph:1",
+                            id: "paragraph:0",
                             1: gridItem({ x: 0, y: 0, w: 1, h: 2 }),
                         },
                         {
@@ -175,15 +182,24 @@ describe("fromBlocksToParsedDescription", () => {
                                 title: "",
                                 url: "https://example.ja",
                             },
-                            id: "link:1",
+                            id: "link:0",
                             1: gridItem({ x: 0, y: 2, w: 1, h: 1 }),
                         },
                     ],
                 },
                 1,
-                { some: "metadata", right: "here", layout: ["p1", "p1", "l"] },
-                { ja: title },
-                {}
+                {
+                    metadata: {
+                        some: "metadata",
+                        right: "here",
+                        layout: ["p1", "p1", "l"],
+                    },
+                    title: { ja: title },
+                    paragraphs: {},
+                    mediaembeddeclarations: {},
+                    links: {},
+                    footnotes: {},
+                }
             )
         ).toEqual({
             title: { ja: title },
