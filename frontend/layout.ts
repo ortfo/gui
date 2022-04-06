@@ -43,7 +43,9 @@ export function fromBlocksToLayout(
         layout.push(
             row.map(([x, y, type, id]) => {
                 const [_, layoutIndex] = id.split(":")
-                return `${type[0]}${layoutIndex}` as OrtfoMkLayoutCell
+                return `${type[0]}${
+                    parseInt(layoutIndex) + 1
+                }` as OrtfoMkLayoutCell
             })
         )
     }
@@ -111,7 +113,6 @@ export function normalizeLayout(
         return compressed
     }
 
-    debugger
     const compressed = layout.map(row => {
         if (Array.isArray(row) && compressible(row)) return compress(row)
         return row

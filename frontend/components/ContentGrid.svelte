@@ -8,11 +8,14 @@ import { localDatabase, localProjects, relativeToDatabase } from "../backend"
 import {
 	ContentBlock,
 	emptyContentUnit,
+	fromBlocksToParsedDescription,
 	ItemID,
 	toBlocks,
 } from "../contentblocks"
 import type { LayedOutElement, ParsedDescription, Translated } from "../ortfo"
 import { state, workOnDisk } from "../stores"
+import { createEventDispatcher, onMount } from "svelte"
+import { diff } from "just-diff"
 
 export let work: ParsedDescription
 export let language: string
@@ -21,11 +24,13 @@ let blocks: Translated<ContentBlock[]> = {}
 let cols: number[][] = []
 let rowCapacity: number = 0
 let activeBlock: number | null = null
+let initialized = false
 
-async function initialize(work: ParsedDescription) {
+onMount(async () => {
 	;[blocks, rowCapacity] = await toBlocks(work)
 	cols = [[400, rowCapacity]]
-}
+	initialized = true
+})
 
 const addBlock = (type: LayedOutElement["type"]) => e => {
 	Object.entries(blocks).forEach(([lang, blocksOneLang]) => {
@@ -63,9 +68,10 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 }
 
 function thumbnailOfSource(source: string): string {
-	let absolutePath = $workOnDisk.metadata.thumbnails?.[
+	let absolutePath =
+		$workOnDisk.metadata.thumbnails?.[
 			$workOnDisk.media[language].find(m => m.source === source)?.path
-		]?.[700] 
+		]?.[700]
 	return absolutePath ? relativeToDatabase(absolutePath) : ""
 }
 
@@ -81,11 +87,20 @@ const removeBlock = (item: ContentBlock) => e => {
 function index(item: { id: string }): number {
 	return blocks[language].findIndex(it => it.id === item.id)
 }
+
+$: {
+	let updatedWork = fromBlocksToParsedDescription(blocks, rowCapacity, work)
+	let delta = diff(updatedWork, work)
+	if (delta.length > 0) {
+		console.info("Work changed, delta is", delta)
+		work = updatedWork
+	}
+}
 </script>
 
-{#await initialize(work)}
+{#if !initialized}
 	Loading...
-{:then}
+{:else}
 	<Grid
 		bind:items={blocks[language]}
 		{cols}
@@ -203,7 +218,7 @@ function index(item: { id: string }): number {
 			</button>
 		</div>
 	</div>
-{/await}
+{/if}
 
 <!-- 
 	- remove space (if any) at top: get minimum `y` and translate all items with `y <- y - minY`

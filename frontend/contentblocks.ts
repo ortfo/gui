@@ -174,14 +174,13 @@ function onlyOfType(
 export function fromBlocksToParsedDescription(
     blocks: Translated<ContentBlock[]>,
     rowCapacity: number,
-    metadata: ParsedDescription["metadata"],
-    title: Translated<string>,
-    footnotes: Translated<Footnote[]>
+    base: ParsedDescription
 ): ParsedDescription {
+    if (Object.keys(blocks).length === 0) {
+        return base
+    }
     let description: ParsedDescription = {
-        metadata,
-        title,
-        footnotes,
+        ...base,
         paragraphs: {},
         mediaembeddeclarations: {},
         links: {},

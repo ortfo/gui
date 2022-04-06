@@ -50,7 +50,7 @@ func startWebview() {
 		settings, _ := LoadSettings()
 		return settings.RebuildDatabase()
 	})
-	w.Bind("backend__layout", func(workUntyped interface{}) (map[string]ortfomk.Layout, error) {
+	w.Bind("backend__layout", func(workUntyped interface{}) (map[string][]LayedOutElement, error) {
 		var description ortfodb.ParsedDescription
 		mapstructure.Decode(workUntyped, &description)
 		layedout, err := Layout(description)

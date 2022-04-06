@@ -44,7 +44,10 @@ function editTitle(e) {
 		titleH1.focus()
 	} else {
 		editingTitle = false
-		$workInEditor.title[$state.lang] = titleH1.textContent
+		$workInEditor.title = {
+			...$workInEditor.title,
+			[$state.lang]: titleH1.textContent,
+		}
 	}
 }
 

@@ -8,19 +8,65 @@ import (
 	ortfomk "github.com/ortfo/mk"
 )
 
-func Layout(description ortfodb.ParsedDescription) (layouts map[string]ortfomk.Layout, err error) {
+type LayedOutElement struct {
+	Type               string
+	LayoutIndex        int
+	Positions          [][]int
+	GeneralContentType string
+	ID                 string
+	Alt                string
+	Title              string
+	Source             string
+	Path               string
+	ContentType        string
+	Size               uint64
+	Dimensions         ortfodb.ImageDimensions
+	Duration           uint
+	Online             bool
+	Attributes         ortfodb.MediaAttributes
+	HasSound           bool
+	Content            string
+	Name               string
+	URL                string
+}
+
+func Layout(description ortfodb.ParsedDescription) (layouts map[string][]LayedOutElement, err error) {
 	// Create a stubbed-out WorkOneLang from a ParsedDescription,
 	// because LayedOut() needs a WorkOneLang
 	// (for good reasons, we need those when actually building the site from the layout,
 	// and I won't make two separate .LayedOut(), it's too much of a hassle
 	// (looked into it, not feasible without duplicating code))
-	layouts = make(map[string]ortfomk.Layout)
+	layouts = make(map[string][]LayedOutElement)
 	for _, language := range LanguagesIn(description) {
 		layout, err := StubOutWorkOneLang(description, language).LayedOut()
 		if err != nil {
 			return layouts, fmt.Errorf("while laying out work in %s: %w", language, err)
 		}
-		layouts[language] = layout
+		layouts[language] = make([]LayedOutElement, 0, len(layout))
+		for _, element := range layout {
+			layouts[language] = append(layouts[language], LayedOutElement{
+				Type:               element.Type,
+				LayoutIndex:        element.LayoutIndex,
+				Positions:          element.Positions,
+				GeneralContentType: element.GeneralContentType,
+				ID:                 element.ID(),
+				Alt:                element.Alt,
+				Title:              element.Title(),
+				Source:             element.Source,
+				Path:               element.Path,
+				ContentType:        element.ContentType,
+				Size:               element.Size,
+				Dimensions:         element.Dimensions,
+				Duration:           element.Duration,
+				Online:             element.Online,
+				Attributes:         element.Attributes,
+				HasSound:           element.HasSound,
+				Content:            element.Content,
+				Name:               element.Name,
+				URL:                element.URL,
+			})
+		}
+
 	}
 	return
 }
