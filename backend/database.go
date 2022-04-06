@@ -61,6 +61,7 @@ func (settings *Settings) LoadDatabase() (db ortfomk.Database, err error) {
 }
 
 func (settings *Settings) RebuildDatabase() error {
+	LogToBrowser("Rebuilding database...")
 	projectsFolder, err := homedir.Expand(settings.ProjectsFolder)
 	if err != nil {
 		return fmt.Errorf("while expanding ~: %w", err)
@@ -82,5 +83,6 @@ func (settings *Settings) RebuildDatabase() error {
 	if err != nil {
 		return fmt.Errorf("couldn't build the portfolio's database: %w", err)
 	}
+	LogToBrowser("Finish rebuilding database")
 	return nil
 }
