@@ -63,11 +63,10 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 }
 
 function thumbnailOfSource(source: string): string {
-	return relativeToDatabase(
-		$workOnDisk.metadata.thumbnails?.[
+	let absolutePath = $workOnDisk.metadata.thumbnails?.[
 			$workOnDisk.media[language].find(m => m.source === source)?.path
-		][700]
-	)
+		]?.[700] 
+	return absolutePath ? relativeToDatabase(absolutePath) : ""
 }
 
 const removeBlock = (item: ContentBlock) => e => {
