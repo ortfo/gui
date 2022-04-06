@@ -18,11 +18,12 @@ type Settings struct {
 }
 
 type UIState struct {
-	OpenTab                string  `json:"openTab"`
-	RebuildingDatabase     bool    `json:"rebuildingDatabase"`
-	EditingWorkID          string  `json:"editingWorkID"`
-	Lang                   string  `json:"lang"`
-	MetadataPaneSplitRatio float64 `json:"metadataPaneSplitRatio"`
+	OpenTab                string         `json:"openTab"`
+	RebuildingDatabase     bool           `json:"rebuildingDatabase"`
+	EditingWorkID          string         `json:"editingWorkID"`
+	Lang                   string         `json:"lang"`
+	MetadataPaneSplitRatio float64        `json:"metadataPaneSplitRatio"`
+	ScrollPositions        map[string]int `json:"scrollPositions"`
 }
 
 func ConfigurationDirectory(segments ...string) string {
@@ -78,6 +79,14 @@ func DefaultUIState() UIState {
 		OpenTab:                "works",
 		Lang:                   "en",
 		MetadataPaneSplitRatio: 0.333333333,
+		ScrollPositions: map[string]int{
+			"works":        0,
+			"editor":       0,
+			"tags":         0,
+			"sites":        0,
+			"technologies": 0,
+			"settings":     0,
+		},
 	}
 }
 
@@ -155,6 +164,13 @@ func LoadUIState() (state UIState, err error) {
 
 	// parse
 	err = json.Unmarshal(content, &state)
+	if err != nil {
+		// UI state is not user-editable, so when ortfo upgrades and the UI state schema changes,
+		// it isn't the user's responsability to fix it (as the change does not constitute a breaking change).
+		// Therefore we have to ighore errors, and discard UI state after an upgrade, if it fails.
+		// It won't result in any significant data loss anyways.
+		return DefaultUIState(), nil
+	}
 
 	return
 }

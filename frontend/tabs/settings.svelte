@@ -1,10 +1,16 @@
 <script lang="ts">
+import { onMount } from "svelte"
+
 import { backend } from "../backend"
 
-import { settings } from "../stores"
+import { settings, state } from "../stores"
 
 settings.subscribe(async settings => {
 	await backend.settingsWrite(settings)
+})
+
+onMount(() => {
+	window.scrollTo({ top: $state.scrollPositions.settings })
 })
 </script>
 

@@ -30,6 +30,14 @@ onMount(async () => {
 	;[blocks, rowCapacity] = await toBlocks(work)
 	cols = [[400, rowCapacity]]
 	initialized = true
+	// Need timeout because of the scale transition
+	setTimeout(() => {
+		window.scrollTo({
+			top: $state.scrollPositions.editor,
+			left: 0,
+			behavior: "smooth",
+		})
+	}, 200)
 })
 
 const addBlock = (type: LayedOutElement["type"]) => e => {

@@ -9,6 +9,7 @@ import Settings from "./tabs/settings.svelte"
 import { onMount } from "svelte"
 import Modal from "svelte-simple-modal"
 import ModalButtonClose from "./components/ModalButtonClose.svelte"
+import tinykeys from "tinykeys"
 
 async function loadSettings() {
 	await backend.initialize()
@@ -58,10 +59,15 @@ async function load() {
 }
 
 onMount(() => {
-	window.addEventListener("keypress", e => {
-		if (e.key == "r" && e.ctrlKey) {
+	tinykeys(window, {
+		"$mod+r": () => {
+			backend.saveUIState($state)
 			window.location.reload()
-		}
+		},
+	})
+
+	window.addEventListener("scroll", () => {
+		$state.scrollPositions[$state.openTab] = window.scrollY
 	})
 })
 
@@ -96,9 +102,9 @@ settings.subscribe(settings => applyTheme(settings.theme))
 		<h1>Woops!</h1>
 		<p>Couldn't load your stuff:</p>
 		<ol>
-			{#each e.toString().split(": ") as reason}
+			<!-- {#each e.toString().split(": ") as reason}
 				<li>{reason}</li>
-			{/each}
+			{/each} -->
 		</ol>
 	</div>
 {/await}

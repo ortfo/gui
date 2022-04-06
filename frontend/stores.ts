@@ -35,6 +35,7 @@ export type State = {
     editingWorkID: WorkID | null
     lang: "en" | "fr"
     metadataPaneSplitRatio: number
+    scrollPositions: { [tab in PageName]: number }
 }
 
 export const settings: Writable<Settings> = writable({
@@ -46,11 +47,19 @@ export const settings: Writable<Settings> = writable({
 })
 
 export const state: Writable<State> = writable({
-    openTab: "editor",
+    openTab: "works",
     rebuildingDatabase: false,
-    editingWorkID: "illiimité",
+    editingWorkID: "",
     lang: "en",
     metadataPaneSplitRatio: 0.333,
+    scrollPositions: {
+        works: 0,
+        tags: 0,
+        technologies: 0,
+        sites: 0,
+        settings: 0,
+        editor: 0,
+    },
 })
 
 export const database: Writable<Database> = writable({} as Database)
