@@ -6,11 +6,11 @@ import { settings, state } from "../stores"
 import { backend, localDatabase, relativeToDatabase } from "../backend"
 
 function thumbPath() {
-	return relativeToDatabase(
+	const absolutePath =
 		work.metadata.thumbnails?.[
 			Object.keys(work.metadata.thumbnails)?.[0]
 		]?.[400]
-	)
+	return absolutePath ? relativeToDatabase(absolutePath) : ""
 }
 
 function editWork() {
