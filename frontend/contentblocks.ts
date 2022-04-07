@@ -1,12 +1,13 @@
 import gridHelp from "svelte-grid/build/helper"
 import { backend } from "./backend"
 import { fromBlocksToLayout, layoutWidth } from "./layout"
-import type {
+import {
     LayedOutElement,
     Link,
     MediaEmbedDeclaration,
     Paragraph,
     ParsedDescription,
+    replaceLanguageDefaultInObject,
     Translated,
 } from "./ortfo"
 import { distance, first, pick, second } from "./utils"
@@ -91,7 +92,8 @@ export function eachLanguage<I, O>(blocks: Translated<I[]>) {
  * @returns [content blocks, max. number of columns per row (row "capacity")]
  */
 export async function toBlocks(
-    description: ParsedDescription
+    description: ParsedDescription,
+    languages: string[]
 ): Promise<[Translated<ContentBlock[]>, number]> {
     const rowCapacity = description.metadata.layout
         ? layoutWidth(description.metadata.layout)
@@ -103,6 +105,7 @@ export async function toBlocks(
         console.error(error)
         return [{}, 0]
     }
+    layouts = replaceLanguageDefaultInObject(layouts, languages)
     return [
         eachLanguage<LayedOutElement, ContentBlock>(layouts).map(
             (item: LayedOutElement) => {

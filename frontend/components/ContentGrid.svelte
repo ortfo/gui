@@ -12,7 +12,7 @@ import {
 	ItemID,
 	toBlocks,
 } from "../contentblocks"
-import type { LayedOutElement, ParsedDescription, Translated } from "../ortfo"
+import { inLanguage, LayedOutElement, ParsedDescription, Translated } from "../ortfo"
 import { state, workOnDisk } from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
@@ -27,7 +27,7 @@ let activeBlock: number | null = null
 let initialized = false
 
 onMount(async () => {
-	;[blocks, rowCapacity] = await toBlocks(work)
+	;[blocks, rowCapacity] = await toBlocks(work, ["fr", "en"])
 	cols = [[400, rowCapacity]]
 	initialized = true
 	// Need timeout because of the scale transition
@@ -78,7 +78,7 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 function thumbnailOfSource(source: string): string {
 	let absolutePath =
 		$workOnDisk.metadata.thumbnails?.[
-			$workOnDisk.media[language].find(m => m.source === source)?.path
+			inLanguage(language)($workOnDisk).media.find(m => m.source === source)?.path
 		]?.[700]
 	return absolutePath ? relativeToDatabase(absolutePath) : ""
 }

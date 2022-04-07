@@ -121,6 +121,26 @@ export const fromLanguages = (...singleLanguageWorks: WorkOneLang[]) => {
     } as Work
 }
 
+export function replaceLanguageDefaultInObject(object: Translated<any>, languages: string[]) {
+    if (Object.prototype.toString.call(object) === "[object Object]") {
+        if (Object.keys(object).length === 1 && Object.keys(object)[0] === "default") {
+            return Object.fromEntries(languages.map(language => [language, object.default]))
+        }
+    }
+    return object
+}
+
+export function replaceLanguageDefault(work: Work, languages: string[]): Work {
+    return {
+        ...work,
+        title: replaceLanguageDefaultInObject(work.title, languages),
+        footnotes: replaceLanguageDefaultInObject(work.footnotes, languages),
+        links: replaceLanguageDefaultInObject(work.links, languages),
+        media: replaceLanguageDefaultInObject(work.media, languages),
+        paragraphs: replaceLanguageDefaultInObject(work.paragraphs, languages),
+    }
+}
+
 export interface WorkMetadata {
     created?: string
     started?: string
