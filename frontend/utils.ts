@@ -61,6 +61,9 @@ export function pick<T extends object, K extends keyof T>(
 }
 
 export function lcm(...integers: number[]): number {
+    if (integers.length === 0) {
+        return 0
+    }
     if (integers.length < 2) {
         return integers[0]
     }

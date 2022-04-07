@@ -1,4 +1,5 @@
-import { groupBy } from "lodash"
+import type { Content } from "@tiptap/core"
+import { groupBy, last } from "lodash"
 import { ContentBlock } from "./contentblocks"
 import { lcm, range, repeat } from "./utils"
 
@@ -24,32 +25,45 @@ export type SvelteGridItem<Data = any> = {
 export type OrtfoMkLayoutCell = `${"p" | "m" | "l"}${number}` | null
 export type OrtfoMkLayout = (OrtfoMkLayoutCell[] | OrtfoMkLayoutCell)[]
 
-export function fromBlocksToLayout(
+export function blockAt(
     blocks: ContentBlock[],
     size: number
+): (x: number, y: number) => ContentBlock | null {
+    return (target_x, target_y) =>
+        blocks.find(({ [size]: { x, y, w, h }, id }) => {
+            return (
+                range(x, x + w).includes(target_x) &&
+                range(y, y + h).includes(target_y)
+            )
+        }) || null
+}
+
+export function fromBlocksToLayout(
+    blocks: ContentBlock[],
+    layoutWidth: number
 ): OrtfoMkLayout {
-    const layout: OrtfoMkLayout = []
-    const repeated = []
-    for (const block of blocks) {
-        const { x, y, w, h } = block[size]
-        const { type } = block.data
-        for (const current_x of range(x, x + w)) {
-            for (const current_y of range(y, y + h)) {
-                repeated.push([current_x, current_y, type, block.id])
+    let layout: OrtfoMkLayout = []
+    const at = blockAt(blocks, layoutWidth)
+    const layoutHeight = Math.max(...blocks.map(b => b[layoutWidth].y)) + 1
+
+    for (const y of range(0, layoutHeight)) {
+        const row: OrtfoMkLayoutCell[] = []
+        for (const x of range(0, layoutWidth)) {
+            const block = at(x, y)
+            let cell: OrtfoMkLayoutCell
+            if (block === null) {
+                row.push(null)
+            } else {
+                const [_, layoutIndex] = block.id.split(":")
+                row.push(`${block.data.type[0]}${parseInt(layoutIndex) + 1}`)
             }
         }
+        layout.push(row)
     }
-    for (const row of Object.values(groupBy(repeated, e => e[1]))) {
-        layout.push(
-            row.map(([x, y, type, id]) => {
-                const [_, layoutIndex] = id.split(":")
-                return `${type[0]}${
-                    parseInt(layoutIndex) + 1
-                }` as OrtfoMkLayoutCell
-            })
-        )
-    }
-    return normalizeLayout(layout, size)
+
+    layout = normalizeLayout(layout, layoutWidth)
+
+    return layout
 }
 
 /**
@@ -79,12 +93,12 @@ export function normalizeLayout(
         let lastSeen = undefined // null is taken by spacers
         let repeats = []
         for (const cell of row) {
-            // Previous cell was the same as this one.
-            // It's a consecutive repeat, tally up in the lastest element of `repeats`.
             if (lastSeen === cell) {
+                // Previous cell was the same as this one.
+                // It's a consecutive repeat, tally up in the lastest element of `repeats`.
                 repeats[repeats.length - 1][1]++
-                // Else, this is a new cell, so start a new element in `repeats`.
             } else {
+                // Else, this is a new cell, so start a new element in `repeats`.
                 repeats.push([cell, 1])
             }
             lastSeen = cell
@@ -92,33 +106,20 @@ export function normalizeLayout(
         return repeats
     }
 
-    const compressible = row =>
-        // A row is only compressible if every **consecutive** repeat has its repeats count divisible by the total number of columns.
-        // For example, [l1, l1, m1, m1, m1] is compressible, but [l1, m1, m1, m1, l1] is not!
-        consecutiveRepeats(row).every(
-            ([_, repeatsCount]) => repeatsCount % columnsCount === 0
-        )
-
     const compress = row => {
+        const compressionRate = Math.min(
+            ...consecutiveRepeats(row).map(([, r]) => r)
+        )
         // To compress a row (meaning turn [l1, l1, m1, m1, m1] into [l1, m1, m1]),
-        // create a new row with each **consecutive** repeat repeated the minimum number of times: original repeats count / total columns count.
-        // ⚠ A row **cannot** be compressed properly if it is not compressible (see compressible)
+        // create a new row with each **consecutive** repeat repeated the minimum number of times: original repeats count / lowest repeat count of row.
         let compressed = []
         for (const [cell, repeatsCount] of consecutiveRepeats(row)) {
             compressed = [
                 ...compressed,
-                ...repeat(repeatsCount / columnsCount, cell),
+                ...repeat(repeatsCount / compressionRate, cell),
             ]
         }
         return compressed
-    }
-
-    const compressed = layout.map(row => {
-        if (Array.isArray(row) && compressible(row)) return compress(row)
-        return row
-    })
-    if (compressed.some(row => row === undefined)) {
-        throw Error("undefineds in compressed layout!!!!")
     }
 
     let latestCounts: { p: number; l: number; m: number } = {
@@ -129,7 +130,7 @@ export function normalizeLayout(
 
     return layout
         .map(row => {
-            if (Array.isArray(row) && compressible(row)) return compress(row)
+            if (Array.isArray(row)) return compress(row)
             return row
         })
         .map(row => {
@@ -145,6 +146,7 @@ export function normalizeLayout(
                     latestCounts[cellType(cell)] = parseInt(cell.slice(1))
                     return cell
                 }
+                return cell
             })
         )
 }
