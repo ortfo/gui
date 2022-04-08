@@ -97,12 +97,12 @@ function thumbnailOfSource(source: string): string {
 }
 
 const removeBlock = (item: ContentBlock) => e => {
-	Object.keys(blocks).forEach(lang => {
-		blocks[language] = blocks[language].filter(
-			block => block.id !== item.id
-		)
-		blocks[language] = blocks[language].map(gridHelp.item)
-	})
+	blocks = Object.fromEntries(
+		Object.entries(blocks).map(([lang, blocks]) => [
+			lang,
+			blocks.filter(b => b.id !== item.id),
+		])
+	)
 }
 
 function index(item: { id: string }): number {
