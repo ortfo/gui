@@ -42,6 +42,9 @@ export function fromBlocksToLayout(
     blocks: ContentBlock[],
     layoutWidth: number
 ): OrtfoMkLayout {
+    if (blocks.length === 0) {
+        return []
+    }
     let layout: OrtfoMkLayout = []
     const at = blockAt(blocks, layoutWidth)
     const layoutHeight = Math.max(...blocks.map(b => b[layoutWidth].y)) + 1
