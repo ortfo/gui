@@ -160,7 +160,7 @@ export async function toBlocks(
                 return { ...block, data: blockData }
             }
         ),
-        rowCapacity,
+        Math.max(rowCapacity, 1),
     ]
 }
 

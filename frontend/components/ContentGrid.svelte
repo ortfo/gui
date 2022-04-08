@@ -33,7 +33,6 @@ let initialized = false
 
 onMount(async () => {
 	;[blocks, rowCapacity] = await toBlocks(work, ["fr", "en"])
-	rowCapacity = Math.max(rowCapacity, 1)
 	cols = [[400, rowCapacity]]
 	initialized = true
 	// Need timeout because of the scale transition
