@@ -12,7 +12,12 @@ import {
 	ItemID,
 	toBlocks,
 } from "../contentblocks"
-import { inLanguage, LayedOutElement, ParsedDescription, Translated } from "../ortfo"
+import {
+	inLanguage,
+	LayedOutElement,
+	ParsedDescription,
+	Translated,
+} from "../ortfo"
 import { state, workOnDisk } from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
@@ -28,6 +33,7 @@ let initialized = false
 
 onMount(async () => {
 	;[blocks, rowCapacity] = await toBlocks(work, ["fr", "en"])
+	rowCapacity = Math.max(rowCapacity, 1)
 	cols = [[400, rowCapacity]]
 	initialized = true
 	// Need timeout because of the scale transition
@@ -42,21 +48,28 @@ onMount(async () => {
 
 const addBlock = (type: LayedOutElement["type"]) => e => {
 	Object.entries(blocks).forEach(([lang, blocksOneLang]) => {
+		const empty = blocksOneLang.length === 0
 		const geometry = {
-			x: Math.min(...blocksOneLang.map(block => block[rowCapacity].x)),
-			y:
-				Math.max(...blocksOneLang.map(block => block[rowCapacity].y)) +
-				1,
+			x: empty
+				? 0
+				: Math.min(...blocksOneLang.map(block => block[rowCapacity].x)),
+			y: empty
+				? 0
+				: Math.max(
+						...blocksOneLang.map(block => block[rowCapacity].y)
+				  ) + 1,
 			w: rowCapacity,
 			h: 1,
 		}
 		const id = `${type}:${
-			Math.max(
-				...blocksOneLang
-					.map(b => b.id.split(":"))
-					.filter(([bType, _]) => bType === type)
-					.map(([_, id]) => parseInt(id))
-			) + 1
+			empty
+				? 0
+				: Math.max(
+						...blocksOneLang
+							.map(b => b.id.split(":"))
+							.filter(([bType, _]) => bType === type)
+							.map(([_, id]) => parseInt(id))
+				  ) + 1
 		}` as ItemID
 
 		blocks[lang] = [
@@ -108,7 +121,7 @@ $: {
 
 {#if !initialized}
 	Loading...
-{:else}
+{:else if blocks[language].length > 0}
 	<Grid
 		bind:items={blocks[language]}
 		{cols}
@@ -226,6 +239,39 @@ $: {
 			</button>
 		</div>
 	</div>
+{:else}
+	<div class="empty">
+		<h2>No content yet.</h2>
+		<div class="create-block empty">
+			<h3>Add a…</h3>
+			<div class="types">
+				<button data-variant="none" on:click={addBlock("media")}>
+					<img
+						src="/assets/icon-media.svg"
+						alt="media icon"
+						class="icon"
+					/>
+					media
+				</button>
+				<button data-variant="none" on:click={addBlock("paragraph")}>
+					<img
+						src="/assets/icon-paragraph.svg"
+						alt="¶"
+						class="icon"
+					/>
+					paragraph
+				</button>
+				<button data-variant="none" on:click={addBlock("link")}>
+					<img
+						src="/assets/icon-major-link.svg"
+						alt="link icon"
+						class="icon"
+					/>
+					link
+				</button>
+			</div>
+		</div>
+	</div>
 {/if}
 
 <!-- 
@@ -253,7 +299,7 @@ h2 {
 	align-self: flex-start;
 }
 
-.create-block {
+.create-block:not(.empty) {
 	border: 0.175em solid var(--ortforange);
 	border-radius: 0.5em;
 	max-width: 400px;
@@ -371,6 +417,7 @@ h2 {
 	display: flex;
 	justify-content: space-between;
 	margin: 0 2em;
+	max-width: 300px;
 }
 .create-block .types button {
 	display: flex;
@@ -378,10 +425,32 @@ h2 {
 	justify-content: center;
 	align-items: center;
 	width: 7em;
+	padding: 0.5em;
 	transition: all 0.25s ease;
+	outline: none;
 }
 
-.create-block .types button:hover:not(:active) {
+.create-block .types button:hover:not(:active),
+.create-block .types button:focus:not(:active) {
+	box-shadow: -0.5em 0.5em 0 0 var(--ortforange);
+	transform: translate(0.5em, -0.5em);
+}
+
+/* .create-block .types button:hover:not(:active) {
 	font-weight: bold;
+} */
+
+.empty {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	text-align: center;
+	width: 100%;
+	border-radius: 3px;
+	padding: 4em;
+}
+
+.empty h2 {
+	color: var(--gray);
 }
 </style>
