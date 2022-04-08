@@ -7,6 +7,7 @@ import { tooltip } from "../actions"
 import { localDatabase, localProjects, relativeToDatabase } from "../backend"
 import {
 	ContentBlock,
+	eachLanguage,
 	emptyContentUnit,
 	fromBlocksToParsedDescription,
 	ItemID,
@@ -106,18 +107,36 @@ const removeBlock = (item: ContentBlock) => e => {
 	)
 }
 
-function index(item: { id: string }): number {
-	return blocks[language].findIndex(it => it.id === item.id)
+function updateOtherLanguages() {
+	const otherLanguages = Object.keys(blocks).filter(l => l !== language)
+	const blockInCurrentLanguage = id => blocks[language].find(b => b.id === id)
+	for (const lang of otherLanguages) {
+		blocks[lang] = blocks[lang].map(b => ({
+			...b,
+			[rowCapacity]: blockInCurrentLanguage(b.id)?.[rowCapacity],
+		}))
+	}
 }
 
-$: {
-	let updatedWork = fromBlocksToParsedDescription(blocks, rowCapacity, work)
+function updateWork(blocks) {
+	let updatedWork = fromBlocksToParsedDescription(
+		blocks,
+		rowCapacity,
+		work,
+		language
+	)
 	let delta = diff(updatedWork, work)
 	if (delta.length > 0) {
 		console.info("Work changed, delta is", delta)
 		work = updatedWork
 	}
 }
+
+function index(item: { id: string }): number {
+	return blocks[language].findIndex(it => it.id === item.id)
+}
+
+$: updateWork(blocks)
 </script>
 
 {#if !initialized}
@@ -130,6 +149,10 @@ $: {
 		let:dataItem={item}
 		let:movePointerDown
 		let:resizePointerDown
+		on:change={_ => {
+			updateOtherLanguages()
+			updateWork(blocks)
+		}}
 	>
 		<div
 			transition:scale

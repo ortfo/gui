@@ -176,7 +176,8 @@ function onlyOfType(
 export function fromBlocksToParsedDescription(
     blocks: Translated<ContentBlock[]>,
     rowCapacity: number,
-    base: ParsedDescription
+    base: ParsedDescription,
+    currentLanguage: string // necessary for layout changes, they only occur in the current language's blocks, we need to propagate them to the other languages
 ): ParsedDescription {
     if (Object.keys(blocks).length === 0) {
         return base
@@ -192,10 +193,8 @@ export function fromBlocksToParsedDescription(
         return description
     }
 
-    const anyLanguage = Object.keys(blocks)[0]
-
     description.metadata.layout = fromBlocksToLayout(
-        blocks[anyLanguage],
+        blocks[currentLanguage],
         rowCapacity
     )
 
