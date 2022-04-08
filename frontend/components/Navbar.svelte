@@ -111,7 +111,7 @@ nav a {
 	border-bottom: 3px solid transparent;
 }
 nav a.current {
-	font-weight: bold;
+	font-variation-settings: "wght" 700;
 	border-bottom-color: var(--ortforange);
 }
 button:first-of-type {

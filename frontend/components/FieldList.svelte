@@ -84,7 +84,7 @@ li > button.remove {
 
 li::before {
 	content: "–";
-	font-weight: bold;
+	font-variation-settings: "wght" 700;
 	font-size: 2em;
 	color: var(--gray);
 	margin-right: 0.25em;

@@ -79,7 +79,7 @@ input:not(:checked) + label {
 	letter-spacing: 0.25ch;
 	text-transform: uppercase;
 	color: var(--gray);
-	font-weight: bold;
+	font-variation-settings: "wght" 700;
 	font-size: 0.75em;
 }
 </style>

@@ -282,7 +282,7 @@ $: {
 h2 {
 	text-align: center;
 	color: var(--ortforange);
-	font-weight: normal;
+	font-variation-settings: "wght" 700;
 }
 
 :global(.svlt-grid-item) {
@@ -324,7 +324,7 @@ h2 {
 	font-size: 10em;
 	height: 0.5em;
 	line-height: 0.1;
-	font-weight: bold;
+	font-variation-settings: "wght" 700;
 	opacity: 0.5;
 	pointer-events: none;
 }

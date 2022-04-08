@@ -126,6 +126,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	font-family: var(--sans);
 	margin: 0;
 	padding: 0;
+	font-variation-settings: 'wght' 400;
 }
 
 :global(button) {
@@ -139,7 +140,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	border: 2px solid var(--ortforange);
 	color: var(--ortforange);
 	background-color: transparent;
-	font-weight: bold;
+	font-variation-settings: 'wght' 700;
 	padding: 0.25rem 1.5rem;
 	cursor: pointer;
 	transition: all 0.2s ease;
@@ -157,7 +158,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 :global(h1) {
 	text-align: center;
 	font-size: 3em;
-	font-weight: normal;
+	font-variation-settings: 'wght' 400;
 	margin: 2rem 0;
 }
 

@@ -26,14 +26,14 @@ dd {
 	align-items: center;
 }
 dt {
-	font-weight: bold;
+	font-variation-settings: "wght" 700;
 }
 dt.colon::after {
 	content: ": ";
 }
 .part-of-object > dt::before {
 	content: "└";
-	font-weight: bold;
+	font-variation-settings: "wght" 700;
 	font-size: 2em;
 	color: var(--gray);
 	margin-right: 0.25em;
