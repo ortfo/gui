@@ -93,7 +93,9 @@ function thumbnailOfSource(source: string): string {
 		$workOnDisk.metadata.thumbnails?.[
 			inLanguage(language)($workOnDisk).media.find(m => m.source === source)?.path
 		]?.[700]
-	return absolutePath ? relativeToDatabase(absolutePath) : ""
+	return absolutePath
+		? localDatabase(relativeToDatabase(absolutePath))
+		: localProjects(`${$workOnDisk.id}/.portfoliodb/${source}`)
 }
 
 const removeBlock = (item: ContentBlock) => e => {
@@ -136,8 +138,8 @@ $: {
 			data-type={item.data.type}
 			class:active={activeBlock === item.id}
 			style={item.data.type === "media"
-				? `background-image: url(${localDatabase(
-						thumbnailOfSource(item.data.source)
+				? `background-image: url(${thumbnailOfSource(
+						item.data.source
 				  )})`
 				: ""}
 		>
