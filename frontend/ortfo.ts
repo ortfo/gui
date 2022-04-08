@@ -121,10 +121,18 @@ export const fromLanguages = (...singleLanguageWorks: WorkOneLang[]) => {
     } as Work
 }
 
-export function replaceLanguageDefaultInObject(object: Translated<any>, languages: string[]) {
+export function replaceLanguageDefaultInObject(
+    object: Translated<any>,
+    languages: string[]
+) {
     if (Object.prototype.toString.call(object) === "[object Object]") {
-        if (Object.keys(object).length === 1 && Object.keys(object)[0] === "default") {
-            return Object.fromEntries(languages.map(language => [language, object.default]))
+        if (
+            Object.keys(object).length === 1 &&
+            Object.keys(object)[0] === "default"
+        ) {
+            return Object.fromEntries(
+                languages.map(language => [language, object.default])
+            )
         }
     }
     return object

@@ -1,12 +1,20 @@
 import { normalizeLayout } from "./layout"
-import { ParsedDescription, replaceLanguageDefault, Work, WorkMetadata } from "./ortfo"
+import {
+    ParsedDescription,
+    replaceLanguageDefault,
+    Work,
+    WorkMetadata,
+} from "./ortfo"
 import { except, lcm, mapToTranslated } from "./utils"
 
 export function toParsedDescription(work: Work): ParsedDescription {
     if (!work) {
         throw Error("No work given")
     }
-    const { media, metadata, ...rest } = replaceLanguageDefault(work, ["fr", "en"])
+    const { media, metadata, ...rest } = replaceLanguageDefault(work, [
+        "fr",
+        "en",
+    ])
     // XXX: the row capacity should be supplied as an argument, in case the user adds additional rows
     metadata.layout = normalizeLayout(
         metadata.layout,

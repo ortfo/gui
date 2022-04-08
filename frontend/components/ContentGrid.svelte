@@ -91,7 +91,9 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 function thumbnailOfSource(source: string): string {
 	let absolutePath =
 		$workOnDisk.metadata.thumbnails?.[
-			inLanguage(language)($workOnDisk).media.find(m => m.source === source)?.path
+			inLanguage(language)($workOnDisk).media.find(
+				m => m.source === source
+			)?.path
 		]?.[700]
 	return absolutePath
 		? localDatabase(relativeToDatabase(absolutePath))
@@ -467,7 +469,7 @@ h2 {
 }
 
 .create-block .types button:hover:not(:active) {
-	font-variation-settings: 'wght' 700;
+	font-variation-settings: "wght" 700;
 }
 
 .create-block .types button img {

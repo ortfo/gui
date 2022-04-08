@@ -14,10 +14,10 @@ func Writeback(settings Settings, parsedDescription ortfodb.ParsedDescription, w
 	// It also removes technical metadata properties that shouldn't be written back.
 	// TODO: this behavior should be implemented in ortfo/mk.
 	parsedDescription.Metadata = ChangeKeys(parsedDescription.Metadata, map[string]string{
-		"madewith": "made with",
+		"madewith":       "made with",
 		"pagebackground": "page background",
-		"layoutproper": "", // empty keys means just delete it.
-		"title": "",
+		"layoutproper":   "", // empty keys means just delete it.
+		"title":          "",
 	})
 	description, err := ortfodb.ReplicateDescription(parsedDescription)
 	// println("Replicated description:", description)
