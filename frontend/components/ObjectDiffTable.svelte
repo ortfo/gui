@@ -41,3 +41,18 @@ function pathHTML(path: (string | number)[]): string {
 		</tr>
 	{/each}
 </table>
+
+<style>
+td {
+	text-align: center;
+	padding: 0.125em;
+}
+
+td:nth-child(3) {
+	min-width: 2em;
+}
+
+:global(td > ul > li) {
+	padding-left: 0 !important;
+}
+</style>

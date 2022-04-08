@@ -141,18 +141,22 @@ let titleH1: HTMLHeadingElement
 					bind:value={$workInEditor.metadata.pagebackground}
 				/>
 			</dl>
+		</section>
+	</Split>
+	{#if import.meta.env.DEV}
+		<details class="raw-data dev-only">
+			<summary>Show raw data for this work</summary>
+			<JSONTree value={$workInEditor} />
+		</details>
+		<div class="float dev-only">
 			<ObjectDiffTable
 				a={toParsedDescription($workOnDisk)}
 				b={$workInEditor}
 				aLabel="on disk"
 				bLabel="in editor"
 			/>
-		</section>
-	</Split>
-	<details class="raw-data">
-		<summary>Show raw data for this work</summary>
-		<JSONTree value={$workOnDisk} />
-	</details>
+		</div>
+	{/if}
 {:catch error}
 	{#if error.why === "missing_work"}
 		<h1>Well, this is weird.</h1>
@@ -225,5 +229,16 @@ let titleH1: HTMLHeadingElement
 
 .error button {
 	margin-top: 1em;
+}
+
+.float {
+	position: fixed;
+	bottom: 2em;
+	right: 2em;
+	width: 500px;
+	z-index: 1000;
+	background: var(--gray-light);
+	padding: 2em;
+	border-radius: 0.5em;
 }
 </style>
