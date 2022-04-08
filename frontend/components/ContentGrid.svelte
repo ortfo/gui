@@ -417,28 +417,38 @@ h2 {
 	display: flex;
 	justify-content: space-between;
 	margin: 0 2em;
-	max-width: 300px;
+	max-width: 500px;
 }
 .create-block .types button {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	width: 7em;
+	width: 6em;
+	height: 6em;
 	padding: 0.5em;
-	transition: all 0.25s ease;
+	margin: 0.5em;
+	transition: all 0.25s ease, font-varation-settings 1s ease,
+		box-shadow 0.25s ease 0.125s;
 	outline: none;
+	font-size: 1em;
+	border: 1px solid transparent;
 }
 
 .create-block .types button:hover:not(:active),
 .create-block .types button:focus:not(:active) {
-	box-shadow: -0.5em 0.5em 0 0 var(--ortforange);
+	box-shadow: -0.5em 0.5em 0 0 var(--black);
+	border-color: var(--black);
 	transform: translate(0.5em, -0.5em);
 }
 
-/* .create-block .types button:hover:not(:active) {
-	font-weight: bold;
-} */
+.create-block .types button:hover:not(:active) {
+	font-variation-settings: 'wght' 700;
+}
+
+.create-block .types button img {
+	transform: scale(1.25);
+}
 
 .empty {
 	display: flex;
