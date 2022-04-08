@@ -87,6 +87,11 @@ export function lcm(...integers: number[]): number {
     return lcm(greater, ...integers.slice(2))
 }
 
+export function logExpr(expr) {
+    console.log("logExpr", expr)
+    return expr
+}
+
 export function mapToTranslated<I, O>(
     map: (item: I) => O,
     data: Translated<I[]>

@@ -58,3 +58,8 @@ func ChangeKeys[K string, V any](m map[K]V, replaceMap map[K]K) map[K]V {
 	}
 	return m
 }
+
+func LogExpression[T any](expression T) T {
+	fmt.Printf("[[[LOG EXPR]]] %#v", expression)
+	return expression
+}
