@@ -7,6 +7,7 @@ import { tooltip } from "../actions"
 import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
 import type { Writable } from "svelte/store"
+import { FootnoteReference } from "../markdown/footnoteReference"
 
 export let value: string
 export let placeholder: string = ""
@@ -45,8 +46,15 @@ const dispatch = createEventDispatcher()
 onMount(() => {
 	editor = new Editor({
 		element,
-		extensions: [StarterKit, Link, Placeholder.configure({ placeholder })],
 		content: value,
+		extensions: [
+			FootnoteReference,
+			StarterKit,
+			Link.configure({
+				HTMLAttributes: [],
+			}),
+			Placeholder.configure({ placeholder }),
+		],
 		onTransaction: () => {
 			editor = editor
 		},
@@ -204,6 +212,12 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 :global(.editor p.is-editor-empty:first-child::before) {
 	content: attr(data-placeholder);
 	color: var(--gray);
+}
+
+:global(.editor sup) {
+	font-size: 0.8em;
+	line-height: 1.2em;
+	vertical-align: super;
 }
 
 :global(.editor .ProseMirror) {
