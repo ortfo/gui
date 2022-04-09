@@ -102,9 +102,9 @@ settings.subscribe(settings => applyTheme(settings.theme))
 		<h1>Woops!</h1>
 		<p>Couldn't load your stuff:</p>
 		<ol>
-			<!-- {#each e.toString().split(": ") as reason}
+			{#each e.toString().split(": ") as reason}
 				<li>{reason}</li>
-			{/each} -->
+			{/each}
 		</ol>
 	</div>
 {/await}
