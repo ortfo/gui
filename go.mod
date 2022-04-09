@@ -6,8 +6,8 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/ortfo/db v0.0.0-20220301190808-8fac2c7dbc30
-	github.com/ortfo/mk v0.0.0-20220302232757-69ab5a5e53bd
-	github.com/webview/webview v0.0.0-20220331215229-54e6153a6ae3
+	github.com/ortfo/mk v0.0.0-20220406181020-b47878a991fa
+	github.com/webview/webview v0.0.0-20220407190137-85a0d5c36d07
 )
 
 require (
