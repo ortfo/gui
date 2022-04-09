@@ -18,6 +18,14 @@ let element
 let editor: Editor
 let onToolbar: boolean // Whether the mouse is over the toolbar
 
+function toBuffer(value: string) {
+	return value
+}
+
+function fromBuffer(buffer: string) {
+	return buffer
+}
+
 const actions = (editor: Editor) => ({
 	bold: editor.chain().focus().toggleMark("bold").focus(),
 	italic: editor.chain().focus().toggleMark("italic").focus(),
@@ -39,7 +47,7 @@ const actions = (editor: Editor) => ({
 			return false
 		},
 	},
-	"set-content-to-value": editor.chain().setContent(value),
+	"set-content-to-value": editor.chain().setContent(toBuffer(value)),
 })
 
 const dispatch = createEventDispatcher()
@@ -47,7 +55,6 @@ const dispatch = createEventDispatcher()
 onMount(() => {
 	editor = new Editor({
 		element,
-		content: value,
 		extensions: [
 			FootnoteReference,
 			StarterKit,
@@ -58,11 +65,12 @@ onMount(() => {
 			}),
 			Placeholder.configure({ placeholder }),
 		],
+		content: toBuffer(value),
 		onTransaction: () => {
 			editor = editor
 		},
 		onUpdate: ({ editor }) => {
-			dispatch("input", editor.getHTML())
+			value = fromBuffer(editor.getHTML())
 		},
 		onBlur: () => {
 			if (!onToolbar) {
@@ -83,7 +91,7 @@ onDestroy(() => {
 
 // Only update editor's buffer when not editing
 $: if (editor && !editor.isFocused && !onToolbar) {
-	editor.chain().setContent(value).run()
+	editor.chain().setContent(toBuffer(value)).run()
 }
 </script>
 

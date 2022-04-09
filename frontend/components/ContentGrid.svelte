@@ -170,11 +170,8 @@ $: updateWork(blocks)
 			<div class="content">
 				{#if item.data.type === "paragraph"}
 					<MarkdownEditor
-						value={item.data.content}
+						bind:value={blocks[language][index(item)].data.content}
 						active={activeBlock === item.id}
-						on:input={({ detail }) => {
-							blocks[language][index(item)].data.content = detail
-						}}
 						on:blur={() => (activeBlock = null)}
 						on:focus={() => (activeBlock = item.id)}
 						placeholder="write some text here"
