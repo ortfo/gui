@@ -139,14 +139,19 @@ describe("toBlocks", async () => {
 describe("fromBlocksToParsedDescription", () => {
     it("handles void descriptions", () => {
         expect(
-            fromBlocksToParsedDescription({}, 42, {
-                metadata: { sth: 3 },
-                title: {},
-                paragraphs: {},
-                mediaembeddeclarations: {},
-                links: {},
-                footnotes: {},
-            })
+            fromBlocksToParsedDescription(
+                {},
+                42,
+                {
+                    metadata: { sth: 3 },
+                    title: {},
+                    paragraphs: {},
+                    mediaembeddeclarations: {},
+                    links: {},
+                    footnotes: {},
+                },
+                "default"
+            )
         ).toEqual({
             footnotes: {},
             paragraphs: {},
@@ -199,7 +204,8 @@ describe("fromBlocksToParsedDescription", () => {
                     mediaembeddeclarations: {},
                     links: {},
                     footnotes: {},
-                }
+                },
+                "ja"
             )
         ).toEqual({
             title: { ja: title },
