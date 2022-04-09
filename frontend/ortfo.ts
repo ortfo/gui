@@ -1,13 +1,11 @@
 export type Translated<T> = { [langage: string]: T }
 
-export interface Abbreviation {
-    name: string
-    definition: string
+export interface Abbreviations {
+    [name: string]: string
 }
 
-export interface Footnote {
-    name: string
-    content: string
+export interface Footnotes {
+    [name: string]: string
 }
 
 export interface Paragraph {
@@ -29,7 +27,7 @@ export interface ortfodbWork {
     paragraphs: Translated<Paragraph[]>
     links: Translated<Link[]>
     media: Translated<Media[]>
-    footnotes: Translated<Footnote[]>
+    footnotes: Translated<Footnotes>
 }
 
 export interface MediaEmbedDeclaration {
@@ -53,7 +51,7 @@ export interface ParsedDescription {
     paragraphs: Translated<Paragraph[]>
     mediaembeddeclarations: Translated<MediaEmbedDeclaration[]>
     links: Translated<Link[]>
-    footnotes: Translated<Footnote[]>
+    footnotes: Translated<Footnotes>
 }
 
 export interface WorkOneLang {
@@ -63,7 +61,7 @@ export interface WorkOneLang {
     paragraphs: Paragraph[]
     media: Media[]
     links: Link[]
-    footnotes: Footnote[]
+    footnotes: Footnotes
     language: string
 }
 
