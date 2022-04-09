@@ -6,9 +6,10 @@ import { tooltip } from "../actions"
 // import BubbleMenu from "@tiptap/extension-bubble-menu"
 import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
-import type { Writable } from "svelte/store"
 import { FootnoteReference } from "../markdown/footnoteReference"
 import { MathDisplay, MathInline } from "../markdown/math"
+
+const dispatch = createEventDispatcher()
 
 export let value: string
 export let placeholder: string = ""
@@ -50,8 +51,6 @@ const actions = (editor: Editor) => ({
 	"set-content-to-value": editor.chain().setContent(toBuffer(value)),
 })
 
-const dispatch = createEventDispatcher()
-
 onMount(() => {
 	editor = new Editor({
 		element,
@@ -71,6 +70,8 @@ onMount(() => {
 		},
 		onUpdate: ({ editor }) => {
 			value = fromBuffer(editor.getHTML())
+			console.log("dispatching", value)
+			dispatch("input", value)
 		},
 		onBlur: () => {
 			if (!onToolbar) {
@@ -231,9 +232,17 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	vertical-align: super;
 }
 
+:global(.editor sup.footnote-ref) {
+	color: var(--ortforange);
+}
+:global(.editor sup.footnote-ref a) {
+	text-decoration: none;
+}
+
 :global(.editor .ProseMirror) {
 	max-height: 260px;
 	overflow-y: scroll;
+	border: none;
 }
 
 .toolbar {

@@ -20,6 +20,8 @@ import tinykeys from "tinykeys"
 import { backend } from "../backend"
 import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
+import { inLanguage } from "../ortfo"
+import FieldMap from "../components/FieldMap.svelte"
 
 onMount(async () => {
 	tinykeys(window, {
@@ -110,38 +112,60 @@ let titleH1: HTMLHeadingElement
 			<ContentGrid bind:work={$workInEditor} language={$state.lang} />
 		</section>
 
-		<section class="metadata" slot="secondary">
-			<h2>Metadata</h2>
-			{#if $settings.showTips}
-				<p class="tip">
-					unset values inherit their defaults, set in
-					<a
-						href="#settings"
-						on:click={() => ($state.openTab = "settings")}
-						>settings</a
-					>
-				</p>
-			{/if}
+		<aside slot="secondary">
+			<section class="metadata">
+				<h2>Metadata</h2>
+				{#if $settings.showTips}
+					<p class="tip">
+						unset values inherit their defaults, set in
+						<a
+							href="#settings"
+							on:click={() => ($state.openTab = "settings")}
+							>settings</a
+						>
+					</p>
+				{/if}
+				<dl>
+					<FieldList
+						key="tags"
+						bind:value={$workInEditor.metadata.tags}
+					/>
+					<FieldList
+						key="madewith"
+						bind:value={$workInEditor.metadata.madewith}
+					/>
+					<FieldColors
+						key="colors"
+						bind:value={$workInEditor.metadata.colors}
+					/>
+					<FieldImage
+						key="pagebackground"
+						bind:value={$workInEditor.metadata.pagebackground}
+					/>
+				</dl>
+			</section>
 
-			<dl>
-				<FieldList
-					key="tags"
-					bind:value={$workInEditor.metadata.tags}
+			<section class="footnotes">
+				<h2>Footnotes</h2>
+				<!-- TODO when a key changes, update references. -->
+				<FieldMap
+					value={$workInEditor.footnotes[$state.lang]}
+					on:input={({ detail }) => {
+						$workInEditor.footnotes = {
+							...$workInEditor.footnotes,
+							[$state.lang]: Object.fromEntries(
+								Object.entries(detail).map(([k, v]) => [
+									k,
+									v.replace(/<p>(.+)<\/p>/, "$1"),
+								])
+							),
+						}
+					}}
+					placeholderKey="key"
+					placeholderValue="content"
 				/>
-				<FieldList
-					key="madewith"
-					bind:value={$workInEditor.metadata.madewith}
-				/>
-				<FieldColors
-					key="colors"
-					bind:value={$workInEditor.metadata.colors}
-				/>
-				<FieldImage
-					key="pagebackground"
-					bind:value={$workInEditor.metadata.pagebackground}
-				/>
-			</dl>
-		</section>
+			</section>
+		</aside>
 	</Split>
 	{#if import.meta.env.DEV}
 		<details class="raw-data dev-only">
@@ -149,6 +173,7 @@ let titleH1: HTMLHeadingElement
 			<JSONTree value={$workInEditor} />
 		</details>
 		<div class="float dev-only">
+			<div id="debug" />
 			<ObjectDiffTable
 				a={toParsedDescription($workOnDisk)}
 				b={$workInEditor}
@@ -210,8 +235,12 @@ let titleH1: HTMLHeadingElement
 	padding-right: 1em;
 }
 
-.metadata {
+aside {
 	padding-left: 1em;
+}
+
+aside section:not(:first-of-type) {
+	margin-top: 4em;
 }
 
 .title,
