@@ -8,6 +8,7 @@ import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
 import type { Writable } from "svelte/store"
 import { FootnoteReference } from "../markdown/footnoteReference"
+import { MathDisplay, MathInline } from "../markdown/math"
 
 export let value: string
 export let placeholder: string = ""
@@ -50,6 +51,8 @@ onMount(() => {
 		extensions: [
 			FootnoteReference,
 			StarterKit,
+			MathDisplay,
+			MathInline,
 			Link.configure({
 				HTMLAttributes: [],
 			}),
