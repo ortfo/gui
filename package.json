@@ -14,9 +14,9 @@
     "format": "pnpm prettier frontend/ --write --plugin-search-dir=. && cd backend && gofmt -s -w *.go"
   },
   "husky": {
-	"hooks": {
-	  "pre-commit": "lint-staged"
-	}
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "devDependencies": {
     "@faker-js/faker": "^6.1.1",
@@ -50,6 +50,7 @@
     "@tiptap/extension-link": "^2.0.0-beta.36",
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
     "@tiptap/starter-kit": "^2.0.0-beta.183",
+    "@types/set-interval-async": "^1.0.0",
     "base64-arraybuffer": "^1.0.2",
     "colornames": "^1.1.1",
     "fast-deep-equal": "^3.1.3",
@@ -59,6 +60,7 @@
     "rfdc": "^1.3.0",
     "rollup": "^2.70.1",
     "rollup-plugin-node-builtins": "^2.1.2",
+    "set-interval-async": "^2.0.3",
     "svelte-grid": "^5.1.1",
     "svelte-json-tree": "^0.1.0",
     "svelte-simple-modal": "^1.3.1",
