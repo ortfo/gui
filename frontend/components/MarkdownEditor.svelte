@@ -227,16 +227,14 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 }
 
 :global(.editor sup) {
-	font-size: 0.8em;
-	line-height: 1.2em;
+	font-size: 0.9em;
+	line-height: 0.8em;
 	vertical-align: super;
 }
 
-:global(.editor sup.footnote-ref) {
-	color: var(--ortforange);
-}
 :global(.editor sup.footnote-ref a) {
 	text-decoration: none;
+	font-variation-settings: "wght" 800;
 }
 
 :global(.editor .ProseMirror) {
