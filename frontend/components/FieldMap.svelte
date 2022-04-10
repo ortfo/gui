@@ -40,7 +40,6 @@ function add(e) {
 
 function changeValue(key: string) {
 	return e => {
-		console.log("changing value", e)
 		value = Object.fromEntries(
 			Object.entries(value).map(([k, v]) => [k, k === key ? e.detail : v])
 		)

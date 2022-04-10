@@ -12,7 +12,6 @@ export const FootnoteReference = Node.create({
             reference: {
                 default: "",
                 parse: (element: HTMLElement) => {
-                    console.log("parsing", element)
                     return element.querySelector("a").innerText.trim()
                 },
             },
@@ -24,12 +23,10 @@ export const FootnoteReference = Node.create({
             {
                 tag: "sup.footnote-ref",
                 getAttrs: element => {
-                    console.log("matched sth")
                     if (typeof element === "string") return false
                     if (element.childNodes.length !== 1) return false
                     const child = element.firstChild
                     if (child.nodeName !== "A") return false
-                    console.log("matched", element, child.textContent.trim())
 
                     return {
                         reference: child.textContent.trim(),
@@ -52,7 +49,6 @@ export const FootnoteReference = Node.create({
     },
 
     renderHTML({ node }) {
-        console.log("rendering", node)
         return [
             "sup",
             { class: "footnote-ref", id: `fnref:${node.attrs.reference}` },

@@ -70,7 +70,6 @@ onMount(() => {
 		},
 		onUpdate: ({ editor }) => {
 			value = fromBuffer(editor.getHTML())
-			console.log("dispatching", value)
 			dispatch("input", value)
 		},
 		onBlur: () => {
