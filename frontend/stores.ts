@@ -62,6 +62,8 @@ export const state: Writable<State> = writable({
     },
 })
 
+export const buildProgress: Writable<number> = writable(0)
+
 export const database: Writable<Database> = writable({} as Database)
 
 export const workInEditor: Writable<ParsedDescription> = writable(

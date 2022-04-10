@@ -1,21 +1,45 @@
 <script lang="ts">
 import { tooltip } from "../actions"
-import { settings, state, hasUnsavedChanges } from "../stores"
+import { settings, state, hasUnsavedChanges, buildProgress } from "../stores"
 import type { PageName } from "../stores"
 import { summon } from "../modals"
 import { backend } from "../backend"
 
+let rebuildErrored = false
+let rebuildError = ""
+
 async function rebuildDatabase() {
 	$state.rebuildingDatabase = true
-	await backend.rebuildDatabase()
-	$state.rebuildingDatabase = false
-	window.location.reload()
+	try {
+		await Promise.all([
+			backend.rebuildDatabase(),
+			async () => {
+				setInterval(async () => {
+					let progress = await backend.getBuildProgress()
+					$buildProgress = progress.percent
+				}, 50)
+			},
+		])
+		// window.location.reload()
+	} catch (error) {
+		rebuildErrored = true
+		rebuildError = error
+		console.error(error)
+	} finally {
+		setTimeout(() => {
+			rebuildErrored = false
+		}, 1500)
+		$state.rebuildingDatabase = false
+	}
 }
 let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 </script>
 
 <nav>
 	<img src={`assets/${$settings.theme}-logo.svg`} alt="ortfo's logo" />
+	{#if rebuildErrored}
+	{rebuildError}
+	{:else}
 	<a
 		class={$state.openTab === "works" ? "current" : ""}
 		href="#works"
@@ -53,6 +77,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			{tab}
 		</a>
 	{/each}
+	{/if}
 	<button on:click={rebuildDatabase}>
 		{#if $state.rebuildingDatabase}
 			rebuilding&hellip;
@@ -70,6 +95,11 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			backend.quit()
 		}}>×</button
 	>
+	<div
+		class="progress-bar"
+		class:errored={rebuildErrored}
+		style={`width: ${rebuildErrored ? 100 : $buildProgress}%`}
+	/>
 </nav>
 
 <style>
@@ -86,7 +116,23 @@ nav {
 	left: 0;
 	right: 0;
 	z-index: 100;
+	position: relative;
 }
+
+.progress-bar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	background-color: var(--ortforange-light);
+	z-index: -10;
+	transition: width 0.25s ease;
+}
+
+.progress-bar.errored {
+	background-color: rgb(255, 89, 89);
+}
+
 .separator {
 	margin: 0 -1em;
 	font-size: 1.5em;

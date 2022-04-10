@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -85,4 +86,23 @@ func (settings *Settings) RebuildDatabase() error {
 	}
 	LogToBrowser("Finish rebuilding database")
 	return nil
+}
+
+func (settings *Settings) ProgressFile() ortfomk.ProgressFile {
+	var progressFile ortfomk.ProgressFile
+	progressFilePath := ConfigurationDirectory(".progress.json")
+	if _, err := os.Stat(progressFilePath); os.IsNotExist(err) {
+		return progressFile
+	}
+	raw, err := os.ReadFile(progressFilePath)
+	if err != nil {
+		ErrorToBrowser("Couldn't read progress file: %s", err)
+		return progressFile
+	}
+	err = json.Unmarshal(raw, &progressFile)
+	if err != nil {
+		ErrorToBrowser("Couldn't parse progress file: %s", err)
+		return progressFile
+	}
+	return progressFile
 }

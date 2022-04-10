@@ -18,6 +18,20 @@ export type Base64WithFiletype = string
 
 export type MaybeError = string | null
 
+export type BuildProgress = {
+    total: number;
+    processed: number;
+    percent: number;
+    current: {
+        id: string;
+        step: string;
+        resolution: number;
+        file: string;
+        language: string;
+        output: string;
+    }
+}
+
 export const localProjects = path => `http://localhost:4444/projects/${path}`
 export const localDatabase = path => `http://localhost:4444/database/${path}`
 export const relativeToDatabase = path => path.split("portfolio-database/")[1]
@@ -45,6 +59,12 @@ export const backend = {
             // @ts-ignore backend__* functions are injected by webview (from the backend)
             (await backend__databaseRead()) || {}
         ) as Database
+    },
+    getBuildProgress: async() => {
+        return lowercaseNoSpacesKeys(
+            // @ts-ignore backend__* functions are injected by webview (from the backend)
+            (await backend__getBuildProgress()) || {}
+        ) as BuildProgress
     },
     rebuildDatabase: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
