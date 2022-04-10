@@ -135,10 +135,10 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	cursor: pointer;
 }
 
-:global(button):not([data-variant]) {
+:global(button:not([data-variant])) {
 	border-radius: 2em;
-	border: 2px solid var(--ortforange);
-	color: var(--ortforange);
+	border: 2px solid var(--black);
+	color: var(--black);
 	background-color: transparent;
 	font-variation-settings: "wght" 800;
 	padding: 0.25rem 1.5rem;
