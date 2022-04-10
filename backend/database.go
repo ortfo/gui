@@ -72,10 +72,10 @@ func (settings *Settings) RebuildDatabase() error {
 		return fmt.Errorf("couldn't load database configuration: %w", err)
 	}
 
-	err = ortfodb.Build(
+	go ortfodb.Build(
 		projectsFolder,
 		ConfigurationDirectory("portfolio-database", "database.json"),
-		ortfodb.Flags{Scattered: true, Silent: true},
+		ortfodb.Flags{Scattered: true, Silent: true, ProgressFile: ConfigurationDirectory("portfolio-database", "progress.json")},
 		ortfodbConfig,
 	)
 	if crash := recover(); crash != nil {
@@ -90,18 +90,22 @@ func (settings *Settings) RebuildDatabase() error {
 
 func (settings *Settings) ProgressFile() ortfomk.ProgressFile {
 	var progressFile ortfomk.ProgressFile
-	progressFilePath := ConfigurationDirectory(".progress.json")
+	progressFilePath := ConfigurationDirectory("portfolio-database", "progress.json")
 	if _, err := os.Stat(progressFilePath); os.IsNotExist(err) {
 		return progressFile
 	}
 	raw, err := os.ReadFile(progressFilePath)
+	LogToBrowser("Progress file raw is %s", string(raw))
+	if string(raw) == "" {
+		return settings.ProgressFile()
+	}
 	if err != nil {
 		ErrorToBrowser("Couldn't read progress file: %s", err)
 		return progressFile
 	}
 	err = json.Unmarshal(raw, &progressFile)
 	if err != nil {
-		ErrorToBrowser("Couldn't parse progress file: %s", err)
+		ErrorToBrowser("Couldn't parse progress file: %s. Raw was %q", err, string(raw))
 		return progressFile
 	}
 	return progressFile

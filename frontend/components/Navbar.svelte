@@ -1,85 +1,102 @@
+<script lang="ts" context="module">
+export function startPolling(reload: boolean = false) {
+	let poller = setIntervalAsync(async () => {
+		let progress = (await backend.getBuildProgress()) as BuildProgress
+		buildProgress.set(progress)
+		if (progress.percent === 100) {
+			clearIntervalAsync(poller)
+			// Leave time for the progress bar to fade out
+			setTimeout(() => {
+				buildProgress.set({
+					percent: 0,
+					current: {},
+					total: 0,
+					processed: 0,
+				} as BuildProgress)
+				if (reload) {
+					setTimeout(() => {
+						window.location.reload()
+					}, 500)
+				}
+			}, 500)
+		}
+	}, 150)
+}
+
+export function rebuildDatabase(reload: boolean = false) {
+	startPolling(reload)
+	backend.rebuildDatabase()
+}
+</script>
+
 <script lang="ts">
 import { tooltip } from "../actions"
-import { settings, state, hasUnsavedChanges, buildProgress } from "../stores"
+import {
+	settings,
+	state,
+	hasUnsavedChanges,
+	buildProgress,
+	rebuildingDatabase,
+} from "../stores"
 import type { PageName } from "../stores"
 import { summon } from "../modals"
-import { backend } from "../backend"
+import { backend, BuildProgress } from "../backend"
+import {
+	setIntervalAsync,
+	clearIntervalAsync,
+} from "set-interval-async/dynamic"
 
 let rebuildErrored = false
 let rebuildError = ""
 
-async function rebuildDatabase() {
-	$state.rebuildingDatabase = true
-	try {
-		await Promise.all([
-			backend.rebuildDatabase(),
-			async () => {
-				setInterval(async () => {
-					let progress = await backend.getBuildProgress()
-					$buildProgress = progress.percent
-				}, 50)
-			},
-		])
-		// window.location.reload()
-	} catch (error) {
-		rebuildErrored = true
-		rebuildError = error
-		console.error(error)
-	} finally {
-		setTimeout(() => {
-			rebuildErrored = false
-		}, 1500)
-		$state.rebuildingDatabase = false
-	}
-}
 let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 </script>
 
 <nav>
 	<img src={`assets/${$settings.theme}-logo.svg`} alt="ortfo's logo" />
 	{#if rebuildErrored}
-	{rebuildError}
+		{rebuildError}
 	{:else}
-	<a
-		class={$state.openTab === "works" ? "current" : ""}
-		href="#works"
-		on:click={() => {
-			$state.openTab = "works"
-		}}
-	>
-		works
-	</a>
-	{#if $state.editingWorkID}
-		<span class="separator">/</span>
 		<a
+			class={$state.openTab === "works" ? "current" : ""}
+			href="#works"
 			on:click={() => {
-				$state.openTab = "editor"
-			}}
-			href="#editor"
-			class:current={$state.openTab === "editor"}
-			>{$state.editingWorkID}</a
-		>
-		{#if $hasUnsavedChanges}
-			<span
-				class="unsaved-changes"
-				use:tooltip={"You have unsaved changes"}>&bull;</span
-			>
-		{/if}
-	{/if}
-	{#each tabs as tab}
-		<a
-			class={$state.openTab === tab ? "current" : ""}
-			href={`#${tab}`}
-			on:click={() => {
-				$state.openTab = tab
+				$state.openTab = "works"
 			}}
 		>
-			{tab}
+			works
 		</a>
-	{/each}
+		{#if $state.editingWorkID}
+			<span class="separator">/</span>
+			<a
+				on:click={() => {
+					$state.openTab = "editor"
+				}}
+				href="#editor"
+				class:current={$state.openTab === "editor"}
+				>{$state.editingWorkID}</a
+			>
+			{#if $hasUnsavedChanges}
+				<span
+					class="unsaved-changes"
+					use:tooltip={"You have unsaved changes"}>&bull;</span
+				>
+			{/if}
+		{/if}
+		{#each tabs as tab}
+			<a
+				class={$state.openTab === tab ? "current" : ""}
+				href={`#${tab}`}
+				on:click={() => {
+					$state.openTab = tab
+				}}
+			>
+				{tab}
+			</a>
+		{/each}
 	{/if}
-	<button on:click={rebuildDatabase}>
-		{#if $state.rebuildingDatabase}
+	<button on:click={_ => rebuildDatabase()}>
+		{#if $rebuildingDatabase}
 			rebuilding&hellip;
 		{:else}
 			rebuild
@@ -98,7 +115,12 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 	<div
 		class="progress-bar"
 		class:errored={rebuildErrored}
-		style={`width: ${rebuildErrored ? 100 : $buildProgress}%`}
+		class:active={$rebuildingDatabase}
+		style={`width: ${
+			rebuildErrored || !$rebuildingDatabase
+				? 100
+				: $buildProgress.percent
+		}%`}
 	/>
 </nav>
 
@@ -116,7 +138,7 @@ nav {
 	left: 0;
 	right: 0;
 	z-index: 100;
-	position: relative;
+	/* position: relative; */
 }
 
 .progress-bar {
@@ -124,9 +146,15 @@ nav {
 	top: 0;
 	bottom: 0;
 	left: 0;
-	background-color: var(--ortforange-light);
+	background-color: var(--ortforange);
+	/* background-color: red; */
 	z-index: -10;
-	transition: width 0.25s ease;
+	transition: width 0.25s ease, opacity 0.5s ease;
+	opacity: 0;
+}
+
+.progress-bar.active {
+	opacity: 1;
 }
 
 .progress-bar.errored {

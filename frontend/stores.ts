@@ -1,6 +1,7 @@
 import { diff, Operation } from "just-diff"
 import type { Readable, Writable } from "svelte/store"
 import { derived, writable } from "svelte/store"
+import type { BuildProgress } from "./backend"
 import { toParsedDescription } from "./description"
 import type {
     Database,
@@ -31,7 +32,6 @@ export type WorkID = string
 
 export type State = {
     openTab: PageName
-    rebuildingDatabase: boolean
     editingWorkID: WorkID | null
     lang: "en" | "fr"
     metadataPaneSplitRatio: number
@@ -48,7 +48,6 @@ export const settings: Writable<Settings> = writable({
 
 export const state: Writable<State> = writable({
     openTab: "works",
-    rebuildingDatabase: false,
     editingWorkID: "",
     lang: "en",
     metadataPaneSplitRatio: 0.333,
@@ -62,7 +61,23 @@ export const state: Writable<State> = writable({
     },
 })
 
-export const buildProgress: Writable<number> = writable(0)
+export const buildProgress: Writable<BuildProgress> = writable({
+    current: {
+        file: "",
+        id: "",
+        language: "",
+        output: "",
+        resolution: 0,
+        step: "",
+    },
+    percent: 0,
+    processed: 0,
+    total: 0,
+})
+export const rebuildingDatabase: Readable<boolean> = derived(
+    [buildProgress],
+    ([$buildProgress]) => $buildProgress.total > 0
+)
 
 export const database: Writable<Database> = writable({} as Database)
 

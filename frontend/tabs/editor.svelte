@@ -22,14 +22,14 @@ import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
 import { inLanguage } from "../ortfo"
 import FieldMap from "../components/FieldMap.svelte"
+import { rebuildDatabase } from "../components/Navbar.svelte";
 
 onMount(async () => {
 	tinykeys(window, {
 		"$mod+s": async () => {
-			backend.writeToDisk($workInEditor, $workOnDisk.id)
-			backend.rebuildDatabase()
-			backend.saveUIState($state)
-			window.location.reload()
+			await backend.writeToDisk($workInEditor, $workOnDisk.id)
+			rebuildDatabase(true)
+			await backend.saveUIState($state)
 			// TODO only re-mount components whose was unsaved prior to rebuilding
 		},
 	})
