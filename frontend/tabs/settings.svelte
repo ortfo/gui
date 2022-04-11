@@ -1,9 +1,8 @@
 <script lang="ts">
 import { onMount } from "svelte"
-
 import { backend } from "../backend"
-
 import { settings, state } from "../stores"
+import {_} from "svelte-i18n"
 
 settings.subscribe(async settings => {
 	await backend.settingsWrite(settings)
@@ -14,32 +13,32 @@ onMount(() => {
 })
 </script>
 
-<h1>Settings</h1>
+<h1>{$_("Settings")}</h1>
 
 <dl>
-	<dt>theme</dt>
+	<dt>{$_("theme")}</dt>
 	<dd>
 		<select name="theme" id="theme" bind:value={$settings.theme}>
-			<option value="light">light</option>
-			<option value="dark">dark</option>
+			<option value="light">{$_("light")}</option>
+			<option value="dark">{$_("dark")}</option>
 		</select>
 	</dd>
 
-	<dt>surname</dt>
+	<dt>{$_("surname")}</dt>
 	<dd><input type="text" bind:value={$settings.surname} /></dd>
 
-	<dt>projects folder</dt>
+	<dt>{$_("projects folder")}</dt>
 	<dd><input type="text" bind:value={$settings.projectsfolder} /></dd>
 
-	<dt>language</dt>
+	<dt>{$_("language")}</dt>
 	<dd>
 		<select name="language" id="language" bind:value={$settings.language}>
-			<option value="fr">french</option>
-			<option value="en">english</option>
+			<option value="fr">{$_("french")}</option>
+			<option value="en">{$_("english")}</option>
 		</select>
 	</dd>
 
-	<dt>show tips</dt>
+	<dt>{$_("show tips")}</dt>
 	<dd>
 		<input
 			type="checkbox"

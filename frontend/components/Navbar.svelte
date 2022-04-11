@@ -45,6 +45,7 @@ import {
 	setIntervalAsync,
 	clearIntervalAsync,
 } from "set-interval-async/dynamic"
+import { _ } from "svelte-i18n"
 
 let rebuildErrored = false
 let rebuildError = ""
@@ -64,7 +65,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 				$state.openTab = "works"
 			}}
 		>
-			works
+			{$_("works")}
 		</a>
 		{#if $state.editingWorkID}
 			<span class="separator">/</span>
@@ -91,20 +92,20 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 					$state.openTab = tab
 				}}
 			>
-				{tab}
+				{$_(tab)}
 			</a>
 		{/each}
 	{/if}
 	<button on:click={_ => rebuildDatabase()}>
 		{#if $rebuildingDatabase}
-			rebuilding&hellip;
+			{$_("rebuilding…")}
 		{:else}
-			rebuild
+			{$_("rebuild")}
 		{/if}
 	</button>
-	<button on:click={() => summon("publish")}>publish!</button>
+	<button on:click={() => summon("publish")}>{$_("publish!")}</button>
 	<button
-		use:tooltip={"Quit ortfo"}
+		use:tooltip={$_("Quit ortfo")}
 		class="quit"
 		data-variant="a"
 		on:click={() => {

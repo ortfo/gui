@@ -3,6 +3,7 @@ import { entries } from "lodash"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import { tooltip } from "../actions"
 import { createEventDispatcher } from "svelte"
+import {_} from "svelte-i18n"
 
 const dispatch = createEventDispatcher()
 type K = any
@@ -10,6 +11,7 @@ type V = any
 
 export let placeholderKey: string = "name"
 export let placeholderValue: string = "value"
+export let removeTooltip: string = $_("Remove this one")
 export let value: { [key: string]: string }
 
 let buffer: [string, string][] = Object.entries(value)
@@ -76,7 +78,7 @@ function changeKey(index: number) {
 				/>
 			</dd>
 			<button
-				use:tooltip={"Remove this footnote"}
+				use:tooltip={removeTooltip}
 				class="remove"
 				data-variant="none"
 				on:click={remove(key)}>&times;</button

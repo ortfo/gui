@@ -8,6 +8,7 @@ import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
 import { FootnoteReference } from "../markdown/footnoteReference"
 import { MathDisplay, MathInline } from "../markdown/math"
+import {_} from "svelte-i18n"
 
 const dispatch = createEventDispatcher()
 
@@ -105,27 +106,27 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 >
 	<li>
 		<button
-			use:tooltip={"Bold"}
+			use:tooltip={$_("Bold")}
 			data-variant="none"
 			on:click={actions(editor)["bold"].run}
-			><img src="/assets/icon-bold.svg" alt="bold" class="icon" /></button
+			><img src="/assets/icon-bold.svg" alt={$_("bold")} class="icon" /></button
 		>
 	</li>
 	<li>
 		<button
-			use:tooltip={"Italic"}
+			use:tooltip={$_("Italic")}
 			data-variant="none"
 			on:click={actions(editor)["italic"].run}
 			><img
 				src="/assets/icon-italic.svg"
-				alt="italic"
+				alt={$_("italic")}
 				class="icon"
 			/></button
 		>
 	</li>
 	<li>
 		<button
-			use:tooltip={"Heading"}
+			use:tooltip={$_("Heading")}
 			data-variant="none"
 			on:click={actions(editor)["heading"].run}
 			><img
@@ -137,39 +138,39 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	</li>
 	<li>
 		<button
-			use:tooltip={"Code"}
+			use:tooltip={$_("Code")}
 			data-variant="none"
 			on:click={actions(editor)["code"].run}
-			><img src="/assets/icon-code.svg" alt="code" class="icon" /></button
+			><img src="/assets/icon-code.svg" alt={$_("code")} class="icon" /></button
 		>
 	</li>
 	<li>
 		<button
-			use:tooltip={"Block of code"}
+			use:tooltip={$_("Block of code")}
 			data-variant="none"
 			on:click={actions(editor)["code-block"].run}
 			><img
 				src="/assets/icon-code-block.svg"
-				alt="code block"
+				alt={$_("code block")}
 				class="icon"
 			/></button
 		>
 	</li>
 	<li>
 		<button
-			use:tooltip={"Insert media"}
+			use:tooltip={$_("Insert media")}
 			data-variant="none"
 			on:click={actions(editor)["media"].run}
 			><img
 				src="/assets/icon-insert-media.svg"
-				alt="media"
+				alt={$_("media")}
 				class="icon"
 			/></button
 		>
 	</li>
 	<li>
 		<button
-			use:tooltip={"Link"}
+			use:tooltip={$_("Link")}
 			data-variant="none"
 			on:click={actions(editor)["link"].run}
 			><img src="/assets/icon-link.svg" alt="link" class="icon" /></button
@@ -177,36 +178,36 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	</li>
 	<li>
 		<button
-			use:tooltip={"Bullet list"}
+			use:tooltip={$_("Bullet list")}
 			data-variant="none"
 			on:click={actions(editor)["list-bullets"].run}
 			><img
 				src="/assets/icon-list-bullets.svg"
-				alt="bullet list"
+				alt={$_("bullet list")}
 				class="icon"
 			/></button
 		>
 	</li>
 	<li>
 		<button
-			use:tooltip={"Numbered list"}
+			use:tooltip={$_("Numbered list")}
 			data-variant="none"
 			on:click={actions(editor)["list-numbered"].run}
 			><img
 				src="/assets/icon-list-numbered.svg"
-				alt="numbered list"
+				alt={$_("numbered list")}
 				class="icon"
 			/></button
 		>
 	</li>
 	<li>
 		<button
-			use:tooltip={"List of definitions"}
+			use:tooltip={$_("List of definitions")}
 			data-variant="none"
 			on:click={actions(editor)["list-definitions"].run}
 			><img
 				src="/assets/icon-list-definitions.svg"
-				alt="definition list"
+				alt={$_("definition list")}
 				class="icon"
 			/></button
 		>

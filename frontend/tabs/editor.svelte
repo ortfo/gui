@@ -22,7 +22,8 @@ import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
 import { inLanguage } from "../ortfo"
 import FieldMap from "../components/FieldMap.svelte"
-import { rebuildDatabase } from "../components/Navbar.svelte";
+import { rebuildDatabase } from "../components/Navbar.svelte"
+import { _ } from "svelte-i18n"
 
 onMount(async () => {
 	tinykeys(window, {
@@ -98,14 +99,15 @@ let titleH1: HTMLHeadingElement
 					{$workInEditor.title[$state.lang]}
 				</h1>
 				<button data-variant="inline" on:click={editTitle}
-					>{#if editingTitle}finish editing{:else}edit{/if}</button
+					>{#if editingTitle}{$_("finish")}{:else}{$_("edit")}{/if}</button
 				>
 			</div>
 
 			{#if $settings.showTips}
 				<p class="tip">
-					Drag and drop blocks to arrange the layout of the page.
-					Double-click a block to edit it.
+					{$_(
+						"Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it."
+					)}
 				</p>
 			{/if}
 
@@ -114,14 +116,14 @@ let titleH1: HTMLHeadingElement
 
 		<aside slot="secondary">
 			<section class="metadata">
-				<h2>Metadata</h2>
+				<h2>{$_("Metadata")}</h2>
 				{#if $settings.showTips}
 					<p class="tip">
-						unset values inherit their defaults, set in
+						{$_("unset values inherit their defaults, set in")}
 						<a
 							href="#settings"
 							on:click={() => ($state.openTab = "settings")}
-							>settings</a
+							>{$_("settings")}</a
 						>
 					</p>
 				{/if}
@@ -146,7 +148,7 @@ let titleH1: HTMLHeadingElement
 			</section>
 
 			<section class="footnotes">
-				<h2>Footnotes</h2>
+				<h2>{$_("Footnotes")}</h2>
 				<!-- TODO when a key changes, update references. -->
 				<FieldMap
 					value={$workInEditor.footnotes[$state.lang]}
@@ -161,8 +163,9 @@ let titleH1: HTMLHeadingElement
 							),
 						}
 					}}
-					placeholderKey="key"
-					placeholderValue="content"
+					placeholderKey={$_("key")}
+					placeholderValue={$_("content")}
+					removeTooltip={$_("Remove this footnote")}
 				/>
 			</section>
 		</aside>
@@ -187,11 +190,12 @@ let titleH1: HTMLHeadingElement
 		<h1>Well, this is weird.</h1>
 		<div class="error">
 			<p>
-				It looks like <em>{$state.editingWorkID}</em>'s folder has gone
-				missing.
+				{@html $_(
+					"It looks like <em>{id}</em>'s folder has gone missing."
+				)}
 			</p>
 			<button on:click={_ => ($state.openTab = "works")}
-				>go back to all projects</button
+				>{$_("go back to all projects")}</button
 			>
 		</div>
 	{:else}

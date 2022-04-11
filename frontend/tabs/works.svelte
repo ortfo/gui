@@ -6,12 +6,17 @@ import CardWork from "../components/CardWork.svelte"
 import NewWork from "../modals/NewWork.svelte"
 import { settings, databaseCurrentLanguage } from "../stores"
 const { open: openModal } = getContext("simple-modal")
+import { _ } from "svelte-i18n"
 </script>
 
 {#if $settings.surname}
-	<h1>Good to see you, {$settings.surname}.</h1>
+	<h1>
+		{$_("Good to see you, {name}.", {
+			values: { name: $settings.surname },
+		})}
+	</h1>
 {:else}
-	<h1>Good to see you.</h1>
+	<h1>{$_("Good to see you.")}</h1>
 {/if}
 
 <ul class="cards">

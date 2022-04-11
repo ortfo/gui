@@ -1,0 +1,78 @@
+Good to see you, {name}.: Heureux de vous revoir, {name}.
+Good to see you.: Heureux de vous revoir.
+works: projets
+tags: tags
+technologies: technologies
+sites: sites
+settings: réglages
+rebuild: reconstruire
+rebuilding…: reconstruction…
+publish!: publier !
+made with: fait avec
+colors: couleurs
+primary: principale
+secondary: secondaire
+tertiary: tertiaire
+page background: fond de page
+content: contenu
+key: clé
+Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.: Faites glisser les blocs pour réorganiser la page. Double-cliquez sur un bloc pour le modifier.
+unset values inherit their defaults, set in: les valeurs non définies héritent de leurs valeurs par défaut, définies dans
+Footnotes: Notes de bas de page
+Metadata: Métadonnées
+move: déplacer
+resize: redimensionner
+delete: supprimer
+delete block: supprimer le bloc
+write some text here: écrivez du texte ici
+name your link: donnez un nom à votre lien
+put the url here: mettez l'URL ici
+describe your media: décrivez votre média
+put the path or url to the media here: mettez le chemin ou l'URL du média ici
+media: média
+link: lien
+paragraph: paragraphe
+No content yet.: Aucun contenu pour l'instant.
+Add a new block?: Ajouter un nouveau bloc ?
+media icon: icône de média
+link icon: icône de lien
+paragraph icon: icône de paragraphe
+Bold: Gras
+bold: gras
+Italic: Italique
+italic: italique
+Heading: Titre
+heading: titre
+Code: Code
+code: code
+Block of code: Bloc de code
+block of code: bloc de code
+Insert media: Insérer un média
+insert media: insérer un média
+Link: Lien
+Bullet list: Liste à puces
+bullet list: liste à puces
+Numbered list: Liste numérotée
+numbered list: liste numérotée
+List of definitions: Liste de définitions
+list of definitions: liste de définitions
+Settings: Réglages
+theme: thème
+surname: prénom
+light: clair
+dark: sombre
+projects folder: dossier des projets
+language: langue
+show tips: afficher des explications
+unset: non défini
+chosen image for {key}: image choisie pour {key}
+Loading…: Chargement…
+"An error occured: ": "Une erreur est survenue : "
+another one?: un autre ?
+add something: ajouter quelque chose
+Add a…: Ajouter un…
+edit: modifier
+finish: terminer
+Remove this one: Supprimer ceci
+Remove this footnote: Supprimer cette note de bas de page
+pick from image: choisir depuis une image

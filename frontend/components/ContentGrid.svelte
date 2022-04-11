@@ -22,6 +22,7 @@ import {
 import { state, workOnDisk } from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
+import {_} from "svelte-i18n"
 
 export let work: ParsedDescription
 export let language: string
@@ -174,7 +175,7 @@ $: updateWork(blocks)
 						active={activeBlock === item.id}
 						on:blur={() => (activeBlock = null)}
 						on:focus={() => (activeBlock = item.id)}
-						placeholder="write some text here"
+						placeholder={$_("write some text here")}
 					/>
 				{:else if item.data.type === "link"}
 					<span class="type">Link</span>
@@ -183,14 +184,14 @@ $: updateWork(blocks)
 						bind:value={blocks[language][index(item)].data.name}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
-						placeholder="name your link"
+						placeholder={$_("name your link")}
 					/>
 					<input
 						class="url"
 						bind:value={blocks[language][index(item)].data.url}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
-						placeholder="put the url here"
+						placeholder={$_("put the url here")}
 					/>
 				{:else if item.data.type === "media"}
 					<input
@@ -198,47 +199,47 @@ $: updateWork(blocks)
 						bind:value={blocks[language][index(item)].data.alt}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
-						placeholder="describe your media"
+						placeholder={$_("describe your media")}
 					/>
 					<input
 						class="url"
 						bind:value={blocks[language][index(item)].data.source}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
-						placeholder="put the path or url to the media here"
+						placeholder={$_("put the path or url to the media here")}
 					/>
 				{/if}
 			</div>
 			<div
 				class="deleter"
-				use:tooltip={["delete block", 500]}
+				use:tooltip={[$_("delete block"), 500]}
 				on:click={removeBlock(item)}
 			>
-				<img src="/assets/icon-delete.svg" class="icon" alt="delete" />
+				<img src="/assets/icon-delete.svg" class="icon" alt={$_("delete")} />
 			</div>
 			<div
 				class="dragger"
-				use:tooltip={["move", 500]}
+				use:tooltip={[$_("move"), 500]}
 				on:mousedown={movePointerDown}
 			>
-				<img src="/assets/icon-move.svg" class="icon" alt="move" />
+				<img src="/assets/icon-move.svg" class="icon" alt={$_("move")} />
 			</div>
 			<div
 				class="resizer"
-				use:tooltip={["resize", 500]}
+				use:tooltip={[$_("resize"), 500]}
 				on:mousedown={resizePointerDown}
 			>
 				<img
 					src="/assets/icon-resize.svg"
 					class="icon"
-					alt="resize"
+					alt={$_("resize")}
 					draggable="false"
 				/>
 			</div>
 		</div>
 	</Grid>
 	<div class="create-block">
-		<h2>Add a new block?</h2>
+		<h2>{$_("Add a new block?")}</h2>
 		<div class="types">
 			<button data-variant="none" on:click={addBlock("media")}>
 				<img
@@ -246,35 +247,35 @@ $: updateWork(blocks)
 					alt="media icon"
 					class="icon"
 				/>
-				media
+				{$_("media")}
 			</button>
 			<button data-variant="none" on:click={addBlock("paragraph")}>
 				<img src="/assets/icon-paragraph.svg" alt="¶" class="icon" />
-				paragraph
+				{$_("paragraph")}
 			</button>
 			<button data-variant="none" on:click={addBlock("link")}>
 				<img
 					src="/assets/icon-major-link.svg"
-					alt="link icon"
+					alt={$_("link icon")}
 					class="icon"
 				/>
-				link
+				{$_("link")}
 			</button>
 		</div>
 	</div>
 {:else}
 	<div class="empty">
-		<h2>No content yet.</h2>
+		<h2>{$_("No content yet.")}</h2>
 		<div class="create-block empty">
-			<h3>Add a…</h3>
+			<h3>{$_("Add a…")}</h3>
 			<div class="types">
 				<button data-variant="none" on:click={addBlock("media")}>
 					<img
 						src="/assets/icon-media.svg"
-						alt="media icon"
+						alt={$_("media icon")}
 						class="icon"
 					/>
-					media
+					{$_("media")}
 				</button>
 				<button data-variant="none" on:click={addBlock("paragraph")}>
 					<img
@@ -282,15 +283,15 @@ $: updateWork(blocks)
 						alt="¶"
 						class="icon"
 					/>
-					paragraph
+					{$_("paragraph")}
 				</button>
 				<button data-variant="none" on:click={addBlock("link")}>
 					<img
 						src="/assets/icon-major-link.svg"
-						alt="link icon"
+						alt={$_("link icon")}
 						class="icon"
 					/>
-					link
+					{$_("link")}
 				</button>
 			</div>
 		</div>

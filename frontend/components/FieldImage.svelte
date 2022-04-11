@@ -3,6 +3,7 @@ import type { Base64WithFiletype } from "../backend"
 import { encode as bufferBase64encode } from "base64-arraybuffer"
 import { createEventDispatcher } from "svelte"
 import MetadataField from "./MetadataField.svelte"
+import { _ } from "svelte-i18n"
 
 const emit = createEventDispatcher()
 
@@ -38,12 +39,12 @@ async function getBase64d() {
 	{#if files.length || value?.data}
 		<div class="preview">
 			{#await getBase64d()}
-				<p>Loading...</p>
+				<p>{$_("Loading…")}</p>
 			{:then}
 				<img
 					class="preview"
 					src={value.data}
-					alt="chosen image for {key}"
+					alt={$_("chosen image for {key}", { values: { key } })}
 				/>
 				<button
 					class="remove"
@@ -55,7 +56,7 @@ async function getBase64d() {
 					}}>&times;</button
 				>
 			{:catch err}
-				<p>An error occured: {err}</p>
+				<p>{$_("An error occured: ")}{err}</p>
 			{/await}
 		</div>
 	{/if}

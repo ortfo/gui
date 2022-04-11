@@ -1,5 +1,6 @@
 <script lang="ts">
 import { metadataReadableNames } from "../ortfo"
+import { _ } from "svelte-i18n"
 
 export let key: string
 export let colon: boolean = false
@@ -9,7 +10,7 @@ export let oneline: boolean = false
 
 <div class="entry" class:oneline class:part-of-object={partOfObject}>
 	<dt class:colon>
-		{metadataReadableNames[key] || key}
+		{$_(metadataReadableNames[key] || key)}
 	</dt>
 	<dd><slot /></dd>
 </div>

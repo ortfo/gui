@@ -3,6 +3,7 @@ import { createEventDispatcher } from "svelte"
 import { summon } from "../modals"
 import FieldColor from "./FieldColor.svelte"
 import MetadataField from "./MetadataField.svelte"
+import {_} from "svelte-i18n"
 
 const emit = createEventDispatcher()
 
@@ -25,5 +26,6 @@ export let key: string
 		<FieldColor partOfObject key="secondary" bind:value={value.secondary} />
 		<FieldColor partOfObject key="tertiary" bind:value={value.tertiary} />
 	</dl>
-	<button data-variant="inline" on:click={autoSelect}>auto-select</button>
+	<button data-variant="inline" on:click={autoSelect}>{$_("pick from image")}</button>
+
 </MetadataField>

@@ -10,6 +10,18 @@ import { onMount } from "svelte"
 import Modal from "svelte-simple-modal"
 import ModalButtonClose from "./components/ModalButtonClose.svelte"
 import tinykeys from "tinykeys"
+import {addMessages, init as i18nInit, locale} from "svelte-i18n"
+import fr from "../i18n/fr.yaml"
+
+function loadLocales() {
+	addMessages("fr", fr)
+	i18nInit({
+		fallbackLocale: "en",
+		initialLocale: $settings.language,
+	})
+}
+
+$: $locale = $settings.language
 
 async function loadSettings() {
 	await backend.initialize()
@@ -56,6 +68,7 @@ async function loadDatabase() {
 async function load() {
 	await loadSettings()
 	await loadDatabase()
+	loadLocales()
 }
 
 onMount(() => {

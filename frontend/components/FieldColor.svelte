@@ -2,6 +2,7 @@
 import MetadataField from "./MetadataField.svelte"
 import colorNameToHex from "colornames"
 import { createEventDispatcher } from "svelte"
+import {_} from "svelte-i18n"
 const dispatch = createEventDispatcher()
 
 function toHex(value: string) {
@@ -34,7 +35,7 @@ function reset(e) {
 		type="text"
 		value={hexCode}
 		on:input={e => dispatch("input", (value = e.target.value))}
-		placeholder="unset"
+		placeholder={$_("unset")}
 	/>
 </MetadataField>
 

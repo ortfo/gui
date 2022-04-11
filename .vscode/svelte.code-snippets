@@ -1,0 +1,7 @@
+{
+	"Add a translated string": {
+		"scope": "svelte",
+		"prefix": "trad",
+		"body": "{\\$_(\"${1:CLIPBOARD}\")}",
+	}
+}
