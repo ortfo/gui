@@ -57,7 +57,7 @@ input:checked + label {
 }
 
 input:checked + label .code {
-	color: var(--black);
+	color: black;
 }
 
 label {
