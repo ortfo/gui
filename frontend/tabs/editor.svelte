@@ -230,6 +230,7 @@ let titleH1: HTMLHeadingElement
 	margin-top: 5em;
 }
 .url {
+	margin-top: 2em;
 	font-family: var(--mono);
 }
 .layout {
