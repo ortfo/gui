@@ -158,7 +158,7 @@ $: updateWork(blocks)
 		}}
 	>
 		<div
-			transition:scale
+			in:scale
 			class="block"
 			data-type={item.data.type}
 			class:active={activeBlock === item.id}
