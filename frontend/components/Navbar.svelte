@@ -184,6 +184,14 @@ nav a {
 	display: inline-block;
 	border-bottom: 3px solid transparent;
 }
+
+nav a[href="#editor"] {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	min-width: 0; /* prevent navbar overflow */
+}
+
 nav a.current {
 	font-variation-settings: "wght" 700;
 	border-bottom-color: var(--ortforange);
