@@ -147,7 +147,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 }
 
 :global(button):not([data-variant]):hover {
-	background-color: var(--ortforange-light);
+	background-color: var(--ortforange);
 }
 
 :global(button[data-variant="inline"]) {
