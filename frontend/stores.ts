@@ -81,9 +81,7 @@ export const rebuildingDatabase: Readable<boolean> = derived(
 
 export const database: Writable<Database> = writable({} as Database)
 
-export const workInEditor: Writable<ParsedDescription> = writable(
-    {} as ParsedDescription
-)
+export const workInEditor: Writable<ParsedDescription | null> = writable(null)
 
 export const workOnDisk: Readable<Work | null> = derived(
     [database, state],

@@ -1,3 +1,15 @@
+<script context="module" lang="ts">
+export async function saveWork(
+	id: WorkID,
+	parsedDescription: ParsedDescription,
+	reload: boolean = false
+) {
+	await backend.writeToDisk(parsedDescription, id)
+	rebuildDatabase(reload)
+}
+
+</script>
+
 <script lang="ts">
 import { onMount } from "svelte"
 import { toParsedDescription } from "../description"
@@ -8,6 +20,8 @@ import {
 	workInEditor,
 	workOnDiskCurrentLanguage,
 	workOnDisk,
+	WorkID,
+	State,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
 import FieldImage from "../components/FieldImage.svelte"
@@ -20,7 +34,7 @@ import tinykeys from "tinykeys"
 import { backend } from "../backend"
 import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
-import { inLanguage } from "../ortfo"
+import { inLanguage, ParsedDescription } from "../ortfo"
 import FieldMap from "../components/FieldMap.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
 import { _ } from "svelte-i18n"
@@ -28,8 +42,7 @@ import { _ } from "svelte-i18n"
 onMount(async () => {
 	tinykeys(window, {
 		"$mod+s": async () => {
-			await backend.writeToDisk($workInEditor, $workOnDisk.id)
-			rebuildDatabase(true)
+			await saveWork($workOnDisk.id, $workInEditor, true)
 			await backend.saveUIState($state)
 			// TODO only re-mount components whose was unsaved prior to rebuilding
 		},
@@ -70,7 +83,7 @@ let titleH1: HTMLHeadingElement
 				options={{ en: "english", fr: "français" }}
 				showCodes
 			/>
-			<p class="url">/{$workOnDisk.id}</p>
+			<p class="url">/{$workOnDisk?.id}</p>
 
 			<div class="title" id="title">
 				<h1
@@ -99,7 +112,9 @@ let titleH1: HTMLHeadingElement
 					{$workInEditor.title[$state.lang]}
 				</h1>
 				<button data-variant="inline" on:click={editTitle}
-					>{#if editingTitle}{$_("finish")}{:else}{$_("edit")}{/if}</button
+					>{#if editingTitle}{$_("finish")}{:else}{$_(
+							"edit"
+						)}{/if}</button
 				>
 			</div>
 
@@ -178,7 +193,7 @@ let titleH1: HTMLHeadingElement
 		<div class="float dev-only">
 			<div id="debug" />
 			<ObjectDiffTable
-				a={toParsedDescription($workOnDisk)}
+				a={toParsedDescription($workOnDisk || null) || {}}
 				b={$workInEditor}
 				aLabel="on disk"
 				bLabel="in editor"

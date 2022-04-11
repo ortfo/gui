@@ -7,9 +7,9 @@ import {
 } from "./ortfo"
 import { except, lcm, mapToTranslated } from "./utils"
 
-export function toParsedDescription(work: Work): ParsedDescription {
+export function toParsedDescription(work: Work): ParsedDescription | null {
     if (!work) {
-        throw Error("No work given")
+        return null
     }
     const { media, metadata, ...rest } = replaceLanguageDefault(work, [
         "fr",

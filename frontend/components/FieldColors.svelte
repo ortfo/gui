@@ -1,11 +1,12 @@
 <script lang="ts">
-import { createEventDispatcher } from "svelte"
-import { summon } from "../modals"
+import { createEventDispatcher, getContext } from "svelte"
+import { createModalSummoner } from "../modals"
 import FieldColor from "./FieldColor.svelte"
 import MetadataField from "./MetadataField.svelte"
 import {_} from "svelte-i18n"
 
 const emit = createEventDispatcher()
+const summon = createModalSummoner(getContext("simple-modal"))
 
 export let value: {
 	primary: string
@@ -14,7 +15,7 @@ export let value: {
 }
 
 function autoSelect(e) {
-	summon("pick-image")
+	// summon(PickImage)
 }
 
 export let key: string

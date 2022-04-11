@@ -1,12 +1,12 @@
 <script lang="ts">
-import { getContext } from "svelte"
-
 import Card from "../components/Card.svelte"
 import CardWork from "../components/CardWork.svelte"
 import NewWork from "../modals/NewWork.svelte"
 import { settings, databaseCurrentLanguage } from "../stores"
-const { open: openModal } = getContext("simple-modal")
+import { createModalSummoner } from "../modals";
 import { _ } from "svelte-i18n"
+import { getContext } from "svelte";
+const summon = createModalSummoner(getContext("simple-modal"))
 </script>
 
 {#if $settings.surname}
@@ -21,7 +21,7 @@ import { _ } from "svelte-i18n"
 
 <ul class="cards">
 	<li id="create">
-		<Card creates hasIcon on:click={() => openModal(NewWork)}>+</Card>
+		<Card creates hasIcon on:click={() => summon(NewWork)}>+</Card>
 	</li>
 	{#each $databaseCurrentLanguage.works as work}
 		<li id={`work-${work.id}`}>

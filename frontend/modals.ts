@@ -1,3 +1,5 @@
-export let summon = (modalName: "publish" | "pick-image" | "new-entry") => {
-    console.error("Not implemented")
+export function createModalSummoner(simpleModalContext) {
+    return modal => {
+        simpleModalContext.open(modal)
+    }
 }

@@ -37,15 +37,21 @@ import {
 	hasUnsavedChanges,
 	buildProgress,
 	rebuildingDatabase,
+	unsavedChanges,
 } from "../stores"
 import type { PageName } from "../stores"
-import { summon } from "../modals"
+import { createModalSummoner } from "../modals"
 import { backend, BuildProgress } from "../backend"
 import {
 	setIntervalAsync,
 	clearIntervalAsync,
 } from "set-interval-async/dynamic"
 import { _ } from "svelte-i18n"
+import UnsavedChanges from "../modals/UnsavedChanges.svelte"
+import { create } from "lodash"
+import { getContext } from "svelte"
+
+const summon = createModalSummoner(getContext("simple-modal"))
 
 let rebuildErrored = false
 let rebuildError = ""
@@ -77,12 +83,18 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 				class:current={$state.openTab === "editor"}
 				>{$state.editingWorkID}</a
 			>
-			{#if $hasUnsavedChanges}
-				<span
-					class="unsaved-changes"
-					use:tooltip={"You have unsaved changes"}>&bull;</span
-				>
-			{/if}
+			<span
+				class="close-current-work"
+				class:unsaved-changes={$hasUnsavedChanges}
+				on:click={() => {
+					if ($hasUnsavedChanges) {
+						summon(UnsavedChanges)
+					} else {
+						$state.openTab = "works"
+						$state.editingWorkID = ""
+					}
+				}}
+			/>
 		{/if}
 		{#each tabs as tab}
 			<a
@@ -167,9 +179,28 @@ nav {
 	font-size: 1.5em;
 	color: var(--gray);
 }
-.unsaved-changes {
-	margin-left: -0.7em;
-	font-size: 2.5em;
+.close-current-work {
+	display: inline-block;
+	margin-left: -0.9rem;
+	width: 1.2rem;
+	cursor: pointer;
+}
+.close-current-work::after,
+.close-current-work.unsaved-changes:hover::after {
+	content: "×";
+	font-size: 2em;
+}
+.close-current-work.unsaved-changes::after {
+	content: "●";
+	font-size: 1.2em;
+}
+.close-current-work:not(.unsaved-changes) {
+	opacity: 0;
+}
+.close-current-work:hover {
+	opacity: 1;
+}
+.close-current-work.unsaved-changes:not(:hover) {
 	color: var(--ortforange);
 }
 .separator,

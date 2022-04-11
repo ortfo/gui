@@ -76,3 +76,8 @@ finish: terminer
 Remove this one: Supprimer ceci
 Remove this footnote: Supprimer cette note de bas de page
 pick from image: choisir depuis une image
+Unsaved changes: Modifications non enregistrées
+This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?: Ce projet a des modifications non enregistrées qui seront perdues si vous fermez cet onglet. Êtes-vous sûr de vouloir continuer ?
+save then close: enregistrer puis fermer
+don't close: ne pas fermer
+close without saving: fermer sans enregistrer
