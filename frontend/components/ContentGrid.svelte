@@ -178,7 +178,7 @@ $: updateWork(blocks)
 						placeholder={$_("write some text here")}
 					/>
 				{:else if item.data.type === "link"}
-					<span class="type">Link</span>
+					<span class="type">{$_("Link")}</span>
 					<input
 						class="name"
 						bind:value={blocks[language][index(item)].data.name}
