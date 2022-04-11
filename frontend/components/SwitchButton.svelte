@@ -53,11 +53,11 @@ input {
 
 input:checked + label {
 	background-color: var(--ortforange);
-	color: var(--white);
+	color: black;
 }
 
 input:checked + label .code {
-	color: var(--ortforange-light);
+	color: var(--black);
 }
 
 label {
