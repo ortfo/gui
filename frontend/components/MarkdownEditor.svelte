@@ -110,7 +110,12 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Bold")}
 			data-variant="none"
 			on:click={actions(editor)["bold"].run}
-			><img src="/assets/icon-bold.svg" alt={$_("bold")} class="icon" /></button
+			tabindex="-1"
+			><img
+				src="/assets/icon-bold.svg"
+				alt={$_("bold")}
+				class="icon"
+			/></button
 		>
 	</li>
 	<li>
@@ -118,6 +123,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Italic")}
 			data-variant="none"
 			on:click={actions(editor)["italic"].run}
+			tabindex="-1"
 			><img
 				src="/assets/icon-italic.svg"
 				alt={$_("italic")}
@@ -130,6 +136,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Heading")}
 			data-variant="none"
 			on:click={actions(editor)["heading"].run}
+			tabindex="-1"
 			><img
 				src="/assets/icon-heading.svg"
 				alt="heading"
@@ -142,7 +149,12 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Code")}
 			data-variant="none"
 			on:click={actions(editor)["code"].run}
-			><img src="/assets/icon-code.svg" alt={$_("code")} class="icon" /></button
+			tabindex="-1"
+			><img
+				src="/assets/icon-code.svg"
+				alt={$_("code")}
+				class="icon"
+			/></button
 		>
 	</li>
 	<li>
@@ -150,6 +162,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Block of code")}
 			data-variant="none"
 			on:click={actions(editor)["code-block"].run}
+			tabindex="-1"
 			><img
 				src="/assets/icon-code-block.svg"
 				alt={$_("code block")}
@@ -162,6 +175,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Insert media")}
 			data-variant="none"
 			on:click={actions(editor)["media"].run}
+			tabindex="-1"
 			><img
 				src="/assets/icon-insert-media.svg"
 				alt={$_("media")}
@@ -174,6 +188,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Link")}
 			data-variant="none"
 			on:click={actions(editor)["link"].run}
+			tabindex="-1"
 			><img src="/assets/icon-link.svg" alt="link" class="icon" /></button
 		>
 	</li>
@@ -182,6 +197,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Bullet list")}
 			data-variant="none"
 			on:click={actions(editor)["list-bullets"].run}
+			tabindex="-1"
 			><img
 				src="/assets/icon-list-bullets.svg"
 				alt={$_("bullet list")}
@@ -194,6 +210,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("Numbered list")}
 			data-variant="none"
 			on:click={actions(editor)["list-numbered"].run}
+			tabindex="-1"
 			><img
 				src="/assets/icon-list-numbered.svg"
 				alt={$_("numbered list")}
@@ -206,6 +223,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 			use:tooltip={$_("List of definitions")}
 			data-variant="none"
 			on:click={actions(editor)["list-definitions"].run}
+			tabindex="-1"
 			><img
 				src="/assets/icon-list-definitions.svg"
 				alt={$_("definition list")}
