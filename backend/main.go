@@ -79,10 +79,10 @@ func startWebview() {
 	w.Bind("backend__loadState", func() (UIState, error) {
 		return LoadUIState()
 	})
-	w.Bind("backend__getBuildProgress", func() (ortfomk.ProgressFile) {
+	w.Bind("backend__getBuildProgress", func() ortfomk.ProgressFile {
 		settings, _ := LoadSettings()
 		return settings.ProgressFile()
-	}) 
+	})
 	w.Run()
 }
 

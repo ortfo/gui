@@ -7,7 +7,6 @@ export async function saveWork(
 	await backend.writeToDisk(parsedDescription, id)
 	rebuildDatabase(reload)
 }
-
 </script>
 
 <script lang="ts">
@@ -34,7 +33,12 @@ import tinykeys from "tinykeys"
 import { backend } from "../backend"
 import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
-import { inLanguage, ParsedDescription } from "../ortfo"
+import type {
+	Abbreviations,
+	Paragraph,
+	ParsedDescription,
+	Translated,
+} from "../ortfo"
 import FieldMap from "../components/FieldMap.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
 import { _ } from "svelte-i18n"
@@ -42,7 +46,7 @@ import { _ } from "svelte-i18n"
 onMount(async () => {
 	tinykeys(window, {
 		"$mod+s": async () => {
-			await saveWork($workOnDisk.id, $workInEditor, true)
+			await saveWork($workOnDisk.id, $workInEditor, false)
 			await backend.saveUIState($state)
 			// TODO only re-mount components whose was unsaved prior to rebuilding
 		},

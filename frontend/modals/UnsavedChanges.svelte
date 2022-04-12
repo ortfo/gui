@@ -1,7 +1,7 @@
 <script lang="ts">
 import { getContext } from "svelte"
 import { _ } from "svelte-i18n"
-import { backend } from "../backend";
+import { backend } from "../backend"
 import { state, workInEditor, workOnDisk } from "../stores"
 import { saveWork } from "../tabs/editor.svelte"
 

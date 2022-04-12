@@ -3,9 +3,9 @@ import Card from "../components/Card.svelte"
 import CardWork from "../components/CardWork.svelte"
 import NewWork from "../modals/NewWork.svelte"
 import { settings, databaseCurrentLanguage } from "../stores"
-import { createModalSummoner } from "../modals";
+import { createModalSummoner } from "../modals"
 import { _ } from "svelte-i18n"
-import { getContext } from "svelte";
+import { getContext } from "svelte"
 const summon = createModalSummoner(getContext("simple-modal"))
 </script>
 

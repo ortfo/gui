@@ -2,7 +2,7 @@
 import MetadataField from "./MetadataField.svelte"
 import colorNameToHex from "colornames"
 import { createEventDispatcher } from "svelte"
-import {_} from "svelte-i18n"
+import { _ } from "svelte-i18n"
 const dispatch = createEventDispatcher()
 
 function toHex(value: string) {

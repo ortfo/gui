@@ -8,7 +8,7 @@ import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
 import { FootnoteReference } from "../markdown/footnoteReference"
 import { MathDisplay, MathInline } from "../markdown/math"
-import {_} from "svelte-i18n"
+import { _ } from "svelte-i18n"
 
 const dispatch = createEventDispatcher()
 

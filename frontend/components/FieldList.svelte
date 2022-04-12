@@ -1,7 +1,7 @@
 <script lang="ts">
 import { metadataReadableNames } from "../ortfo"
 import MetadataField from "./MetadataField.svelte"
-import {_} from "svelte-i18n"
+import { _ } from "svelte-i18n"
 
 export let value: string[]
 export let key: string
@@ -41,7 +41,9 @@ function change(index: number) {
 		{/each}
 		<li class="new">
 			<input
-				placeholder={$_(value.length ? "another one?" : "add something")}
+				placeholder={$_(
+					value.length ? "another one?" : "add something"
+				)}
 				type="text"
 				on:blur={add}
 				on:keypress={e => e.code === "Enter" && add(e)}

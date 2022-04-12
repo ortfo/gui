@@ -22,7 +22,8 @@ import {
 import { state, workOnDisk } from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
-import {_} from "svelte-i18n"
+import { _ } from "svelte-i18n"
+
 const dispatch = createEventDispatcher()
 
 export let work: ParsedDescription
@@ -209,7 +210,9 @@ $: updateWork(blocks)
 						bind:value={blocks[language][index(item)].data.source}
 						on:focus={() => (activeBlock = item.id)}
 						on:blur={() => (activeBlock = null)}
-						placeholder={$_("put the path or url to the media here")}
+						placeholder={$_(
+							"put the path or url to the media here"
+						)}
 					/>
 				{/if}
 			</div>
@@ -218,14 +221,22 @@ $: updateWork(blocks)
 				use:tooltip={[$_("delete block"), 500]}
 				on:click={removeBlock(item)}
 			>
-				<img src="/assets/icon-delete.svg" class="icon" alt={$_("delete")} />
+				<img
+					src="/assets/icon-delete.svg"
+					class="icon"
+					alt={$_("delete")}
+				/>
 			</div>
 			<div
 				class="dragger"
 				use:tooltip={[$_("move"), 500]}
 				on:mousedown={movePointerDown}
 			>
-				<img src="/assets/icon-move.svg" class="icon" alt={$_("move")} />
+				<img
+					src="/assets/icon-move.svg"
+					class="icon"
+					alt={$_("move")}
+				/>
 			</div>
 			<div
 				class="resizer"

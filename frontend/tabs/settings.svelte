@@ -2,7 +2,7 @@
 import { onMount } from "svelte"
 import { backend } from "../backend"
 import { settings, state } from "../stores"
-import {_} from "svelte-i18n"
+import { _ } from "svelte-i18n"
 
 settings.subscribe(async settings => {
 	await backend.settingsWrite(settings)

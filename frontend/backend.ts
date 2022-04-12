@@ -20,16 +20,16 @@ export type Base64WithFiletype = string
 export type MaybeError = string | null
 
 export type BuildProgress = {
-    total: number;
-    processed: number;
-    percent: number;
+    total: number
+    processed: number
+    percent: number
     current: {
-        id: string;
-        step: string;
-        resolution: number;
-        file: string;
-        language: string;
-        output: string;
+        id: string
+        step: string
+        resolution: number
+        file: string
+        language: string
+        output: string
     }
 }
 
@@ -61,7 +61,7 @@ export const backend = {
             (await backend__databaseRead()) || {}
         ) as Database
     },
-    getBuildProgress: async() => {
+    getBuildProgress: async () => {
         return lowercaseNoSpacesKeys(
             // @ts-ignore backend__* functions are injected by webview (from the backend)
             (await backend__getBuildProgress()) || {}
