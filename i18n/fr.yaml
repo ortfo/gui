@@ -81,3 +81,5 @@ This work has unsaved changes, which will be lost if you close the tab. Are you 
 save then close: enregistrer puis fermer
 don't close: ne pas fermer
 close without saving: fermer sans enregistrer
+name: nom
+value: valeur

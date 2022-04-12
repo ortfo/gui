@@ -9,8 +9,8 @@ const dispatch = createEventDispatcher()
 type K = any
 type V = any
 
-export let placeholderKey: string = "name"
-export let placeholderValue: string = "value"
+export let placeholderKey: string = $_("name")
+export let placeholderValue: string = $_("value")
 export let removeTooltip: string = $_("Remove this one")
 export let value: { [key: string]: string }
 export let richText: boolean = false
