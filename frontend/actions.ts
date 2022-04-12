@@ -11,9 +11,9 @@ export const tooltip = (
     } else if (Array.isArray(parameters)) {
         ;[content, delay] = parameters
     } else {
-        node.title = parameters.content
+        // node.title = parameters.content
         return tippy(node, parameters)
     }
-    node.title = content
+    // node.title = content
     return tippy(node, { content, delay: [delay, 0] })
 }
