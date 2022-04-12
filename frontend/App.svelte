@@ -142,6 +142,10 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	font-variation-settings: "wght" 400;
 }
 
+:global(*:focus-visible) {
+	outline: 1px solid var(--ortforange);
+}
+
 :global(button) {
 	background: transparent;
 	border: none;
@@ -175,14 +179,11 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	margin: 2rem 0;
 }
 
-:global(input, textarea, .editor) {
+:global(input:not([type=file]), textarea, .editor) {
 	border: 1px solid var(--black);
 	border-radius: .5em;
 	padding: 0.25rem 0.5rem;
-	font-variation-settings: "wght" 400;
-	font-family: var(--sans);
 	font-size: 1em;
-	width: 100%;
 	transition: all 0.2s ease;
 }
 

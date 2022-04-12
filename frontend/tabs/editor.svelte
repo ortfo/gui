@@ -289,6 +289,11 @@ aside section:not(:first-of-type) {
 	margin-top: 4em;
 }
 
+aside h2 {
+	margin-bottom: .25em;
+	font-size: 1.75em;
+}
+
 .title,
 .url {
 	align-self: flex-start;

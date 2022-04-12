@@ -4,11 +4,23 @@ html, body {
 	height: 100%;
 }
 
-* {
+textarea {
+	background: transparent;
+}
+
+/* * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 	font-variation-settings: 'wght' 400;
+} */
+
+*:focus:not(:focus-visible) {
+	outline: none;
+}
+*:focus:not(:focus-visible)::-moz-focus-inner {
+	border: 0;
+	outline: none;
 }
 
 /* Fonts */
