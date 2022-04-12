@@ -146,7 +146,7 @@ $: updateWork(blocks)
 </script>
 
 {#if !initialized}
-	Loading...
+	{$_("Loading…")}
 {:else if blocks[language].length > 0}
 	<Grid
 		bind:items={blocks[language]}
