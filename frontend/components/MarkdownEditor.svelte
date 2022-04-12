@@ -255,6 +255,10 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	vertical-align: super;
 }
 
+:global(.editor strong) {
+	font-variation-settings: "wght" 800;
+}
+
 :global(.editor sup.footnote-ref a) {
 	text-decoration: none;
 	font-variation-settings: "wght" 800;
