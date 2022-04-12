@@ -1,5 +1,4 @@
 <script lang="ts">
-import { metadataReadableNames } from "../ortfo"
 import MetadataField from "./MetadataField.svelte"
 import { _ } from "svelte-i18n"
 
@@ -57,7 +56,10 @@ li > button {
 	opacity: 0;
 }
 
-li:hover > button {
+li:hover > button,
+li input:focus + button,
+li button:hover,
+li button:focus {
 	opacity: 1;
 }
 
