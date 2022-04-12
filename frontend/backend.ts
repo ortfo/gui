@@ -1,3 +1,4 @@
+import { applyAbbreviations, collectAbbreviations } from "./description"
 import type {
     Database,
     LayedOutElement,
@@ -81,7 +82,10 @@ export const backend = {
     },
     writeToDisk: async (work: ParsedDescription, workID: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return (await backend__writeback(work, workID)) as MaybeError
+        return (await backend__writeback(
+            applyAbbreviations(work),
+            workID
+        )) as MaybeError
     },
     saveUIState: async (state: State) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)

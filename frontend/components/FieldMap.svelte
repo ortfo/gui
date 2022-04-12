@@ -3,7 +3,7 @@ import { entries } from "lodash"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import { tooltip } from "../actions"
 import { createEventDispatcher } from "svelte"
-import {_} from "svelte-i18n"
+import { _ } from "svelte-i18n"
 
 const dispatch = createEventDispatcher()
 type K = any
@@ -13,6 +13,7 @@ export let placeholderKey: string = "name"
 export let placeholderValue: string = "value"
 export let removeTooltip: string = $_("Remove this one")
 export let value: { [key: string]: string }
+export let richText: boolean = false
 
 let buffer: [string, string][] = Object.entries(value)
 $: buffer = Object.entries(value)
@@ -40,13 +41,11 @@ function add(e) {
 	dispatch("input", value)
 }
 
-function changeValue(key: string) {
-	return e => {
-		value = Object.fromEntries(
-			Object.entries(value).map(([k, v]) => [k, k === key ? e.detail : v])
-		)
-		dispatch("input", value)
-	}
+function changeValue(key: string, to: string) {
+	value = Object.fromEntries(
+		Object.entries(value).map(([k, v]) => [k, k === key ? to : v])
+	)
+	dispatch("input", value)
 }
 
 function changeKey(index: number) {
@@ -64,18 +63,31 @@ function changeKey(index: number) {
 
 <dl>
 	{#each buffer as [key, val], index}
-		<div class="entry">
+		<div
+			class="entry"
+			class:richText
+			class:active={focusedValueField === index}
+		>
 			<dt>
 				<input value={key} on:change={changeKey(index)} />
 			</dt>
 			<dd>
-				<MarkdownEditor
-					value={val}
-					active={focusedValueField === index}
-					on:input={changeValue(key)}
-					on:blur={() => (focusedValueField = null)}
-					on:focus={() => (focusedValueField = index)}
-				/>
+				{#if richText}
+					<MarkdownEditor
+						value={val}
+						active={focusedValueField === index}
+						on:input={e => changeValue(key, e.detail)}
+						on:blur={() => (focusedValueField = null)}
+						on:focus={() => (focusedValueField = index)}
+					/>
+				{:else}
+					<textarea
+						value={val}
+						on:input={e => changeValue(key, e.target.value)}
+						on:blur={() => (focusedValueField = null)}
+						on:focus={() => (focusedValueField = index)}
+					/>
+				{/if}
 			</dd>
 			<button
 				use:tooltip={removeTooltip}
@@ -85,7 +97,11 @@ function changeKey(index: number) {
 			>
 		</div>
 	{/each}
-	<div class="entry new">
+	<div
+		class="entry new"
+		class:richText
+		class:active={focusedValueField === -1}
+	>
 		<dt>
 			<input
 				placeholder={placeholderKey}
@@ -96,14 +112,22 @@ function changeKey(index: number) {
 			/>
 		</dt>
 		<dd>
-			<MarkdownEditor
-				bind:value={newValue}
-				placeholder={placeholderValue}
-				active={focusedValueField === -1}
-				on:focus={() => (focusedValueField = -1)}
-				on:blur={() => (focusedValueField = null)}
-				on:blur={add}
-			/>
+			{#if richText}
+				<MarkdownEditor
+					bind:value={newValue}
+					placeholder={placeholderValue}
+					active={focusedValueField === -1}
+					on:blur={() => (focusedValueField = null)}
+					on:focus={() => (focusedValueField = -1)}
+				/>
+			{:else}
+				<textarea
+					placeholder={placeholderValue}
+					bind:value={newValue}
+					on:blur={() => (focusedValueField = null)}
+					on:focus={() => (focusedValueField = -1)}
+				/>
+			{/if}
 		</dd>
 	</div>
 </dl>
@@ -112,28 +136,35 @@ function changeKey(index: number) {
 dl {
 	display: flex;
 	flex-direction: column;
-	gap: 2em;
+	gap: 0.5em;
+	width: 100%;
 }
 .entry {
-	display: flex;
+	display: grid;
+	width: 100%;
 	gap: 2em;
-	align-items: center;
+	align-items: flex-start;
+	grid-template-columns: 2fr 8fr 1fr;
 }
-input {
-	border: none;
-}
-dt input {
-	margin-top: 30px; /* XXX: height of markdown toolbar for value field */
-	width: 2em;
+input,
+textarea {
 	font-size: 1em;
+	width: 100%;
+	min-height: 1em;
+}
+.entry.richText dt input {
+	margin-top: 27px; /* XXX: height of markdown toolbar for value field */
 }
 button.remove {
 	font-size: 2em;
 	line-height: 0.7;
 	opacity: 0;
 	transition: all 0.25s ease;
+	align-self: center;
 }
-.entry:hover button.remove {
+.entry:hover button.remove,
+.entry:focus button.remove,
+.entry.active button.remove {
 	opacity: 1;
 }
 </style>

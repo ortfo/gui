@@ -175,6 +175,25 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	margin: 2rem 0;
 }
 
+:global(input, textarea, .editor) {
+	border: 1px solid var(--black);
+	border-radius: .5em;
+	padding: 0.25rem 0.5rem;
+	font-variation-settings: "wght" 400;
+	font-family: var(--sans);
+	font-size: 1em;
+	width: 100%;
+	transition: all 0.2s ease;
+}
+
+:global(input:hover, textarea:hover, .editor:hover) {
+	border-radius: 0;
+}
+:global(input:focus, textarea:focus, .editor:focus) {
+	border-radius: 0;
+	border-color: var(--ortforange);
+}
+
 :root {
 	--sans: "Manrope";
 	--mono: "Victor Mono", monospace;

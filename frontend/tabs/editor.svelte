@@ -167,6 +167,7 @@ let titleH1: HTMLHeadingElement
 				<!-- TODO when a key changes, update references. -->
 				<FieldMap
 					value={$workInEditor.footnotes[$state.lang]}
+					richText
 					on:input={({ detail }) => {
 						$workInEditor.footnotes = {
 							...$workInEditor.footnotes,
@@ -181,6 +182,27 @@ let titleH1: HTMLHeadingElement
 					placeholderKey={$_("key")}
 					placeholderValue={$_("content")}
 					removeTooltip={$_("Remove this footnote")}
+				/>
+			</section>
+
+			<section class="abbreviations">
+				<h2>{$_("Abbreviations")}</h2>
+
+				<FieldMap
+					value={$workInEditor.abbreviations[$state.lang]}
+					on:input={({ detail }) => {
+						$workInEditor.abbreviations = {
+							...$workInEditor.abbreviations,
+							[$state.lang]: Object.fromEntries(
+								Object.entries(detail).map(([k, v]) => [
+									k,
+									v.replace(/<p>(.+)<\/p>/, "$1"),
+								])
+							),
+						}
+					}}
+					placeholderKey={$_("name")}
+					placeholderValue={$_("definition")}
 				/>
 			</section>
 		</aside>

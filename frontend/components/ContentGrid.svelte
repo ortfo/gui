@@ -23,6 +23,7 @@ import { state, workOnDisk } from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
 import {_} from "svelte-i18n"
+const dispatch = createEventDispatcher()
 
 export let work: ParsedDescription
 export let language: string
@@ -131,6 +132,7 @@ function updateWork(blocks) {
 	let delta = diff(updatedWork, work)
 	if (delta.length > 0) {
 		console.info("Work changed, delta is", delta)
+		dispatch("change", updatedWork)
 		work = updatedWork
 	}
 }
@@ -171,6 +173,7 @@ $: updateWork(blocks)
 			<div class="content">
 				{#if item.data.type === "paragraph"}
 					<MarkdownEditor
+						noBorder
 						bind:value={blocks[language][index(item)].data.content}
 						active={activeBlock === item.id}
 						on:blur={() => (activeBlock = null)}

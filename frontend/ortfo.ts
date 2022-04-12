@@ -1,3 +1,6 @@
+import { eachLanguage } from "./contentblocks"
+import { except, pick } from "./utils"
+
 export type Translated<T> = { [langage: string]: T }
 
 export interface Abbreviations {
@@ -45,13 +48,17 @@ export interface MediaAttributes {
     controls: boolean
 }
 
-export interface ParsedDescription {
+export interface OrtfodbParsedDescription {
     metadata: Translated<any>
     title: Translated<string>
     paragraphs: Translated<Paragraph[]>
     mediaembeddeclarations: Translated<MediaEmbedDeclaration[]>
     links: Translated<Link[]>
     footnotes: Translated<Footnotes>
+}
+
+export interface ParsedDescription extends OrtfodbParsedDescription {
+    abbreviations: Translated<Abbreviations>
 }
 
 export interface WorkOneLang {

@@ -15,6 +15,7 @@ const dispatch = createEventDispatcher()
 export let value: string
 export let placeholder: string = ""
 export let active: boolean = false
+export let noBorder: boolean = false
 
 let element
 let editor: Editor
@@ -213,7 +214,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 		>
 	</li>
 </ul>
-<div class="editor" bind:this={element} />
+<div class="editor" class:noBorder bind:this={element} />
 
 <style>
 :global(.editor ul, .editor ol) {
@@ -224,6 +225,10 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 :global(.editor p.is-editor-empty:first-child::before) {
 	content: attr(data-placeholder);
 	color: var(--gray);
+}
+
+:global(.editor.noBorder) {
+	border: none;
 }
 
 :global(.editor sup) {
@@ -240,7 +245,6 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 :global(.editor .ProseMirror) {
 	max-height: 260px;
 	overflow-y: scroll;
-	border: none;
 }
 
 .toolbar {
