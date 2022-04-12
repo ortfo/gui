@@ -17,6 +17,13 @@ import { lowercaseFirstCharacter, lowercaseNoSpacesKeys } from "./utils"
  */
 export type Base64WithFiletype = string
 
+export type DirEntry = {
+    name: string
+    type: string
+    info: Object
+    isdir: boolean
+}
+
 export type MaybeError = string | null
 
 export type BuildProgress = {
@@ -96,4 +103,7 @@ export const backend = {
         const data = await backend__loadState()
         return lowercaseFirstCharacter(!!data ? data : {}) as State
     },
+    listDirectory: async (path: string) => {
+        return lowercaseNoSpacesKeys(await backend__listDirectory(path)) as DirEntry[]
+    }
 }

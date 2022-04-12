@@ -165,6 +165,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 
 :global(button):not([data-variant]):hover {
 	background-color: var(--ortforange);
+	color: black;
 }
 
 :global(button[data-variant="inline"]) {
@@ -202,6 +203,11 @@ settings.subscribe(settings => applyTheme(settings.theme))
 
 :global(body[data-theme="dark"] .icon) {
 	filter: invert(1);
+}
+
+:global(.window[aria-modal="true"]) {
+	background-color: var(--white);
+	color: var(--black);
 }
 
 main {

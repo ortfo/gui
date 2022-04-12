@@ -2,12 +2,21 @@ package main
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
 	"github.com/webview/webview"
 )
+
+type DirEntry struct {
+	Name  string
+	IsDir bool
+	Type  os.FileMode
+	Info  os.FileInfo
+}
 
 var w webview.WebView
 
@@ -82,6 +91,27 @@ func startWebview() {
 	w.Bind("backend__getBuildProgress", func() ortfomk.ProgressFile {
 		settings, _ := LoadSettings()
 		return settings.ProgressFile()
+	})
+	w.Bind("backend__listDirectory", func(directory string) ([]DirEntry, error) {
+		expanded, _ := homedir.Expand(directory)
+		entries := make([]DirEntry, 0)
+		lazyEntries, err := os.ReadDir(expanded)
+		if err != nil {
+			return entries, fmt.Errorf("while reading directory: %w", err)
+		}
+		for _, entry := range lazyEntries {
+			info, err := entry.Info()
+			if err != nil {
+				return entries, fmt.Errorf("while reading %q: %w", entry.Name(), err)
+			}
+			entries = append(entries, DirEntry{
+				Name:  entry.Name(),
+				IsDir: entry.IsDir(),
+				Type:  entry.Type(),
+				Info:  info,
+			})
+		}
+		return entries, nil
 	})
 	w.Run()
 }
