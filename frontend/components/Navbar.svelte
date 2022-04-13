@@ -197,10 +197,12 @@ nav {
 .close-current-work:not(.unsaved-changes) {
 	opacity: 0;
 }
-.close-current-work:hover {
+.close-current-work:hover,
+.close-current-work:focus,
+nav:hover .close-current-work {
 	opacity: 1;
 }
-.close-current-work.unsaved-changes:not(:hover) {
+.close-current-work.unsaved-changes:not(:hover):not(:focus) {
 	color: var(--ortforange);
 }
 .separator,
