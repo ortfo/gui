@@ -55,6 +55,7 @@
     "base64-arraybuffer": "^1.0.2",
     "colornames": "^1.1.1",
     "fast-deep-equal": "^3.1.3",
+    "fuse.js": "^6.5.3",
     "just-diff": "^5.0.1",
     "lodash": "^4.17.21",
     "nanoid": "^3.3.2",
