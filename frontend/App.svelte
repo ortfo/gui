@@ -163,7 +163,8 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	transition: all 0.2s ease;
 }
 
-:global(button):not([data-variant]):hover {
+:global(button):not([data-variant]):hover,
+:global(button):not([data-variant]):focus {
 	background-color: var(--ortforange);
 	color: black;
 }
