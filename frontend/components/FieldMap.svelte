@@ -62,7 +62,7 @@ function changeKey(index: number) {
 </script>
 
 <dl>
-	{#each buffer as [key, val], index}
+	{#each buffer as [key, val], index (key)}
 		<div
 			class="entry"
 			class:richText

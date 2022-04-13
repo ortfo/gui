@@ -14,7 +14,7 @@ const dispatch = createEventDispatcher()
 </script>
 
 <form class="switch" style="width: {100 * numberOfOptions}">
-	{#each Object.entries(_options) as [code, display]}
+	{#each Object.entries(_options) as [code, display] (code)}
 		<input
 			type="radio"
 			on:change={() => {

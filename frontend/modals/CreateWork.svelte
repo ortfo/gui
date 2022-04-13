@@ -96,7 +96,7 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 		</p>
 		<SearchBar bind:query />
 		<ul use:scrollStates={{ bottom: 50, top: 0 }}>
-			{#each search(dirs, query) as result}
+			{#each search(dirs, query) as result (result.refIndex)}
 				<li>
 					<button
 						on:click={e => {

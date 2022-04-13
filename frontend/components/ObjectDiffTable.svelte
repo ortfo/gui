@@ -22,7 +22,7 @@ function pathHTML(path: (string | number)[]): string {
 		<th />
 		<th>{bLabel}</th>
 	</tr>
-	{#each diff(a, b).sort( (op1, op2) => (op1.path.join("/") < op2.path.join("/") ? 1 : -1) ) as difference}
+	{#each diff(a, b).sort( (op1, op2) => (op1.path.join("/") < op2.path.join("/") ? 1 : -1) ) as difference (difference.path)}
 		<tr>
 			<td>{@html pathHTML(difference.path)}</td>
 			{#if difference.op === "add"}
