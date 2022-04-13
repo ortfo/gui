@@ -16,4 +16,8 @@ button {
 	margin-left: auto;
 	display: flex;
 }
+button:hover, button:focus {
+	color: var(--ortforange);
+	font-variation-settings: "wght" 800;
+}
 </style>
