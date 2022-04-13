@@ -116,17 +116,22 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 						/></button
 					>
 				</li>
+			{:else}
+				<li class="troubleshoot">
+					<div class="emoji">:/</div>
+					<h3 class="no-results">{$_("No results")}</h3>
+					<h3>{$_("Can’t find what you want?")}</h3>
+					<p>
+						{$_("Try changing your projects folder in")}
+						<button
+							data-variant="link"
+							on:click={_ => ($state.openTab = "settings")}
+							>{$_("settings")}</button
+						>
+					</p>
+				</li>
 			{/each}
 		</ul>
-		<section class="troubleshoot">
-			<h3>{$_("Can’t find what you want?")}</h3>
-			{$_("Try changing your projects folder in")}
-			<button
-				data-variant="link"
-				on:click={_ => ($state.openTab = "settings")}
-				>{$_("settings")}</button
-			>
-		</section>
 	{:catch error}
 		<!-- getU was rejected -->
 	{/await}
@@ -184,13 +189,30 @@ ul:not([data-scrolled="bottom"]) {
 	);
 }
 
-li {
+li:not(.troubleshoot) {
 	display: flex;
 	align-items: center;
 	overflow-x: visible;
 }
 
-li button {
+li.troubleshoot {
+	text-align: center;
+}
+
+li.troubleshoot .emoji {
+	font-size: 3em;
+	margin-top: 1em;
+	font-family: var(--mono);
+	font-weight: bold;
+	color: var(--gray);
+}
+
+li.troubleshoot .no-results {
+	font-size: 2em;
+	margin-bottom: 1em;
+}
+
+li:not(.troubleshoot) button {
 	font-size: 1em;
 	padding: 1em 2em;
 	width: 100%;
@@ -202,13 +224,13 @@ li button {
 	transform: scale(0.95);
 }
 
-li button:hover,
-li button:focus {
+li:not(.troubleshoot) button:hover,
+li:not(.troubleshoot) button:focus {
 	background: var(--ortforange);
 	transform: scale(1);
 }
 
-li button:active {
+li:not(.troubleshoot) button:active {
 	background: var(--ortforange);
 	transform: scale(0.9);
 }
