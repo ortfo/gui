@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-export function startPolling(reload: boolean = false) {
+export function startPolling(reloadWhenDone: boolean = true) {
 	let poller = setIntervalAsync(async () => {
 		let progress = (await backend.getBuildProgress()) as BuildProgress
 		buildProgress.set(progress)
@@ -13,7 +13,7 @@ export function startPolling(reload: boolean = false) {
 					total: 0,
 					processed: 0,
 				} as BuildProgress)
-				if (reload) {
+				if (reloadWhenDone) {
 					setTimeout(() => {
 						window.location.reload()
 					}, 500)
@@ -23,8 +23,8 @@ export function startPolling(reload: boolean = false) {
 	}, 150)
 }
 
-export function rebuildDatabase(reload: boolean = false) {
-	startPolling(reload)
+export function rebuildDatabase(reloadWhenDone: boolean = true) {
+	startPolling(reloadWhenDone)
 	backend.rebuildDatabase()
 }
 </script>

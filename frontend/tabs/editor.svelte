@@ -2,11 +2,11 @@
 export async function saveWork(
 	id: WorkID,
 	parsedDescription: ParsedDescription,
-	reload: boolean = false
+	reloadWhenDone: boolean = true
 ) {
 	await backend.writeToDisk(parsedDescription, id)
-	rebuildDatabase(reload)
 	volatileWorks.set(get(volatileWorks).filter(workID => workID !== id))
+	rebuildDatabase(reloadWhenDone)
 }
 </script>
 
