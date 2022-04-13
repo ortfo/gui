@@ -29,9 +29,10 @@ export function toParsedDescription(work: Work): ParsedDescription | null {
         ...rest,
         paragraphs,
         abbreviations,
-        metadata: except("thumbnails")(
-            metadata as any
-        ) as unknown as WorkMetadata,
+        metadata: except("thumbnails")({
+            ...emptyMetadata(),
+            ...metadata,
+        } as any) as unknown as WorkMetadata,
         mediaembeddeclarations: mapToTranslated(media => {
             const { alt, title, source, attributes } = media
             return { alt, title, source, attributes }
@@ -93,4 +94,24 @@ export function applyAbbreviations(
         }
     }
     return newWork
+}
+function emptyMetadata(): WorkMetadata {
+    return {
+        thumbnails: {},
+        aliases: [],
+        colors: {
+            primary: "",
+            secondary: "",
+            tertiary: "",
+        },
+        created: "",
+        finished: "",
+        layout: [],
+        madewith: [],
+        pagebackground: "",
+        started: "",
+        tags: [],
+        titlestyle: "filled",
+        wip: false,
+    }
 }
