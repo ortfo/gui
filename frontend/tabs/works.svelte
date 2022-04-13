@@ -7,8 +7,27 @@ import { createModalSummoner } from "../modals"
 import { _ } from "svelte-i18n"
 import { getContext } from "svelte"
 import CreateWork from "../modals/CreateWork.svelte"
+import type { Work, WorkOneLang } from "../ortfo"
+import Fuse from "fuse.js"
+import SearchBar from "../components/SearchBar.svelte"
 
 let creatingWork = false
+let query: string = ""
+let searcher: Fuse<WorkOneLang>
+
+$: searcher = new Fuse($databaseCurrentLanguage.works, {
+	keys: ["id", "title"],
+	includeMatches: true,
+	includeScore: true,
+})
+
+function search(query: string): WorkOneLang[] {
+	if (query.length < 3) {
+		return $databaseCurrentLanguage.works
+	}
+
+	return searcher.search(query).map(result => result.item)
+}
 </script>
 
 {#if $settings.surname}
@@ -23,11 +42,15 @@ let creatingWork = false
 
 <CreateWork bind:open={creatingWork} />
 
+<section class="filters">
+	<SearchBar bind:query />
+</section>
+
 <ul class="cards">
 	<li id="create">
 		<Card creates hasIcon on:click={_ => (creatingWork = true)}>+</Card>
 	</li>
-	{#each $databaseCurrentLanguage.works as work}
+	{#each search(query) as work (work.id)}
 		<li id={`work-${work.id}`}>
 			<CardWork {work} />
 		</li>
@@ -46,5 +69,11 @@ ul.cards {
 	padding-left: 0;
 	justify-content: center;
 	margin-bottom: 15em;
+}
+
+section.filters {
+	display: flex;
+	padding: 0 2em;
+	margin-bottom: 1em;
 }
 </style>
