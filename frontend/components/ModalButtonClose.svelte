@@ -1,8 +1,10 @@
 <script lang="ts">
+import { _ } from "svelte-i18n"
+
 export let onClose
 </script>
 
-<button data-variant="none" on:click={onClose}>
+<button data-variant="none" on:click={onClose} title={$_("close")}>
 	<!-- <img src="assets/icon-close.svg" alt="×" class="icon"> -->
 	×
 </button>
