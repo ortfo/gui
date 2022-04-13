@@ -104,6 +104,8 @@ export const backend = {
         return lowercaseFirstCharacter(!!data ? data : {}) as State
     },
     listDirectory: async (path: string) => {
-        return lowercaseNoSpacesKeys(await backend__listDirectory(path)) as DirEntry[]
-    }
+        return lowercaseNoSpacesKeys(
+            await backend__listDirectory(path)
+        ) as DirEntry[]
+    },
 }

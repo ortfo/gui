@@ -17,3 +17,24 @@ export const tooltip = (
     // node.title = content
     return tippy(node, { content, delay: [delay, 0] })
 }
+
+export const scrollStates = (
+    element: HTMLElement,
+    thresholds: { bottom: number; top: number }
+) => {
+    element.addEventListener("scroll", () => {
+        const { scrollTop, scrollHeight, clientHeight } = element
+        const { bottom, top } = thresholds
+        const isBottom = scrollTop + clientHeight >= scrollHeight - bottom
+        const isTop = scrollTop <= top
+        if (isBottom || isTop) {
+            element.dataset.scrolled = isBottom
+                ? "bottom"
+                : isTop
+                ? "top"
+                : null
+        } else {
+            delete element.dataset.scrolled
+        }
+    })
+}

@@ -2,6 +2,9 @@ import type { Translated } from "./ortfo"
 
 export const transformKeys =
     (transformer: (input: string) => string) => (obj: any) => {
+        if (Array.isArray(obj)) {
+            return obj.map(transformKeys(transformer))
+        }
         if (Object.prototype.toString.call(obj) !== "[object Object]") {
             return obj
         }
@@ -25,6 +28,9 @@ export const lowercaseNoSpacesKeys = transformKeys(key =>
 export const lowercaseFirstCharacter = transformKeys(
     key => key[0].toLowerCase() + key.slice(1)
 )
+
+export const uppercaseFirstCharacter = (s: string) =>
+    s[0].toUpperCase() + s.slice(1)
 
 export const first = <T>(arr: T[]) => arr[0]
 export const second = <T>(arr: T[]) => arr[1]
@@ -110,4 +116,8 @@ export async function mapToTranslatedAsync<I, O>(
         output[language] = await Promise.all(items.map(map))
     }
     return output
+}
+
+export function unslug(slug: string): string {
+    return uppercaseFirstCharacter(slug.replace(/-/g, " ")).trim()
 }

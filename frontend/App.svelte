@@ -173,6 +173,28 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	padding: 2px 5px;
 }
 
+:global(button[data-variant="link"]) {
+	font-size: 1em;
+	position: relative;
+}
+:global(button[data-variant="link"])::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: var(--ortforange);
+	transition: all 0.125s ease;
+}
+:global(button[data-variant="link"]):hover,
+:global(button[data-variant="link"]):focus {
+	color: var(--ortforange);
+}
+:global(button[data-variant="link"]):not(:hover):not(:focus)::after {
+	transform: scaleX(0.75);
+}
+
 :global(h1) {
 	text-align: center;
 	font-size: 3em;
@@ -180,9 +202,9 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	margin: 2rem 0;
 }
 
-:global(input:not([type=file]), textarea, .editor) {
+:global(input:not([type="file"]), textarea, .editor) {
 	border: 1px solid var(--black);
-	border-radius: .5em;
+	border-radius: 0.5em;
 	padding: 0.25rem 0.5rem;
 	font-size: 1em;
 	transition: all 0.2s ease;

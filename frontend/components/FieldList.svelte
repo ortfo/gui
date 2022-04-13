@@ -28,7 +28,14 @@ function change(index: number) {
 	<ul>
 		{#each value as item, index}
 			<li>
-				<input value={item} on:change={change(index)} />
+				<input
+					value={item}
+					on:change={change(index)}
+					on:blur={item === "" ? remove(index) : null}
+					on:keypress={e =>
+						e.code === "Enter" &&
+						e.target.parentElement.nextElementSibling.focus()}
+				/>
 				<button
 					class="remove"
 					data-variant="none"

@@ -5,6 +5,8 @@ Add a…: Ajouter un…
 Block of code: Bloc de code
 Bold: Gras
 Bullet list: Liste à puces
+Cancel: Annuler
+Can’t find what you want?: Vous ne trouvez pas ce que vous cherchez ?
 Code: Code
 Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.: >-
     Faites glisser les blocs pour réorganiser la page. Double-cliquez sur un
@@ -13,8 +15,11 @@ Footnotes: Notes de bas de page
 Good to see you, {name}.: Heureux de vous revoir, {name}.
 Good to see you.: Heureux de vous revoir.
 Heading: Titre
+Here are the works in your projects folder that don’t have a description yet: Voici les projets dans votre dossier qui n’ont pas encore de description
 Insert media: Insérer un média
+It looks like <em>{id}</em>’s folder has gone missing.: Apparemment, le dossier de <em>{id}</em> a disparu.
 Italic: Italique
+Let’s describe a work: Décrivons un projet.
 Link: Lien
 List of definitions: Liste de définitions
 Loading…: Chargement…
@@ -27,6 +32,7 @@ Settings: Réglages
 This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?: >-
     Ce projet a des modifications non enregistrées qui seront perdues si vous
     fermez cet onglet. Êtes-vous sûr de vouloir continuer ?
+Try changing your projects folder in: Essayez de changer votre dossier de projets dans
 Unsaved changes: Modifications non enregistrées
 add something: ajouter quelque chose
 another one?: un autre ?
@@ -48,6 +54,7 @@ describe your media: décrivez votre média
 don't close: ne pas fermer
 edit: modifier
 finish: terminer
+go back to all projects: retour aux projets
 heading: titre
 insert media: insérer un média
 italic: italique

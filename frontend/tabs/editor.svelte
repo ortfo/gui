@@ -6,6 +6,7 @@ export async function saveWork(
 ) {
 	await backend.writeToDisk(parsedDescription, id)
 	rebuildDatabase(reload)
+	volatileWorks.set(get(volatileWorks).filter(workID => workID !== id))
 }
 </script>
 
@@ -17,10 +18,9 @@ import {
 	state,
 	settings,
 	workInEditor,
-	workOnDiskCurrentLanguage,
 	workOnDisk,
 	WorkID,
-	State,
+	volatileWorks,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
 import FieldImage from "../components/FieldImage.svelte"
@@ -33,15 +33,11 @@ import tinykeys from "tinykeys"
 import { backend } from "../backend"
 import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
-import type {
-	Abbreviations,
-	Paragraph,
-	ParsedDescription,
-	Translated,
-} from "../ortfo"
+import type { ParsedDescription } from "../ortfo"
 import FieldMap from "../components/FieldMap.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
 import { _ } from "svelte-i18n"
+import { get } from "svelte/store"
 
 onMount(async () => {
 	tinykeys(window, {
@@ -232,7 +228,7 @@ let titleH1: HTMLHeadingElement
 		<div class="error">
 			<p>
 				{@html $_(
-					"It looks like <em>{id}</em>'s folder has gone missing."
+					"It looks like <em>{id}</em>’s folder has gone missing."
 				)}
 			</p>
 			<button on:click={_ => ($state.openTab = "works")}
@@ -241,7 +237,7 @@ let titleH1: HTMLHeadingElement
 		</div>
 	{:else}
 		<h1>??</h1>
-		<p>An unknown error occured. It says:</p>
+		<p>{$_("An error occured: ")}</p>
 		<p>{error}</p>
 	{/if}
 {/await}
@@ -290,7 +286,7 @@ aside section:not(:first-of-type) {
 }
 
 aside h2 {
-	margin-bottom: .25em;
+	margin-bottom: 0.25em;
 	font-size: 1.75em;
 }
 

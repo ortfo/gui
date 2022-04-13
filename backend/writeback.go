@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/mitchellh/go-homedir"
@@ -30,6 +31,11 @@ func Writeback(settings Settings, parsedDescription ortfodb.ParsedDescription, w
 	}
 
 	writeTo := filepath.Join(expandedProjectsFolder, workID, ".portfoliodb", "description.md")
+	err = os.MkdirAll(filepath.Dir(writeTo), 0755)
+	if err != nil {
+		return fmt.Errorf("couldn't create missing directories: %w", err)
+	}
+
 	LogToBrowser("Writing description to %s", writeTo)
 	return ioutil.WriteFile(writeTo, []byte(description), 0644)
 }
