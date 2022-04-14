@@ -112,7 +112,7 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 						data-variant="none"
 						><HighlightText
 							text={result.item.name}
-							indices={result.matches.map(m => m.indices)}
+							indices={result.matches.find(m => m.key === "name")?.indices}
 						/></button
 					>
 				</li>

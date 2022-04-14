@@ -2,21 +2,20 @@
 import { first, second } from "../utils"
 import type Fuse from "fuse.js"
 
-export let indices: (readonly Fuse.RangeTuple[])[] = []
+export let indices: readonly Fuse.RangeTuple[] | undefined = []
 export let text: string = ""
 
-const startsHighlight = (index: number) =>
-	indices.flat(1).map(first).includes(index)
-
-const endsHighlight = (index: number) =>
-	indices.flat(1).map(second).includes(index)
+const startsHighlight = (index: number, indices) =>
+	(indices || []).map(first).includes(index)
+const endsHighlight = (index: number, indices) =>
+	(indices || []).map(second).includes(index)
 </script>
 
 {@html Array.from(text)
 	.map((character, index) => {
-		if (startsHighlight(index)) {
+		if (startsHighlight(index, indices)) {
 			return `<span class="highlight">${character}`
-		} else if (endsHighlight(index)) {
+		} else if (endsHighlight(index, indices)) {
 			return `${character}</span>`
 		} else {
 			return character
