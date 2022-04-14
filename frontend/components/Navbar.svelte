@@ -83,7 +83,8 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 				class:current={$state.openTab === "editor"}
 				>{$state.editingWorkID}</a
 			>
-			<span
+			<button
+				data-variant="none"
 				class="close-current-work"
 				class:unsaved-changes={$hasUnsavedChanges}
 				on:click={() => {
@@ -108,6 +109,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			</a>
 		{/each}
 	{/if}
+	<div class="spacer"></div>
 	<button on:click={_ => rebuildDatabase()}>
 		{#if $rebuildingDatabase}
 			{$_("rebuilding…")}
@@ -183,6 +185,7 @@ nav {
 	display: inline-block;
 	margin-left: -0.9rem;
 	width: 1.2rem;
+	font-size: 1em;
 	cursor: pointer;
 }
 .close-current-work::after,
@@ -230,7 +233,7 @@ nav a.current {
 	font-variation-settings: "wght" 700;
 	border-bottom-color: var(--ortforange);
 }
-button:first-of-type {
+.spacer {
 	margin-left: auto;
 }
 
