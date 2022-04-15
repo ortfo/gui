@@ -8,6 +8,7 @@ type T = any
 
 export let items: T[]
 export let keys: (keyof T)[]
+export let selectable: boolean = false
 let searcher: Fuse<T>
 let query: string = ""
 let results: T[]
@@ -40,7 +41,7 @@ $: results = search(items, query)
 >
 	<slot name="create" />
 	{#each results as result (result.refIndex)}
-		<li on:click={console.log}>
+		<li on:click={console.log} class:selectable>
 			<slot {result}>
 				{result.item}
 			</slot>
@@ -50,7 +51,7 @@ $: results = search(items, query)
 	{/each}
 </ul>
 
-<style>
+<style lang="scss">
 ul {
 	margin: 0.5em auto;
 	display: flex;
@@ -95,18 +96,16 @@ li:not(.no-results),
 	list-style: none;
 }
 
-li:not(.no-results):hover,
-:global(li.as-list-item):focus-within,
-:global(li.as-list-item):hover,
-li:not(.no-results):focus-within {
-	background: var(--ortforange);
-	/* FIXME click event's don't get registered when transform animates */
-	/* transform: scale(1); */
-}
-
-:global(li.as-list-item):active,
-li:not(.no-results):active {
-	background: var(--ortforange);
-	/* transform: scale(0.9); */
+li:not(.no-results).selectable,
+:global(li.as-list-item.selectable) {
+	&:hover,
+	&:focus-within {
+		background: var(--ortforange);
+		transform: scale(1);
+	}
+	&:active {
+		background: var(--ortforange);
+		transform: scale(0.9);
+	}
 }
 </style>

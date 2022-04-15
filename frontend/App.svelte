@@ -12,6 +12,8 @@ import ModalButtonClose from "./components/ModalButtonClose.svelte"
 import tinykeys from "tinykeys"
 import { addMessages, init as i18nInit, locale } from "svelte-i18n"
 import messagesFrench from "../i18n/fr.yaml"
+import Technologies from "./tabs/technologies.svelte"
+import Externalsites from "./tabs/externalsites.svelte"
 
 function loadLocales() {
 	addMessages("fr", messagesFrench)
@@ -98,9 +100,9 @@ settings.subscribe(settings => applyTheme(settings.theme))
 			{:else if $state.openTab == "tags"}
 				<Tags />
 			{:else if $state.openTab == "technologies"}
-				TODO
+				<Technologies />
 			{:else if $state.openTab == "sites"}
-				TODO
+				<Externalsites />
 			{:else if $state.openTab == "settings"}
 				<Settings />
 			{:else if $state.openTab == "editor"}
@@ -123,14 +125,16 @@ settings.subscribe(settings => applyTheme(settings.theme))
 {/await}
 
 <style>
+:global(body) {
+	background-color: var(--white);
+}
 :global(body, input, select) {
 	font-family: var(--sans);
-	background-color: var(--white);
 	color: var(--black);
 	margin: 0;
 }
 
-:global(code, pre) {
+:global(code, pre, code em, pre em) {
 	font-family: var(--mono);
 }
 

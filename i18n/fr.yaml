@@ -1,14 +1,18 @@
 Abbreviations: Abbréviations
 Add a new block?: Ajouter un nouveau bloc ?
+Add a tag: Ajouter un tag
 Add a…: Ajouter un…
-'An error occured: ': 'Une erreur est survenue : '
+"An error occured: ": "Une erreur est survenue : "
+Another one?: Un autre ?
 Block of code: Bloc de code
 Bold: Gras
 Bullet list: Liste à puces
 Cancel: Annuler
 Can’t find what you want?: Vous ne trouvez pas ce que vous cherchez ?
+Categorize your works with <em>tags</em>: Catégorisez vos projets avec des <em>tags</em>
 Code: Code
-Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.: >-
+? Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.
+: >-
     Faites glisser les blocs pour réorganiser la page. Double-cliquez sur un
     bloc pour le modifier.
 Footnotes: Notes de bas de page
@@ -25,18 +29,23 @@ List of definitions: Liste de définitions
 Loading…: Chargement…
 Metadata: Métadonnées
 No content yet.: Aucun contenu pour l'instant.
+No description: Aucune description
 No results: Aucun résultat
+No results.: Aucun résultat.
 Numbered list: Liste numérotée
 Remove this footnote: Supprimer cette note de bas de page
 Remove this one: Supprimer ceci
 Search: Rechercher
 Settings: Réglages
-This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?: >-
+? This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?
+: >-
     Ce projet a des modifications non enregistrées qui seront perdues si vous
     fermez cet onglet. Êtes-vous sûr de vouloir continuer ?
 Try changing your projects folder in: Essayez de changer votre dossier de projets dans
 Unsaved changes: Modifications non enregistrées
+a link to a website: un lien vers un site
 add something: ajouter quelque chose
+aliases: alias
 another one?: un autre ?
 block of code: bloc de code
 bold: gras
@@ -45,15 +54,17 @@ chosen image for {key}: image choisie pour {key}
 close: fermer
 close without saving: fermer sans enregistrer
 code: code
-code block: ''
+code block: ""
 colors: couleurs
 content: contenu
 dark: sombre
-definition: ''
-definition list: ''
+definition: ""
+definition list: ""
 delete: supprimer
 delete block: supprimer le bloc
 describe your media: décrivez votre média
+describe your tag: décrivez votre tag
+description: description
 don't close: ne pas fermer
 edit: modifier
 finish: terminer
@@ -63,6 +74,7 @@ insert media: insérer un média
 italic: italique
 key: clé
 language: langue
+learn more at: en savoir plus à
 light: clair
 link: lien
 link icon: icône de lien
@@ -72,12 +84,15 @@ media: média
 media icon: icône de média
 move: déplacer
 name: nom
+name (plural form): nom (au pluriel)
+name (singular form): nom (au singulier)
 name your link: donnez un nom à votre lien
 numbered list: liste numérotée
 page background: fond de page
 paragraph: paragraphe
 paragraph icon: icône de paragraphe
 pick from image: depuis une image
+plural form: au pluriel
 primary: principale
 projects folder: dossier des projets
 publish!: publier !
@@ -90,6 +105,7 @@ save then close: enregistrer puis fermer
 secondary: secondaire
 settings: réglages
 show tips: afficher des explications
+singular form: au singulier
 sites: sites
 surname: prénom
 tags: tags
@@ -101,13 +117,18 @@ unset values inherit their defaults, set in: les valeurs non définies héritent
 value: valeur
 works: projets
 write some text here: écrivez du texte ici
-Categorize your works with <em>tags</em>: Catégorisez vos projets avec des <em>tags</em>
-name (singular form): nom (au singulier)
-name (plural form): nom (au pluriel)
-description: description
-learn more at: en savoir plus à
-describe your tag: décrivez votre tag
-aliases: alias
-Another one?: Un autre ?
-No description: Aucune description
-Add a tag: Ajouter un tag
+purpose: but
+in the pages: dans les pages
+in the URLs: dans les URLs
+username: nom d’utilisateur
+describe your technology: décrivez votre technologie
+Add a technology: Ajouter une technologie
+Add an external site: Ajouter un site externe
+External sites: Sites externes
+"Make people aware of your online presence elsewhere on the web: social media, YouTube channel, et cætera.": "Informez de votre présence autre part sur le web: réseaux sociaux, YouTube, et cætera."
+"Specify what you use in your projects: languages, materials, textures, samples, frameworks, you name it.": "Spécifiez ce que vous utilisez dans vos projets: langages, matériaux, textures, samples, frameworks, et autres."
+create_external_site_tip: "Astuce : utilisez <strong><code>mailto:<em>votre adresse email</em></code></strong> comme lien,<br>et en cliquant dessus, vous pourrez commencer un nouveau courriel à vous !"
+what do you use it for?: pour quoi l’utilisez-vous ?
+without the leading @: sans le préfixe "@"
+put the link here: mettez le lien ici
+by: par

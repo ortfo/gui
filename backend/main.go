@@ -7,6 +7,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
+	"github.com/skratchdot/open-golang/open"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
 	"github.com/webview/webview"
@@ -140,6 +141,9 @@ func startWebview() {
 			})
 		}
 		return entries, nil
+	})
+	w.Bind("backend__openInBrowser", func(url string) error {
+		return open.Start(url)
 	})
 	w.Run()
 }

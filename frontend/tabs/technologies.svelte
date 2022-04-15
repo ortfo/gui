@@ -3,106 +3,127 @@ import { i18n, tooltip } from "../actions"
 import SearchableList from "../components/SearchableList.svelte"
 import { database } from "../stores"
 import { _ } from "svelte-i18n"
-import CreateTag from "../components/CreateTag.svelte"
+import CreateTech from "../components/CreateTech.svelte"
 import Card from "../components/Card.svelte"
 import HighlightText from "../components/HighlightText.svelte"
 import { createModalSummoner } from "../modals"
 import { getContext } from "svelte"
-import type { Tag } from "../ortfo"
+import type { Tag, Technology } from "../ortfo"
 import { backend } from "../backend"
 import MarkdownEditor from "../components/MarkdownEditor.svelte"
 import { except } from "../utils"
 const summon = createModalSummoner(getContext("simple-modal"))
 
-let editingTag: Tag | null = null
-let tagsWithEditingStatus: (Tag & { editing: boolean })[] = $database.tags.map(
-	t => ({ ...t, editing: false })
-)
+let editingTech: Technology | null = null
+let techsWithEditingStatus: (Technology & { editing: boolean })[] =
+	$database.technologies.map(t => ({ ...t, editing: false }))
 
-async function removeTag(tag: Tag) {
-	tagsWithEditingStatus = tagsWithEditingStatus.filter(
-		t => t.singular !== tag.singular
+async function removeTech(tech: Technology) {
+	techsWithEditingStatus = techsWithEditingStatus.filter(
+		t => t.urlname !== tech.urlname
 	)
-	$database.tags = tagsWithEditingStatus.map(except("editing"))
-	await backend.writeSites($database.tags)
+	$database.technologies = techsWithEditingStatus.map(except("editing"))
+	await backend.writeTechnologies($database.technologies)
 }
 
-function editTag(tag: Tag) {
-	console.log("Editing tag", tag)
-	tagsWithEditingStatus = tagsWithEditingStatus.map(t => ({
+function editTech(tech: Technology) {
+	console.log("Editing tech", tech)
+	techsWithEditingStatus = techsWithEditingStatus.map(t => ({
 		...t,
-		editing: t.singular === tag.singular,
+		editing: t.urlname === tech.urlname,
 	}))
-	editingTag = tagsWithEditingStatus.find(t => t.singular === tag.singular)
+	editingTech = techsWithEditingStatus.find(t => t.urlname === tech.urlname)
 }
 
-async function finishEditing(tag: Tag) {
-	tagsWithEditingStatus = tagsWithEditingStatus.map(t => ({
-		...t,
-		editing: false,
-	}))
-	editingTag = null
-	$database.tags = tagsWithEditingStatus.map(except("editing"))
-	await backend.writeSites($database.tags)
-}
-
-function cancelEditing(tag: Tag) {
-	tagsWithEditingStatus = tagsWithEditingStatus.map(t => ({
+async function finishEditing(tech: Technology) {
+	techsWithEditingStatus = techsWithEditingStatus.map(t => ({
 		...t,
 		editing: false,
 	}))
-	editingTag = null
+	editingTech = null
+	$database.technologies = techsWithEditingStatus.map(except("editing"))
+	await backend.writeSites($database.technologies)
+}
+
+function cancelEditing(tech: Technology) {
+	techsWithEditingStatus = techsWithEditingStatus.map(t => ({
+		...t,
+		editing: false,
+	}))
+	editingTech = null
 }
 </script>
 
-<h1 use:i18n>Tags</h1>
-<p class="intro" use:i18n>Categorize your works with <em>tags</em></p>
+<h1 use:i18n>Technologies</h1>
+<p class="intro" use:i18n>
+	Specify what you use in your projects: languages, materials, textures,
+	samples, frameworks, you name it.
+</p>
 
-<section class="tags">
+<section class="technologies">
 	<SearchableList
-		bind:items={tagsWithEditingStatus}
+		bind:items={techsWithEditingStatus}
 		let:result
-		keys={["singular", "plural", "description", "learnmoreurl"]}
+		keys={[
+			"urlname",
+			"displayname",
+			"description",
+			"learnmoreurl",
+			"author",
+		]}
 	>
 		<li
 			slot="create"
-			class:as-list-item={$database.tags.length > 0}
+			class:as-list-item={$database.technologies.length > 0}
 			class="selectable"
 		>
-			{#if $database.tags.length > 0}
+			{#if $database.technologies.length > 0}
 				<button
 					class="create"
 					data-variant="none"
-					on:click={_ => summon(CreateTag)}>+</button
+					on:click={_ => summon(CreateTech)}>+</button
 				>
 			{/if}
 		</li>
 
 		<!-- Individual item -->
 
-		<div class="tag">
+		<div class="tech">
 			<div class="content">
-				<span class="singular-name">
+				<span class="display-name">
 					{#if result.item.editing}
-						<input type="text" bind:value={editingTag.singular} />
+						<input
+							type="text"
+							bind:value={editingTech.displayname}
+						/>
+						<input type="text" bind:value={editingTech.author} />
 					{:else}
 						<HighlightText
-							text={result.item.singular}
+							text={result.item.displayname}
 							indices={result.matches.find(
-								m => m.key === "singular"
+								m => m.key === "displayname"
 							)?.indices}
 						/>
+						<span class="author">
+							{#if result.item.author}{$_("by")} {/if}
+							<HighlightText
+								text={result.item.author}
+								indices={result.matches.find(
+									m => m.key === "author"
+								)?.indices}
+							/>
+						</span>
 					{/if}
 				</span>
 				<span class="names-separator">|</span>
-				<span class="plural-name">
+				<span class="url-name">
 					{#if result.item.editing}
-						<input type="text" bind:value={editingTag.plural} />
+						<input type="text" bind:value={editingTech.urlname} />
 					{:else}
 						<HighlightText
-							text={result.item.plural}
+							text={result.item.urlname}
 							indices={result.matches.find(
-								m => m.key === "plural"
+								m => m.key === "urlname"
 							)?.indices}
 						/>
 					{/if}
@@ -115,8 +136,8 @@ function cancelEditing(tag: Tag) {
 					{#if result.item.editing}
 						<MarkdownEditor
 							autoactive
-							bind:value={editingTag.description}
-							placeholder={$_("describe your tag")}
+							bind:value={editingTech.description}
+							placeholder={$_("describe your technology")}
 						/>
 					{:else if result.item.description}
 						{@html result.item.description}
@@ -129,12 +150,14 @@ function cancelEditing(tag: Tag) {
 				class="edit"
 				data-variant="none"
 				title={$_(
-					result.item.editing ? "Finish editing" : "Edit this tag"
+					result.item.editing
+						? "Finish editing"
+						: "Edit this technology"
 				)}
 				on:click={_ =>
 					result.item.editing
 						? finishEditing(result.item)
-						: editTag(result.item)}
+						: editTech(result.item)}
 			>
 				<img
 					src="/assets/icon-{result.item.editing
@@ -148,12 +171,14 @@ function cancelEditing(tag: Tag) {
 				class="delete"
 				data-variant="none"
 				title={$_(
-					result.item.editing ? "Abort changes" : "Delete this tag"
+					result.item.editing
+						? "Abort changes"
+						: "Delete this technology"
 				)}
 				on:click={_ =>
 					result.item.editing
 						? cancelEditing(result.item)
-						: removeTag(result.item)}
+						: removeTech(result.item)}
 			>
 				×</button
 			>
@@ -162,8 +187,8 @@ function cancelEditing(tag: Tag) {
 		<!-- /Individual item -->
 
 		<li slot="no-results">
-			{#if $database.tags.length === 0}
-				<CreateTag />
+			{#if $database.technologies.length === 0}
+				<CreateTech />
 			{:else}
 				<h2 use:i18n>No results.</h2>
 			{/if}
@@ -179,16 +204,25 @@ function cancelEditing(tag: Tag) {
 h1 {
 	margin: 0;
 }
-section.tags {
+section.technologies {
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 	height: 70vh;
 	margin-bottom: 3em;
 }
-.tag {
+input {
+	display: inline;
+}
+.tech {
 	display: flex;
 	width: 100%;
+}
+.author {
+	color: var(--gray);
+}
+.author:not(:empty) {
+	margin-left: 0.25em;
 }
 .names-separator {
 	margin: 0 0.5em;
@@ -218,8 +252,8 @@ button.create {
 	width: 100%;
 	height: 100%;
 }
-.tag:not(:focus-within):not(:hover) button {
-	opacity: 0;	
+.tech:not(:focus-within):not(:hover) button {
+	opacity: 0;
 }
 li[slot="create"],
 li[slot="no-results"] {

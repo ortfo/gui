@@ -112,7 +112,7 @@ export const backend = {
             await backend__listDirectory(path)
         ) as DirEntry[]
     },
-    writeTags: async (tags: Tag[]) => {
+    writeSites: async (tags: Tag[]) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeTags(
             tags.map(t => ({
@@ -132,4 +132,8 @@ export const backend = {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeExternalSites(externalSites)) as MaybeError
     },
+    openInBrowser: async (url: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__openInBrowser(url)) as MaybeError
+    }
 }

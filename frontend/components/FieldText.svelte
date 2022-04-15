@@ -38,9 +38,3 @@ $: inputElement?.setAttribute("type", type)
 		/>
 	{/if}
 </MetadataField>
-
-<style>
-.rich-text-wrapper {
-	position: relative;
-}
-</style>

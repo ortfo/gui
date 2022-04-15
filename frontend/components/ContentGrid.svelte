@@ -345,6 +345,9 @@ h2 {
 :global(.svlt-grid-item) {
 	display: flex;
 }
+:global(.svlt-grid-item input) {
+	background-color: var(--white);
+}
 .block {
 	border: 0.175em solid var(--gray);
 	border-radius: 0.5em;

@@ -20,6 +20,8 @@ import SearchBar from "../components/SearchBar.svelte"
 import HighlightText from "../components/HighlightText.svelte"
 const summon = createModalSummoner(getContext("simple-modal"))
 
+// TODO use <SearchableList>
+
 export let open: boolean = false
 
 let searcher: Fuse<DirEntry>

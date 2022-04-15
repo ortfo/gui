@@ -16,6 +16,7 @@ const dispatch = createEventDispatcher()
 
 export let value: string
 export let placeholder: string = ""
+export let autoactive: boolean = false
 export let active: boolean = false
 export let noBorder: boolean = false
 
@@ -78,10 +79,16 @@ onMount(() => {
 		},
 		onBlur: () => {
 			if (!onToolbar) {
+				if (autoactive) {
+					active = false
+				}
 				dispatch("blur")
 			}
 		},
 		onFocus: () => {
+			if (autoactive) {
+				active = true
+			}
 			dispatch("focus")
 		},
 	})

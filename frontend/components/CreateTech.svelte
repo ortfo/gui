@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Tag } from "../ortfo"
+import type { Technology } from "../ortfo"
 import { database } from "../stores"
 import { i18n } from "../actions"
 import { _ } from "svelte-i18n"
@@ -8,63 +8,63 @@ import { backend } from "../backend"
 import FieldText from "./FieldText.svelte"
 import MetadataField from "./MetadataField.svelte"
 
-const EMPTY_TAG: Tag = {
+const EMPTY_TECH: Technology = {
 	aliases: [],
 	description: "",
 	learnmoreurl: "",
-	plural: "",
-	singular: "",
+	author: "",
+	displayname: "",
+	urlname: "",
 }
 
-let newTag: Tag = EMPTY_TAG
+let newTech: Technology = EMPTY_TECH
 
-async function addTag() {
-	$database.tags = [...$database.tags, newTag]
-	console.log("addTag", $database.tags)
-	await backend.writeSites($database.tags)
-	newTag = EMPTY_TAG
+async function addTech() {
+	$database.tags = [...$database.technologies, newTech]
+	await backend.writeTechnologies($database.technologies)
+	newTech = EMPTY_TECH
 }
 </script>
 
-<h2 use:i18n>Add a tag</h2>
+<h2 use:i18n>Add a technology</h2>
 
-<form on:submit|preventDefault={addTag}>
+<form on:submit|preventDefault={addTech}>
 	<dl>
 		<MetadataField key={$_("name")} colon>
 			<dl>
 				<FieldText
 					partOfObject
-					bind:value={newTag.singular}
-					key={$_("singular form")}
+					bind:value={newTech.displayname}
+					key={$_("in the pages")}
 				/>
 				<FieldText
 					partOfObject
-					bind:value={newTag.plural}
-					key={$_("plural form")}
+					bind:value={newTech.urlname}
+					key={$_("in the URLs")}
 				/>
 			</dl>
 		</MetadataField>
 		<FieldText
 			rich
-			bind:value={newTag.description}
+			bind:value={newTech.description}
 			key={$_("description")}
-			placeholder={$_("describe your tag")}
+			placeholder={$_("describe your technology")}
 		/>
 		<FieldText
 			type="url"
-			bind:value={newTag.learnmoreurl}
+			bind:value={newTech.learnmoreurl}
 			key={$_("learn more at")}
 			placeholder={$_("a link to a website")}
 		/>
 		<FieldList
 			key={$_("aliases")}
 			help={$_(
-				"other singular-form names that should point to the same category"
+				"other singular-form names that should point to the same technology"
 			)}
-			bind:value={newTag.aliases}
+			bind:value={newTech.aliases}
 		/>
 	</dl>
-	<button use:i18n type="submit">Add</button>
+	<button type="submit" use:i18n>Add</button>
 </form>
 
 <style>

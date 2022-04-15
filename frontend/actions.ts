@@ -1,4 +1,5 @@
 import { MessageFormater, _ } from "svelte-i18n"
+import collapseWhitespace from "collapse-whitespace"
 import { element } from "svelte/internal"
 import tippy from "sveltejs-tippy"
 
@@ -60,9 +61,11 @@ export const i18n = (element: HTMLElement) => {
         return parsed.innerHTML
     }
 
+    const collapseWhitespace = (text: string) => text.replace(/\s+/g, " ")
+
     _.subscribe(messageFormatter => {
         element.innerHTML = messageFormatter(
-            withoutSvelteClasses(element.innerHTML)
+            withoutSvelteClasses(collapseWhitespace(element.innerHTML))
         )
     })
 }
