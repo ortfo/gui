@@ -30,9 +30,9 @@ function editSite(site: ExternalSite) {
 	console.log("Editing site", site)
 	sitesWithEditingStatus = sitesWithEditingStatus.map(t => ({
 		...t,
-		editing: t.singular === site.singular,
+		editing: t.url === site.url,
 	}))
-	editingSite = sitesWithEditingStatus.find(t => t.singular === site.singular)
+	editingSite = sitesWithEditingStatus.find(t => t.url === site.url)
 }
 
 async function finishEditing(site: ExternalSite) {
