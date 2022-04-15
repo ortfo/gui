@@ -8,7 +8,7 @@ import yaml from "@rollup/plugin-yaml"
 export default defineConfig({
     plugins: [
         svelte(),
-        resolve({ browser: true, dedupe: ["svelte"] }),
+        /* resolve({ browser: true, dedupe: ["svelte"] }), */
         commonjs(),
         yaml(),
     ],

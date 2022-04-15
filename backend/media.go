@@ -7,35 +7,46 @@ import (
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
+	statikfs "github.com/rakyll/statik/fs"
+
+	_ "github.com/ortfo/gui/statik"
 )
 
 type mediaRoot struct {
-	projectsRoot string
-	databaseRoot string
+	projectsRoot     string
+	databaseRoot     string
+	staticFileserver http.FileSystem
 }
 
 func (m mediaRoot) Open(name string) (http.File, error) {
 	name = strings.TrimPrefix(name, "/")
 	command, path, _ := strings.Cut(name, "/")
 	path = filepath.Clean(path)
-	println(path)
+	println(path, name)
 	switch command {
 	case "projects":
 		return http.Dir(m.projectsRoot).Open(path)
 	case "database":
 		return http.Dir(m.databaseRoot).Open(path)
+	default:
+		return m.staticFileserver.Open("/" + name)
 	}
-	ErrorToBrowser("Unknown command: %q", command)
-	return nil, fmt.Errorf("unknown command %q", command)
 }
 
 func startFilesystemServer(directory string) error {
 	expandedPath, _ := homedir.Expand(directory)
-	err := http.ListenAndServe(":4444", http.FileServer(mediaRoot{
-		projectsRoot: expandedPath,
-		databaseRoot: ConfigurationDirectory("portfolio-database"),
+	statikFS, err := statikfs.New()
+	if err != nil {
+		return fmt.Errorf("while starting resources static server part: %w", err)
+	}
+
+	err = http.ListenAndServe(":"+Port, http.FileServer(mediaRoot{
+		projectsRoot:     expandedPath,
+		databaseRoot:     ConfigurationDirectory("portfolio-database"),
+		staticFileserver: statikFS,
 	}))
 	fmt.Println(err.Error())
+
 	return err
 }
 

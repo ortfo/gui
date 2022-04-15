@@ -47,3 +47,10 @@ mock-projects/
 vite.config.ts.js
 coverage
 
+
+# frontend compilation output
+dist 
+# embedded compiled frontend (js, css, index.html and images)
+statik/statik.go 
+# compiled binary
+backend/backend 

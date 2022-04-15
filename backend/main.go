@@ -7,9 +7,9 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
-	"github.com/skratchdot/open-golang/open"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
+	"github.com/skratchdot/open-golang/open"
 	"github.com/webview/webview"
 	"gopkg.in/yaml.v2"
 )
@@ -23,6 +23,10 @@ type DirEntry struct {
 
 var w webview.WebView
 
+const (
+	Port = "4444"
+)
+
 func main() {
 	settings, _ := LoadSettings()
 	fmt.Printf("Settings: %#v\n", settings)
@@ -35,7 +39,13 @@ func startWebview() {
 	defer w.Destroy()
 	w.SetTitle("ortfo")
 	w.SetSize(800, 600, webview.HintNone)
-	w.Navigate("http://localhost:3000")
+	w.Navigate("http://localhost:" + func() string {
+		if os.Getenv("DEV") == "yes" {
+			return "3000"
+		} else {
+			return Port + "/index.html"
+		}
+	}())
 	w.Bind("backend__initialize", Initialize)
 	w.Bind("backend__settingsRead", func() (Settings, error) {
 		return LoadSettings()
