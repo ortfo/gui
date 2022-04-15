@@ -19,7 +19,7 @@ let inputElement: HTMLElement
 $: inputElement?.setAttribute("type", type)
 </script>
 
-<MetadataField {key} {help} {partOfObject} oneline={!rich} >
+<MetadataField {key} {help} {partOfObject} oneline={!rich}>
 	{#if rich}
 		<MarkdownEditor
 			bind:value

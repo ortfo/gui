@@ -40,10 +40,10 @@ dt .help {
 	margin-left: 1ch;
 }
 dt .help::before {
-	content: '(';
+	content: "(";
 }
 dt .help::after {
-	content: ')';
+	content: ")";
 }
 dt.colon::after {
 	content: ": ";

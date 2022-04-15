@@ -135,5 +135,5 @@ export const backend = {
     openInBrowser: async (url: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__openInBrowser(url)) as MaybeError
-    }
+    },
 }

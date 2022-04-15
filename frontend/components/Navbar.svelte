@@ -109,7 +109,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			</a>
 		{/each}
 	{/if}
-	<div class="spacer"></div>
+	<div class="spacer" />
 	<button on:click={_ => rebuildDatabase()}>
 		{#if $rebuildingDatabase}
 			{$_("rebuilding…")}
