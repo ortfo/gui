@@ -10,6 +10,8 @@ import { FootnoteReference } from "../markdown/footnoteReference"
 import { MathDisplay, MathInline } from "../markdown/math"
 import { _ } from "svelte-i18n"
 
+// TODO option to remove outer <p> </p> and limit to a single paragraph
+
 const dispatch = createEventDispatcher()
 
 export let value: string
@@ -17,7 +19,7 @@ export let placeholder: string = ""
 export let active: boolean = false
 export let noBorder: boolean = false
 
-let element
+let editorElement
 let editor: Editor
 let onToolbar: boolean // Whether the mouse is over the toolbar
 
@@ -55,7 +57,7 @@ const actions = (editor: Editor) => ({
 
 onMount(() => {
 	editor = new Editor({
-		element,
+		element: editorElement,
 		extensions: [
 			FootnoteReference,
 			StarterKit,
@@ -71,7 +73,7 @@ onMount(() => {
 			editor = editor
 		},
 		onUpdate: ({ editor }) => {
-			value = fromBuffer(editor.getHTML())
+			value = fromBuffer(editor.getHTML()) || "<p></p>"
 			dispatch("input", value)
 		},
 		onBlur: () => {

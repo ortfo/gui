@@ -1,3 +1,5 @@
+import { MessageFormater, _ } from "svelte-i18n"
+import { element } from "svelte/internal"
 import tippy from "sveltejs-tippy"
 
 export const tooltip = (
@@ -36,5 +38,31 @@ export const scrollStates = (
         } else {
             delete element.dataset.scrolled
         }
+    })
+}
+
+export const i18n = (element: HTMLElement) => {
+    const svelteClassPattern = /s-[\w_-]+/
+
+    const withoutSvelteClasses = htmlContent => {
+        let parsed = document.createElement("div")
+        parsed.innerHTML = htmlContent
+        parsed.querySelectorAll("[class]").forEach(element => {
+            ;[...element.classList].forEach(className => {
+                if (svelteClassPattern.test(className)) {
+                    element.classList.remove(className)
+                }
+            })
+            if (element.classList.length === 0) {
+                element.removeAttribute("class")
+            }
+        })
+        return parsed.innerHTML
+    }
+
+    _.subscribe(messageFormatter => {
+        element.innerHTML = messageFormatter(
+            withoutSvelteClasses(element.innerHTML)
+        )
     })
 }

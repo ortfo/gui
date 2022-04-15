@@ -233,10 +233,19 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	color: var(--black);
 }
 
+:global(body) {
+	display: flex;
+	flex-direction: column;
+}
+
 main {
 	max-width: 1400px;
 	margin: 0 auto;
 	padding-top: calc(3.25rem + 2rem);
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	width: 100%;
 }
 
 .error {

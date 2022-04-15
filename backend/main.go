@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
 	"github.com/webview/webview"
+	"gopkg.in/yaml.v2"
 )
 
 type DirEntry struct {
@@ -75,6 +77,32 @@ func startWebview() {
 		}
 
 		return Writeback(settings, description, workID)
+	})
+	w.Bind("backend__writeTags", func(tags []ortfomk.Tag) error {
+		spew.Dump(tags)
+		tagsBytes, err := yaml.Marshal(tags)
+		if err != nil {
+			return fmt.Errorf("while converting to YAML: %w", err)
+		}
+
+		return os.WriteFile(ConfigurationDirectory("portfolio-database", "tags.yaml"), tagsBytes, 0644)
+	})
+	w.Bind("backend__writeTechnologies", func(technologies []ortfomk.Technology) error {
+		tagsBytes, err := yaml.Marshal(technologies)
+		if err != nil {
+			ErrorToBrowser(fmt.Sprintf("while converting to YAML: %v", err))
+			return fmt.Errorf("while converting to YAML: %w", err)
+		}
+
+		return os.WriteFile(ConfigurationDirectory("portfolio-database", "technologies.yaml"), tagsBytes, 0644)
+	})
+	w.Bind("backend__writeExternalSites", func(externalSites []ortfomk.ExternalSite) error {
+		tagsBytes, err := yaml.Marshal(externalSites)
+		if err != nil {
+			return fmt.Errorf("while converting to YAML: %w", err)
+		}
+
+		return os.WriteFile(ConfigurationDirectory("portfolio-database", "sites.yaml"), tagsBytes, 0644)
 	})
 	w.Bind("backend__saveState", func(stateUntyped interface{}) error {
 		var state UIState

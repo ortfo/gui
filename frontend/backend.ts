@@ -1,8 +1,11 @@
 import { applyAbbreviations, collectAbbreviations } from "./description"
 import type {
     Database,
+    ExternalSite,
     LayedOutElement,
     ParsedDescription,
+    Tag,
+    Technology,
     Translated,
 } from "./ortfo"
 import type { Settings, State } from "./stores"
@@ -105,7 +108,28 @@ export const backend = {
     },
     listDirectory: async (path: string) => {
         return lowercaseNoSpacesKeys(
+            // @ts-ignore backend__* functions are injected by webview (from the backend)
             await backend__listDirectory(path)
         ) as DirEntry[]
+    },
+    writeTags: async (tags: Tag[]) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__writeTags(
+            tags.map(t => ({
+                Singular: t.singular,
+                Plural: t.plural,
+                Description: t.description,
+                Aliases: t.aliases,
+                LearnMoreURL: t.learnmoreurl,
+            }))
+        )) as MaybeError
+    },
+    writeTechnologies: async (technologies: Technology[]) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__writeTechnologies(technologies)) as MaybeError
+    },
+    writeExternalSites: async (externalSites: ExternalSite[]) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__writeExternalSites(externalSites)) as MaybeError
     },
 }

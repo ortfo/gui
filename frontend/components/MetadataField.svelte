@@ -3,6 +3,7 @@ import { metadataReadableNames } from "../ortfo"
 import { _ } from "svelte-i18n"
 
 export let key: string
+export let help: string = ""
 export let colon: boolean = false
 export let partOfObject: boolean = false
 export let oneline: boolean = false
@@ -11,6 +12,9 @@ export let oneline: boolean = false
 <div class="entry" class:oneline class:part-of-object={partOfObject}>
 	<dt class:colon>
 		{$_(metadataReadableNames[key] || key)}
+		{#if help}
+			<span class="help">{help}</span>
+		{/if}
 	</dt>
 	<dd><slot /></dd>
 </div>
@@ -19,6 +23,7 @@ export let oneline: boolean = false
 .oneline {
 	display: grid;
 	grid-template-columns: 1fr auto;
+	gap: 1em;
 }
 dt,
 dd {
@@ -28,6 +33,17 @@ dd {
 }
 dt {
 	font-variation-settings: "wght" 700;
+}
+dt .help {
+	color: var(--gray);
+	font-variation-settings: "wght" 700;
+	margin-left: 1ch;
+}
+dt .help::before {
+	content: '(';
+}
+dt .help::after {
+	content: ')';
 }
 dt.colon::after {
 	content: ": ";

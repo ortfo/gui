@@ -3,6 +3,7 @@ import MetadataField from "./MetadataField.svelte"
 import { _ } from "svelte-i18n"
 
 export let value: string[]
+export let help: string = ""
 export let key: string
 
 function remove(index: number) {
@@ -24,7 +25,7 @@ function change(index: number) {
 }
 </script>
 
-<MetadataField {key}>
+<MetadataField {key} {help}>
 	<ul>
 		{#each value as item, index}
 			<li>

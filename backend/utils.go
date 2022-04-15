@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/mitchellh/go-homedir"
 	ortfodb "github.com/ortfo/db"
 )
 
@@ -25,6 +27,15 @@ func WriteIfNotExist(filePath string, data []byte) error {
 		return os.WriteFile(filePath, data, 0644)
 	}
 	return nil
+}
+
+func JoinPaths(paths ...string) string {
+	result, err := homedir.Expand(filepath.Join(paths...))
+	if err != nil {
+		ErrorToBrowser("while expanding ~: %w", err)
+		return filepath.Join(paths...)
+	}
+	return result
 }
 
 func LanguagesIn(description ortfodb.ParsedDescription) (languages []string) {

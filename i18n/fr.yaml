@@ -101,3 +101,13 @@ unset values inherit their defaults, set in: les valeurs non définies héritent
 value: valeur
 works: projets
 write some text here: écrivez du texte ici
+Categorize your works with <em>tags</em>: Catégorisez vos projets avec des <em>tags</em>
+name (singular form): nom (au singulier)
+name (plural form): nom (au pluriel)
+description: description
+learn more at: en savoir plus à
+describe your tag: décrivez votre tag
+aliases: alias
+Another one?: Un autre ?
+No description: Aucune description
+Add a tag: Ajouter un tag
