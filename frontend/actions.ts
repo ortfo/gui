@@ -1,5 +1,4 @@
 import { MessageFormater, _ } from "svelte-i18n"
-import collapseWhitespace from "collapse-whitespace"
 import { element } from "svelte/internal"
 import tippy from "sveltejs-tippy"
 
