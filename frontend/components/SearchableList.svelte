@@ -19,7 +19,6 @@ $: searcher = new Fuse(items, {
 })
 
 function search(items: T[], query: string): Fuse.FuseResult<T>[] {
-	console.log(items)
 	if (query === "") {
 		return items.map((d, i) => ({
 			item: d,
@@ -41,7 +40,7 @@ $: results = search(items, query)
 >
 	<slot name="create" />
 	{#each results as result (result.refIndex)}
-		<li on:click={console.log} class:selectable>
+		<li class:selectable>
 			<slot {result}>
 				{result.item}
 			</slot>

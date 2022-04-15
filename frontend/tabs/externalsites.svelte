@@ -27,7 +27,6 @@ async function removeSite(site: ExternalSite) {
 }
 
 function editSite(site: ExternalSite) {
-	console.log("Editing site", site)
 	sitesWithEditingStatus = sitesWithEditingStatus.map(t => ({
 		...t,
 		editing: t.url === site.url,

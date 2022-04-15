@@ -27,8 +27,6 @@ export let open: boolean = false
 let searcher: Fuse<DirEntry>
 let query: string = ""
 
-$: console.log(searcher)
-
 async function getUndescribedWorks() {
 	let dirs = await backend.listDirectory($settings.projectsfolder)
 

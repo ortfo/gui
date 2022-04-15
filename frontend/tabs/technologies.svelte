@@ -27,7 +27,6 @@ async function removeTech(tech: Technology) {
 }
 
 function editTech(tech: Technology) {
-	console.log("Editing tech", tech)
 	techsWithEditingStatus = techsWithEditingStatus.map(t => ({
 		...t,
 		editing: t.urlname === tech.urlname,

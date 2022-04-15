@@ -28,7 +28,6 @@ async function removeTag(tag: Tag) {
 }
 
 function editTag(tag: Tag) {
-	console.log("Editing tag", tag)
 	tagsWithEditingStatus = tagsWithEditingStatus.map(t => ({
 		...t,
 		editing: t.singular === tag.singular,
@@ -219,7 +218,7 @@ button.create {
 	height: 100%;
 }
 .tag:not(:focus-within):not(:hover) button {
-	opacity: 0;	
+	opacity: 0;
 }
 li[slot="create"],
 li[slot="no-results"] {

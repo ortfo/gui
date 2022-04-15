@@ -20,7 +20,6 @@ let newSite: ExternalSite = EMPTY_SITE
 
 async function addSite() {
 	$database.sites = [...$database.sites, newSite]
-	console.log("addSite", $database.sites)
 	await backend.writeExternalSites($database.sites)
 	newSite = EMPTY_SITE
 }

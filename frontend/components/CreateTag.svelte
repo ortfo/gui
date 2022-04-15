@@ -20,7 +20,6 @@ let newTag: Tag = EMPTY_TAG
 
 async function addTag() {
 	$database.tags = [...$database.tags, newTag]
-	console.log("addTag", $database.tags)
 	await backend.writeSites($database.tags)
 	newTag = EMPTY_TAG
 }
