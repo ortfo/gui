@@ -21,12 +21,17 @@ $: searcher = new Fuse($databaseCurrentLanguage.works, {
 	includeScore: true,
 })
 
-function search(query: string): WorkOneLang[] {
+function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 	if (query.length < 3) {
-		return $databaseCurrentLanguage.works
+		return $databaseCurrentLanguage.works.map((work, i) => ({
+			item: work,
+			matches: [],
+			refIndex: i,
+			score: 1,
+		}))
 	}
 
-	return searcher.search(query).map(result => result.item)
+	return searcher.search(query)
 }
 </script>
 
@@ -50,9 +55,13 @@ function search(query: string): WorkOneLang[] {
 	<li id="create">
 		<Card creates hasIcon on:click={_ => (creatingWork = true)}>+</Card>
 	</li>
-	{#each search(query) as work (work.id)}
-		<li id={`work-${work.id}`}>
-			<CardWork {work} />
+	{#each search(query) as result (result.item.id)}
+		<li id={`work-${result.item.id}`}>
+			<CardWork
+				work={result.item}
+				highlightTitle={result.matches.find(m => m.key === "title")
+					?.indices}
+			/>
 		</li>
 	{/each}
 </ul>

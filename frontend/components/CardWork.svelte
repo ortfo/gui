@@ -4,6 +4,8 @@ import JSONTree from "svelte-json-tree"
 import Card from "./Card.svelte"
 import { settings, state } from "../stores"
 import { backend, localDatabase, relativeToDatabase } from "../backend"
+import type { Fuse } from "fuse.js"
+import HighlightText from "./HighlightText.svelte"
 
 function thumbPath() {
 	const absolutePath =
@@ -18,6 +20,7 @@ function editWork() {
 	$state.openTab = "editor"
 }
 export let work: WorkOneLang
+export let highlightTitle: readonly Fuse.FuseRangeTuple[] = []
 </script>
 
 <Card clickable on:click={editWork}>
@@ -30,7 +33,13 @@ export let work: WorkOneLang
 		/>
 	{/await}
 	<div class="text">
-		<h2>{work.title || work.id}</h2>
+		<h2>
+			<HighlightText
+				--bg="var(--ortforange-light)"
+				text={work.title || work.id}
+				indices={highlightTitle}
+			/>
+		</h2>
 		<!-- {@html work.paragraphs[0]?.content || ""} -->
 		<p class="path">
 			{$settings.projectsfolder.replaceAll("\\", "/")}/{work.id}

@@ -26,5 +26,6 @@ const endsHighlight = (index: number, indices) =>
 <style>
 :global(span.highlight) {
 	font-variation-settings: "wght" 800;
+	background-color: var(--bg, transparent);
 }
 </style>
