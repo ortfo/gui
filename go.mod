@@ -7,6 +7,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/ortfo/db v0.0.0-20220301190808-8fac2c7dbc30
 	github.com/ortfo/mk v0.0.0-20220406181020-b47878a991fa
+	github.com/rakyll/statik v0.1.7
 	github.com/webview/webview v0.0.0-20220407190137-85a0d5c36d07
 )
 
@@ -23,7 +24,7 @@ require (
 	github.com/anaskhan96/soup v1.2.4 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/chai2010/gettext-go v1.0.2 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815 // indirect
@@ -65,5 +66,5 @@ require (
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0
 )
