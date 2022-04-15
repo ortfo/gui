@@ -203,7 +203,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	margin: 2rem 0;
 }
 
-:global(input:not([type="file"]), textarea, .editor) {
+:global(input:not([type="file"]), textarea, ._markdown-editor) {
 	border: 1px solid var(--black);
 	border-radius: 0.5em;
 	padding: 0.25rem 0.5rem;
@@ -211,10 +211,10 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	transition: all 0.2s ease;
 }
 
-:global(input:hover, textarea:hover, .editor:hover) {
+:global(input:hover, textarea:hover, ._markdown-editor:hover) {
 	border-radius: 0;
 }
-:global(input:focus, textarea:focus, .editor:focus) {
+:global(input:focus, textarea:focus, ._markdown-editor:focus) {
 	border-radius: 0;
 	border-color: var(--ortforange);
 }

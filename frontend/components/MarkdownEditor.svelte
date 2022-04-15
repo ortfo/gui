@@ -97,142 +97,148 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 }
 </script>
 
-<ul
-	class="toolbar"
-	class:active
-	on:mouseenter={_ => (onToolbar = true)}
-	on:focus={_ => (onToolbar = true)}
-	on:mouseleave={_ => (onToolbar = false)}
-	on:blur={_ => (onToolbar = false)}
->
-	<li>
-		<button
-			use:tooltip={$_("Bold")}
-			data-variant="none"
-			on:click={actions(editor)["bold"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-bold.svg"
-				alt={$_("bold")}
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Italic")}
-			data-variant="none"
-			on:click={actions(editor)["italic"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-italic.svg"
-				alt={$_("italic")}
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Heading")}
-			data-variant="none"
-			on:click={actions(editor)["heading"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-heading.svg"
-				alt="heading"
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Code")}
-			data-variant="none"
-			on:click={actions(editor)["code"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-code.svg"
-				alt={$_("code")}
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Block of code")}
-			data-variant="none"
-			on:click={actions(editor)["code-block"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-code-block.svg"
-				alt={$_("code block")}
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Insert media")}
-			data-variant="none"
-			on:click={actions(editor)["media"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-insert-media.svg"
-				alt={$_("media")}
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Link")}
-			data-variant="none"
-			on:click={actions(editor)["link"].run}
-			tabindex="-1"
-			><img src="/assets/icon-link.svg" alt="link" class="icon" /></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Bullet list")}
-			data-variant="none"
-			on:click={actions(editor)["list-bullets"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-list-bullets.svg"
-				alt={$_("bullet list")}
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("Numbered list")}
-			data-variant="none"
-			on:click={actions(editor)["list-numbered"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-list-numbered.svg"
-				alt={$_("numbered list")}
-				class="icon"
-			/></button
-		>
-	</li>
-	<li>
-		<button
-			use:tooltip={$_("List of definitions")}
-			data-variant="none"
-			on:click={actions(editor)["list-definitions"].run}
-			tabindex="-1"
-			><img
-				src="/assets/icon-list-definitions.svg"
-				alt={$_("definition list")}
-				class="icon"
-			/></button
-		>
-	</li>
-</ul>
-<div class="editor" class:noBorder bind:this={element} />
+<div class="_markdown-editor" class:noBorder>
+	<ul
+		class="toolbar"
+		class:active
+		on:mouseenter={_ => (onToolbar = true)}
+		on:focus={_ => (onToolbar = true)}
+		on:mouseleave={_ => (onToolbar = false)}
+		on:blur={_ => (onToolbar = false)}
+	>
+		<li>
+			<button
+				use:tooltip={$_("Bold")}
+				data-variant="none"
+				on:click={actions(editor)["bold"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-bold.svg"
+					alt={$_("bold")}
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Italic")}
+				data-variant="none"
+				on:click={actions(editor)["italic"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-italic.svg"
+					alt={$_("italic")}
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Heading")}
+				data-variant="none"
+				on:click={actions(editor)["heading"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-heading.svg"
+					alt="heading"
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Code")}
+				data-variant="none"
+				on:click={actions(editor)["code"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-code.svg"
+					alt={$_("code")}
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Block of code")}
+				data-variant="none"
+				on:click={actions(editor)["code-block"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-code-block.svg"
+					alt={$_("code block")}
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Insert media")}
+				data-variant="none"
+				on:click={actions(editor)["media"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-insert-media.svg"
+					alt={$_("media")}
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Link")}
+				data-variant="none"
+				on:click={actions(editor)["link"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-link.svg"
+					alt="link"
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Bullet list")}
+				data-variant="none"
+				on:click={actions(editor)["list-bullets"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-list-bullets.svg"
+					alt={$_("bullet list")}
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("Numbered list")}
+				data-variant="none"
+				on:click={actions(editor)["list-numbered"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-list-numbered.svg"
+					alt={$_("numbered list")}
+					class="icon"
+				/></button
+			>
+		</li>
+		<li>
+			<button
+				use:tooltip={$_("List of definitions")}
+				data-variant="none"
+				on:click={actions(editor)["list-definitions"].run}
+				tabindex="-1"
+				><img
+					src="/assets/icon-list-definitions.svg"
+					alt={$_("definition list")}
+					class="icon"
+				/></button
+			>
+		</li>
+	</ul>
+	<div class="editor" bind:this={editorElement} />
+</div>
 
 <style>
 :global(.editor ul, .editor ol) {
@@ -245,7 +251,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	color: var(--gray);
 }
 
-:global(.editor.noBorder) {
+:global(._markdown-editor.noBorder) {
 	border: none;
 }
 
@@ -264,7 +270,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	font-variation-settings: "wght" 800;
 }
 
-:global(.editor .ProseMirror) {
+:global(._markdown-editor .editor .ProseMirror) {
 	max-height: 260px;
 	overflow-y: scroll;
 }
