@@ -54,7 +54,6 @@
     "@tiptap/starter-kit": "^2.0.0-beta.183",
     "@types/set-interval-async": "^1.0.0",
     "base64-arraybuffer": "^1.0.2",
-    "colornames": "^1.1.1",
     "fast-deep-equal": "^3.1.3",
     "fuse.js": "^6.5.3",
     "just-diff": "^5.0.1",

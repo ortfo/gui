@@ -1,13 +1,9 @@
 <script lang="ts">
 import MetadataField from "./MetadataField.svelte"
-import colorNameToHex from "colornames"
+import { toHex } from "../colornames.ts"
 import { createEventDispatcher } from "svelte"
 import { _ } from "svelte-i18n"
 const dispatch = createEventDispatcher()
-
-function toHex(value: string) {
-	return (colorNameToHex(value) || "").replace("#", "") || value
-}
 
 export let value: string
 export let key: string
