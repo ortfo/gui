@@ -1,0 +1,32 @@
+name: build
+on: [push, pull_request]
+
+jobs:
+	build:
+		runs-on: ${{matrix.build_with}}
+		strategy:
+			matrix:
+				go: [1.18.x]
+				build_for:
+					- darwin
+					- windows
+					- linux
+				build_with:
+					- ubuntu-latest
+					- macos-latest
+		steps:
+			- name: Install Go
+			  uses: actions/setup-go@v2
+			  with:
+				  go-version: ${{matrix.go}}
+			- name: Install pnpm
+			  uses: pnpm/action-setup@v2.2.1
+			- name: Checkout code
+			  uses: actions/checkout@v2
+			- name: Install backend dependencies
+			  run: go mod tidy
+			- name: Install frontend dependencies
+			  run: pnpm i
+			- name: Build project
+			  run: make build
+
