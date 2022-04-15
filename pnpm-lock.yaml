@@ -35,6 +35,7 @@ specifiers:
   rfdc: ^1.3.0
   rollup: ^2.70.1
   rollup-plugin-node-builtins: ^2.1.2
+  sass: ^1.50.0
   set-interval-async: ^2.0.3
   svelte: ^3.46.6
   svelte-check: ^2.4.6
@@ -96,13 +97,14 @@ devDependencies:
   nodemon: 2.0.15
   prettier: 2.6.2
   prettier-plugin-svelte: 2.6.0_prettier@2.6.2+svelte@3.46.6
+  sass: 1.50.0
   svelte: 3.46.6
-  svelte-check: 2.4.6_svelte@3.46.6
-  svelte-preprocess: 4.10.4_svelte@3.46.6+typescript@4.6.3
+  svelte-check: 2.4.6_sass@1.50.0+svelte@3.46.6
+  svelte-preprocess: 4.10.4_71ac59d67094d49aa9b6020737f07065
   tslib: 2.3.1
   typescript: 4.6.3
-  vite: 2.9.1
-  vitest: 0.8.4_c8@7.11.0
+  vite: 2.9.1_sass@1.50.0
+  vitest: 0.8.4_c8@7.11.0+sass@1.50.0
 
 packages:
 
@@ -305,7 +307,7 @@ packages:
       magic-string: 0.26.1
       svelte: 3.46.6
       svelte-hmr: 0.14.11_svelte@3.46.6
-      vite: 2.9.1
+      vite: 2.9.1_sass@1.50.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2003,6 +2005,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immutable/4.0.0:
+    resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
+    dev: true
+
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -3118,6 +3124,16 @@ packages:
       rimraf: 2.7.1
     dev: true
 
+  /sass/1.50.0:
+    resolution: {integrity: sha512-cLsD6MEZ5URXHStxApajEh7gW189kkjn4Rc8DQweMyF+o5HF5nfEz8QYLMlPsTOD88DknatTmBWkOcw5/LnJLQ==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+    dependencies:
+      chokidar: 3.5.3
+      immutable: 4.0.0
+      source-map-js: 1.0.2
+    dev: true
+
   /semver-diff/3.1.1:
     resolution: {integrity: sha512-GX0Ix/CJcHyB8c4ykpHGIAvLyOwOobtM/8d+TQkAd81/bEjgPHrfba41Vpesr7jX/t8Uh+R3EX9eAS5be+jQYg==}
     engines: {node: '>=8'}
@@ -3344,7 +3360,7 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  /svelte-check/2.4.6_svelte@3.46.6:
+  /svelte-check/2.4.6_sass@1.50.0+svelte@3.46.6:
     resolution: {integrity: sha512-luzdly7RJhyXucQe8ID/7CqDgXdMrPYXmyZBjCbp+cixzTopZotuWevrB5hWDOnOU19m2cyetigIIa7WDHnCmQ==}
     hasBin: true
     peerDependencies:
@@ -3358,7 +3374,7 @@ packages:
       sade: 1.8.1
       source-map: 0.7.3
       svelte: 3.46.6
-      svelte-preprocess: 4.10.4_svelte@3.46.6+typescript@4.6.3
+      svelte-preprocess: 4.10.4_71ac59d67094d49aa9b6020737f07065
       typescript: 4.6.3
     transitivePeerDependencies:
       - '@babel/core'
@@ -3405,7 +3421,7 @@ packages:
     resolution: {integrity: sha512-ufKWvS94z5m6Je9Hu0yosvdALy0mOPcaexbTcQQ/jW+3Rzi4oaHkOeg4RQ3cNpOlOQlIs0lfsF9FBlyquZ7XuQ==}
     dev: false
 
-  /svelte-preprocess/4.10.4_svelte@3.46.6+typescript@4.6.3:
+  /svelte-preprocess/4.10.4_71ac59d67094d49aa9b6020737f07065:
     resolution: {integrity: sha512-fuwol0N4UoHsNQolLFbMqWivqcJ9N0vfWO9IuPAiX/5okfoGXURyJ6nECbuEIv0nU3M8Xe2I1ONNje2buk7l6A==}
     engines: {node: '>= 9.11.2'}
     requiresBuild: true
@@ -3450,6 +3466,7 @@ packages:
       '@types/sass': 1.43.1
       detect-indent: 6.1.0
       magic-string: 0.25.9
+      sass: 1.50.0
       sorcery: 0.10.0
       strip-indent: 3.0.0
       svelte: 3.46.6
@@ -3669,7 +3686,7 @@ packages:
       source-map: 0.7.3
     dev: true
 
-  /vite/2.9.1:
+  /vite/2.9.1_sass@1.50.0:
     resolution: {integrity: sha512-vSlsSdOYGcYEJfkQ/NeLXgnRv5zZfpAsdztkIrs7AZHV8RCMZQkwjo4DS5BnrYTqoWqLoUe1Cah4aVO4oNNqCQ==}
     engines: {node: '>=12.2.0'}
     hasBin: true
@@ -3689,11 +3706,12 @@ packages:
       postcss: 8.4.12
       resolve: 1.22.0
       rollup: 2.70.1
+      sass: 1.50.0
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
 
-  /vitest/0.8.4_c8@7.11.0:
+  /vitest/0.8.4_c8@7.11.0+sass@1.50.0:
     resolution: {integrity: sha512-1OoAG1+VYkzp4WLCVQFRJX/OKk70rsMIM5H23crfc1wSEnJvHlxgQBS1HPpV/VYmjC8bIInKWhnB4Gaw32MnyQ==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
@@ -3719,7 +3737,7 @@ packages:
       local-pkg: 0.4.1
       tinypool: 0.1.2
       tinyspy: 0.3.0
-      vite: 2.9.1
+      vite: 2.9.1_sass@1.50.0
     transitivePeerDependencies:
       - less
       - sass
