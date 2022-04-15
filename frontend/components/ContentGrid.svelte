@@ -34,19 +34,25 @@ let cols: number[][] = []
 let rowCapacity: number = 0
 let activeBlock: number | null = null
 let initialized = false
+let error: Error | null = null
 
 onMount(async () => {
-	;[blocks, rowCapacity] = await toBlocks(work, ["fr", "en"])
-	cols = [[400, rowCapacity]]
-	initialized = true
-	// Need timeout because of the scale transition
-	setTimeout(() => {
-		window.scrollTo({
-			top: $state.scrollPositions.editor,
-			left: 0,
-			behavior: "smooth",
-		})
-	}, 200)
+	try {
+		;[blocks, rowCapacity] = await toBlocks(work, ["fr", "en"])
+		cols = [[400, rowCapacity]]
+		// Need timeout because of the scale transition
+		setTimeout(() => {
+			window.scrollTo({
+				top: $state.scrollPositions.editor,
+				left: 0,
+				behavior: "smooth",
+			})
+		}, 200)
+	} catch (err) {
+		error = err
+	} finally {
+		initialized = true
+	}
 })
 
 const addBlock = (type: LayedOutElement["type"]) => e => {
@@ -147,6 +153,19 @@ $: updateWork(blocks)
 
 {#if !initialized}
 	{$_("Loading…")}
+{:else if error}
+	<h1>{$_("An error occured: ")}</h1>
+	<ul class="reason">
+		{#each error.toString().split(": ") as reason}
+			<li>
+				{#if Array.from(reason).includes("\n")}
+					<pre>{reason}</pre>
+				{:else}
+					{reason}
+				{/if}
+			</li>
+		{/each}
+	</ul>
 {:else if blocks[language].length > 0}
 	<Grid
 		bind:items={blocks[language]}
