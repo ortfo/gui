@@ -240,8 +240,11 @@ let titleH1: HTMLHeadingElement
 					}
 				)}
 			</p>
-			<button on:click={_ => ($state.openTab = "works")}
-				>{$_("go back to all projects")}</button
+			<button
+				on:click={_ => {
+					$state.openTab = "works"
+					$state.editingWorkID = ""
+				}}>{$_("go back to all projects")}</button
 			>
 		</div>
 	{:else}
