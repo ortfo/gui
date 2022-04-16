@@ -145,6 +145,7 @@ nav {
 	align-items: center;
 	height: 2.25rem;
 	background-color: var(--white);
+	transition: background-color 1s ease;
 	border-bottom: 1px solid var(--black);
 	gap: 2em;
 	padding: 0.5rem 1rem;
