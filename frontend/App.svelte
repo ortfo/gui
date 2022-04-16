@@ -11,9 +11,12 @@ import Modal from "svelte-simple-modal"
 import ModalButtonClose from "./components/ModalButtonClose.svelte"
 import tinykeys from "tinykeys"
 import { addMessages, init as i18nInit, locale } from "svelte-i18n"
+import { _ } from "svelte-i18n"
+import { i18n } from "./actions"
 import messagesFrench from "../i18n/fr.yaml"
 import Technologies from "./tabs/technologies.svelte"
 import Externalsites from "./tabs/externalsites.svelte"
+import FieldText from "./components/FieldText.svelte"
 
 function loadLocales() {
 	addMessages("fr", messagesFrench)
@@ -69,8 +72,8 @@ async function loadDatabase() {
 
 async function load() {
 	await loadSettings()
-	await loadDatabase()
 	loadLocales()
+	await loadDatabase()
 }
 
 onMount(() => {
@@ -114,19 +117,34 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	</Modal>
 {:catch e}
 	<div class="error">
-		<h1>Woops!</h1>
-		<p>Couldn't load your stuff:</p>
+		<h1 use:i18n>Woops!</h1>
+		<p use:i18n>Couldn't load your stuff:</p>
 		<ol>
 			{#each e.toString().split(": ") as reason}
 				<li>{reason}</li>
 			{/each}
 		</ol>
+		<h2 use:i18n>Try changing these settings</h2>
+		<dl>
+			<FieldText
+				key={$_("projects folder")}
+				bind:value={$settings.projectsfolder}
+			/>
+		</dl>
+		<button
+			on:click={_ => {
+				backend.settingsWrite($settings)
+				window.location.reload()
+			}}
+			use:i18n>Reload</button
+		>
 	</div>
 {/await}
 
 <style>
 :global(body) {
 	background-color: var(--white);
+	transition: background-color 1s ease;
 }
 :global(body, input, select) {
 	font-family: var(--sans);
@@ -257,10 +275,9 @@ main {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	background-color: lightcoral;
-	color: darkred;
-	max-width: 1000px;
-	margin: 0 auto;
+	background-color: rgb(247, 188, 188);
+	color: rgb(187, 16, 16);
 	padding: 2rem;
+	min-height: 100vh;
 }
 </style>
