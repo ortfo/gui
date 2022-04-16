@@ -1,6 +1,7 @@
 <script lang="ts">
 import { backend, DirEntry } from "../backend"
 import { scrollStates } from "../actions"
+import { i18n } from "../actions"
 import type { Work } from "../ortfo"
 import { logExpr, unslug } from "../utils"
 import UnsavedChanges from "../modals/UnsavedChanges.svelte"
@@ -9,6 +10,7 @@ import Fuse from "fuse.js"
 import { createModalSummoner } from "../modals"
 import {
 	database,
+	databaseCurrentLanguage,
 	databaseLanguages,
 	hasUnsavedChanges,
 	settings,
@@ -18,6 +20,7 @@ import {
 import { _ } from "svelte-i18n"
 import SearchBar from "../components/SearchBar.svelte"
 import HighlightText from "../components/HighlightText.svelte"
+import { escapeRegExp } from "lodash"
 const summon = createModalSummoner(getContext("simple-modal"))
 
 // TODO use <SearchableList>
@@ -85,14 +88,26 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 </script>
 
 <div class="sheet" class:open>
-	<h1>{$_("Let’s describe a work")}</h1>
+	<h1>
+		{#if $databaseCurrentLanguage.works.length === 0}
+			{$_("Let’s get this portfolio started.")}
+		{:else}
+			{$_("Let’s describe a work")}
+		{/if}
+	</h1>
 	{#await getUndescribedWorks()}
 		{$_("Loading…")}
 	{:then dirs}
 		<p class="intro">
-			{$_(
-				"Here are the works in your projects folder that don’t have a description yet"
-			)}
+			{#if $databaseCurrentLanguage.works.length === 0}
+				{$_(
+					"Pick a work to write a portfolio article about it. We’ll take care of the rest."
+				)}
+			{:else}
+				{$_(
+					"Here are the works in your projects folder that don’t have a description yet"
+				)}
+			{/if}
 		</p>
 		<SearchBar bind:query />
 		<ul use:scrollStates={{ bottom: 50, top: 0 }}>
@@ -136,7 +151,16 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 	{:catch error}
 		<!-- getU was rejected -->
 	{/await}
-	<button on:click={_ => (open = false)}>{$_("Cancel")}</button>
+	{#if $databaseCurrentLanguage.works.length === 0}
+		<p class="troubleshooot-bottom" use:i18n>
+			Can’t find what you’re looking for?
+		</p>
+		<button on:click={_ => ($state.openTab = "settings")} use:i18n
+			>Change your projects folder</button
+		>
+	{:else}
+		<button on:click={_ => (open = false)}>{$_("Cancel")}</button>
+	{/if}
 </div>
 
 <style>

@@ -5,7 +5,7 @@ import NewWork from "../modals/NewWork.svelte"
 import { settings, databaseCurrentLanguage } from "../stores"
 import { createModalSummoner } from "../modals"
 import { _ } from "svelte-i18n"
-import { getContext } from "svelte"
+import { getContext, onMount } from "svelte"
 import CreateWork from "../modals/CreateWork.svelte"
 import type { Work, WorkOneLang } from "../ortfo"
 import Fuse from "fuse.js"
@@ -19,6 +19,12 @@ $: searcher = new Fuse($databaseCurrentLanguage.works, {
 	keys: ["id", "title"],
 	includeMatches: true,
 	includeScore: true,
+})
+
+onMount(() => {
+	if ($databaseCurrentLanguage.works.length === 0) {
+		creatingWork = true
+	}
 })
 
 function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
