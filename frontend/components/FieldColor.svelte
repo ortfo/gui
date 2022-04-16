@@ -3,6 +3,7 @@ import MetadataField from "./MetadataField.svelte"
 import { toHex } from "../colornames.ts"
 import { createEventDispatcher } from "svelte"
 import { _ } from "svelte-i18n"
+import { noSpaces } from "../utils"
 const dispatch = createEventDispatcher()
 
 export let value: string
@@ -28,6 +29,7 @@ function reset(e) {
 		on:dblclick={reset}
 	/>
 	<input
+		id="metadata-field-{noSpaces(key)}"
 		type="text"
 		value={hexCode}
 		on:input={e => dispatch("input", (value = e.target.value))}

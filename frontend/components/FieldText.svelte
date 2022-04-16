@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount } from "svelte"
+import { noSpaces } from "../utils"
 
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import MetadataField from "./MetadataField.svelte"
@@ -22,6 +23,7 @@ $: inputElement?.setAttribute("type", type)
 <MetadataField {key} {help} {partOfObject} oneline={!rich}>
 	{#if rich}
 		<MarkdownEditor
+			id="metadata-field-{noSpaces(key)}"
 			bind:value
 			{placeholder}
 			{active}
@@ -30,6 +32,7 @@ $: inputElement?.setAttribute("type", type)
 		/>
 	{:else}
 		<input
+			id="metadata-field-{noSpaces(key)}"
 			bind:this={inputElement}
 			type="text"
 			{required}

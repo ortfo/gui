@@ -4,6 +4,7 @@ import { encode as bufferBase64encode } from "base64-arraybuffer"
 import { createEventDispatcher } from "svelte"
 import MetadataField from "./MetadataField.svelte"
 import { _ } from "svelte-i18n"
+import { noSpaces } from "../utils"
 
 const emit = createEventDispatcher()
 
@@ -33,7 +34,7 @@ async function getBase64d() {
 		type="file"
 		accept="image/*"
 		name={key}
-		id="input-{key}"
+		id="metadata-field-{noSpaces(key)}"
 		bind:files
 	/>
 	{#if files.length || value?.data}

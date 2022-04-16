@@ -1,10 +1,15 @@
 <script lang="ts">
 import MetadataField from "./MetadataField.svelte"
 import { _ } from "svelte-i18n"
+import { noSpaces } from "../utils"
 
 export let value: string[]
 export let help: string = ""
 export let key: string
+
+$: if (value === undefined) {
+	value = []
+}
 
 function remove(index: number) {
 	return () => {
@@ -32,6 +37,7 @@ function change(index: number) {
 				<input
 					value={item}
 					on:change={change(index)}
+					id="metadata-field-{noSpaces(key)}-{index}"
 					on:blur={item === "" ? remove(index) : null}
 					on:keypress={e =>
 						e.code === "Enter" &&
@@ -51,6 +57,7 @@ function change(index: number) {
 				placeholder={$_(
 					value.length ? "another one?" : "add something"
 				)}
+				id="metadata-field-{key}-new"
 				type="text"
 				on:blur={add}
 				on:keypress={e => e.code === "Enter" && add(e)}

@@ -19,6 +19,7 @@ export let placeholder: string = ""
 export let autoactive: boolean = false
 export let active: boolean = false
 export let noBorder: boolean = false
+export let id: string = ""
 
 let editorElement
 let editor: Editor
@@ -99,6 +100,12 @@ onDestroy(() => {
 		editor.destroy()
 	}
 })
+
+$: if (id) {
+	editorElement?.setAttribute("id", id)
+} else {
+	editorElement?.removeAttribute("id")
+}
 
 // Only update editor's buffer when not editing
 $: if (editor && !editor.isFocused && !onToolbar) {

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { metadataReadableNames } from "../ortfo"
+import { noSpaces } from "../utils"
 import { _ } from "svelte-i18n"
 
 export let key: string
@@ -7,14 +8,20 @@ export let help: string = ""
 export let colon: boolean = false
 export let partOfObject: boolean = false
 export let oneline: boolean = false
+export let nolabel: boolean = false
 </script>
 
 <div class="entry" class:oneline class:part-of-object={partOfObject}>
 	<dt class:colon>
-		{$_(metadataReadableNames[key] || key)}
-		{#if help}
-			<span class="help">{help}</span>
-		{/if}
+		<svelte:element
+			this={nolabel ? "div" : "label"}
+			for="metadata-field-{noSpaces(key)}"
+		>
+			{$_(metadataReadableNames[key] || key)}
+			{#if help}
+				<span class="help">{help}</span>
+			{/if}
+		</svelte:element>
 	</dt>
 	<dd><slot /></dd>
 </div>
