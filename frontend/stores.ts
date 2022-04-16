@@ -11,12 +11,14 @@ import type {
     WorkOneLang,
 } from "./ortfo"
 import { inLanguage } from "./ortfo"
+import { logExpr } from "./utils"
 
 export type Settings = {
     theme: string
     surname: string
     projectsfolder: string
     language: "en" | "fr"
+    portfoliolanguages: string[]
     showTips: boolean
 }
 
@@ -40,6 +42,7 @@ export type State = {
 
 export const settings: Writable<Settings> = writable({
     theme: "light",
+    portfolioLanguages: ["en"],
     surname: "",
     projectsfolder: "",
     language: "en",
@@ -90,7 +93,8 @@ export const workOnDisk: Readable<Work | null> = derived(
     ([$database, $state]) =>
         // FIXME #5 everything breaks down if the work is not found
         // (try setting the state to a non-existent work)
-        $database?.works.find(w => w.id === $state.editingWorkID) ?? null
+        logExpr($database)?.works.find(w => w.id === $state.editingWorkID) ??
+        null
 )
 
 export const unsavedChanges: Readable<

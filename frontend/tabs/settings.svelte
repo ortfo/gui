@@ -3,6 +3,22 @@ import { onMount } from "svelte"
 import { backend } from "../backend"
 import { settings, state } from "../stores"
 import { _ } from "svelte-i18n"
+import FieldList from "../components/FieldList.svelte"
+import FieldText from "../components/FieldText.svelte"
+import FieldSelect from "../components/FieldSelect.svelte"
+import FieldToggle from "../components/FieldToggle.svelte"
+import { LANGUAGES } from "../languagecodes"
+
+const languageCodes = Object.fromEntries([
+	...Object.entries(LANGUAGES).map(([code, l]) => [
+		code,
+		`${l.language} (${l.country})`,
+	]),
+	...Object.entries(LANGUAGES).map(([code, l]) => [
+		code.replace(/-\w+$/, ""),
+		`${l.language} (${$_("All countries")})`,
+	]),
+])
 
 settings.subscribe(async settings => {
 	await backend.settingsWrite(settings)
@@ -16,35 +32,40 @@ onMount(() => {
 <h1>{$_("Settings")}</h1>
 
 <dl>
-	<dt>{$_("theme")}</dt>
-	<dd>
-		<select name="theme" id="theme" bind:value={$settings.theme}>
-			<option value="light">{$_("light")}</option>
-			<option value="dark">{$_("dark")}</option>
-		</select>
-	</dd>
+	<FieldSelect
+		oneline
+		key={$_("language")}
+		bind:value={$settings.language}
+		options={{ en: "english", fr: "français" }}
+	/>
+	<FieldSelect
+		oneline
+		key={$_("theme")}
+		bind:value={$settings.theme}
+		options={{ light: $_("light"), dark: $_("dark") }}
+	/>
 
-	<dt>{$_("surname")}</dt>
-	<dd><input type="text" bind:value={$settings.surname} /></dd>
+	<FieldText key={$_("surname")} bind:value={$settings.surname} />
 
-	<dt>{$_("projects folder")}</dt>
-	<dd><input type="text" bind:value={$settings.projectsfolder} /></dd>
+	<FieldText
+		key={$_("projects folder")}
+		bind:value={$settings.projectsfolder}
+	/>
 
-	<dt>{$_("language")}</dt>
-	<dd>
-		<select name="language" id="language" bind:value={$settings.language}>
-			<option value="fr">{$_("french")}</option>
-			<option value="en">{$_("english")}</option>
-		</select>
-	</dd>
+	<FieldList
+		bind:value={$settings.portfoliolanguages}
+		key={$_("portfolio languages")}
+		help={$_("languages to translate your portfolio into")}
+		suggestions={languageCodes}
+		disallowed={["default"]}
+	/>
 
-	<dt>{$_("show tips")}</dt>
-	<dd>
-		<input
-			type="checkbox"
-			name="show-tips"
-			id="show-tips"
-			bind:checked={$settings.showTips}
-		/>
-	</dd>
+	<FieldToggle bind:value={$settings.showTips} key={$_("show tips")} />
 </dl>
+
+<style>
+dl {
+	margin: 0 auto;
+	width: clamp(100px, 500px, 100%);
+}
+</style>

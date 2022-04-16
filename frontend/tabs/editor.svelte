@@ -53,7 +53,10 @@ async function initialize() {
 	if ($workOnDisk === null) {
 		throw MissingWork(`Work ${$state.editingWorkID} not found.`)
 	} else {
-		$workInEditor = toParsedDescription($workOnDisk)
+		$workInEditor = toParsedDescription(
+			$workOnDisk,
+			$settings.portfoliolanguages
+		)
 		$state.lang ||= "en"
 	}
 }

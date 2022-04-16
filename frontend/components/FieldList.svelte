@@ -6,6 +6,11 @@ import { noSpaces } from "../utils"
 export let value: string[]
 export let help: string = ""
 export let key: string
+export let suggestions: { [value: string]: string } | null = null
+export let disallowed: string[] = []
+
+const disallowedPattern = disallowed =>
+	disallowed.length > 0 ? `^(?!.*\\b(${disallowed.join("|")}\\b).*$` : null
 
 $: if (value === undefined) {
 	value = []
@@ -28,16 +33,43 @@ function change(index: number) {
 		value = value.map((v, i) => (i === index ? e.target.value : v))
 	}
 }
+
+function applySuggestion(event) {
+	if (suggestions === null) {
+		return
+	}
+	const suggestionsDisplayedToValue = Object.fromEntries(
+		Object.entries(suggestions).map(([val, display]) => [
+			`${val}: ${display}`,
+			val,
+		])
+	)
+	if (Object.keys(suggestionsDisplayedToValue).includes(event.target.value)) {
+		event.target.value = suggestionsDisplayedToValue[event.target.value]
+	}
+}
 </script>
 
 <MetadataField {key} {help}>
+	{#if suggestions !== null}
+		<datalist id="metadata-field-{noSpaces(key)}-datalist">
+			{#each Object.entries(suggestions) as [val, display]}
+				<option value={`${val}: ${display}`} />
+			{/each}
+		</datalist>
+	{/if}
 	<ul>
 		{#each value as item, index}
 			<li>
 				<input
 					value={item}
-					on:change={change(index)}
 					id="metadata-field-{noSpaces(key)}-{index}"
+					list="metadata-field-{noSpaces(key)}-datalist"
+					pattern={disallowedPattern(disallowed)}
+					on:change={e => {
+						applySuggestion(e)
+						change(index)(e)
+					}}
 					on:blur={item === "" ? remove(index) : null}
 					on:keypress={e =>
 						e.code === "Enter" &&
@@ -57,8 +89,11 @@ function change(index: number) {
 				placeholder={$_(
 					value.length ? "another one?" : "add something"
 				)}
-				id="metadata-field-{key}-new"
+				id="metadata-field-{noSpaces(key)}-new"
 				type="text"
+				list="metadata-field-{noSpaces(key)}-datalist"
+				pattern={disallowedPattern(disallowed)}
+				on:change={applySuggestion}
 				on:blur={add}
 				on:keypress={e => e.code === "Enter" && add(e)}
 			/>

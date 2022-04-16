@@ -11,7 +11,11 @@ import {
 } from "./ortfo"
 import { except, lcm, mapToTranslated } from "./utils"
 
-export function toParsedDescription(work: Work): ParsedDescription | null {
+export function toParsedDescription(
+    work: Work,
+    portfolioLanguages: string[]
+): ParsedDescription | null {
+    console.log("toParsedDescription", work)
     if (!work) {
         return null
     }
@@ -19,7 +23,10 @@ export function toParsedDescription(work: Work): ParsedDescription | null {
         "fr",
         "en",
     ])
-    const [paragraphs, abbreviations] = collectAbbreviations(work.paragraphs)
+    const [paragraphs, abbreviations] = collectAbbreviations(
+        work.paragraphs,
+        portfolioLanguages
+    )
     // XXX: the row capacity should be supplied as an argument, in case the user adds additional rows
     metadata.layout = normalizeLayout(
         metadata.layout,
@@ -41,11 +48,12 @@ export function toParsedDescription(work: Work): ParsedDescription | null {
 }
 
 export function collectAbbreviations(
-    paragraphs: Translated<Paragraph[]>
+    paragraphs: Translated<Paragraph[]>,
+    portfolioLanguages: string[]
 ): [Translated<Paragraph[]>, Translated<Abbreviations>] {
     let abbreviations: Translated<Abbreviations> = {}
     let paragraphsNoAbbreviations: Translated<Paragraph[]> = {}
-    for (const language of Object.keys(paragraphs)) {
+    for (const language of portfolioLanguages) {
         let abbreviationsCurrentLanguage: Abbreviations = {}
         let paragraphsCurrentLanguage: Paragraph[] = []
         for (const paragraph of paragraphs[language]) {
@@ -75,7 +83,7 @@ export function applyAbbreviations(
     const newWork: OrtfodbParsedDescription = except("abbreviations")(
         work as unknown as { [k: string]: any }
     ) as unknown as OrtfodbParsedDescription
-    for (const language of Object.keys(work.paragraphs)) {
+    for (const language of Object.keys(work.abbreviations)) {
         newWork.paragraphs[language] = [...work.paragraphs[language]]
         for (const [index, paragraph] of Object.entries(
             work.paragraphs[language]

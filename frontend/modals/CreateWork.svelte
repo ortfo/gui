@@ -55,7 +55,9 @@ async function getUndescribedWorks() {
 
 async function createWork(dir: DirEntry) {
 	const translated = data =>
-		Object.fromEntries(Array.from($databaseLanguages).map(l => [l, data]))
+		Object.fromEntries(
+			Array.from($settings.portfoliolanguages).map(l => [l, data])
+		)
 	$database.works = [
 		...$database.works,
 		{
@@ -191,10 +193,10 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 	margin-bottom: 2em;
 }
 ul {
-	margin: 0.5em 0 2em;
+	margin: 1em 0 2em;
 	display: flex;
 	flex-direction: column;
-	gap: 1.5em;
+	gap: 1em;
 	overflow-y: scroll;
 	overflow-x: visible;
 	text-align: left;

@@ -10,11 +10,12 @@ import (
 var ThemeNames = [...]string{"dark", "light"}
 
 type Settings struct {
-	Theme          string `json:"theme"`
-	Surname        string `json:"surname"`
-	ProjectsFolder string `json:"projectsFolder"`
-	ShowTips       bool   `json:"showTips"`
-	Language       string `json:"language"`
+	Theme              string   `json:"theme"`
+	Surname            string   `json:"surname"`
+	ProjectsFolder     string   `json:"projectsFolder"`
+	ShowTips           bool     `json:"showTips"`
+	Language           string   `json:"language"`
+	PortfolioLanguages []string `json:"portfolioLanguages"`
 }
 
 type UIState struct {
