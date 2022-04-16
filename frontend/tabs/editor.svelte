@@ -23,6 +23,7 @@ import {
 	volatileWorks,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
+import { i18n } from "../actions"
 import FieldImage from "../components/FieldImage.svelte"
 import FieldList from "../components/FieldList.svelte"
 import FieldColors from "../components/FieldColors.svelte"
@@ -227,11 +228,16 @@ let titleH1: HTMLHeadingElement
 	{/if}
 {:catch error}
 	{#if error.why === "missing_work"}
-		<h1>Well, this is weird.</h1>
+		<h1 use:i18n>Well, this is weird.</h1>
 		<div class="error">
 			<p>
 				{@html $_(
-					"It looks like <em>{id}</em>’s folder has gone missing."
+					"It looks like <em>{id}</em>’s folder has gone missing.",
+					{
+						values: {
+							id: $state.editingWorkID,
+						},
+					}
 				)}
 			</p>
 			<button on:click={_ => ($state.openTab = "works")}
