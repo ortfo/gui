@@ -22,7 +22,7 @@ $: searcher = new Fuse($databaseCurrentLanguage.works, {
 })
 
 function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
-	if (query.length < 3) {
+	if (query.length === 0) {
 		return $databaseCurrentLanguage.works.map((work, i) => ({
 			item: work,
 			matches: [],
