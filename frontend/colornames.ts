@@ -150,5 +150,5 @@ export const NAME_TO_HEX_MAP = {
 }
 
 export function toHex(value: string) {
-    return (NAME_TO_HEX_MAP(value) || "").replace("#", "") || value
+    return (NAME_TO_HEX_MAP[value] || "").replace("#", "") || value
 }
