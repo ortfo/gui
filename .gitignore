@@ -52,5 +52,8 @@ coverage
 dist 
 # embedded compiled frontend (js, css, index.html and images)
 statik/statik.go 
-# compiled binary
-backend/backend 
+# compiled binaries
+ortfogui
+ortfogui-linux
+ortfogui-macos
+ortfogui-windows

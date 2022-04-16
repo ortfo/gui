@@ -3,7 +3,7 @@
 build:
 	pnpm frontend-build
 	statik -f -src=dist/
-	cd backend && go build
+	cd backend && go build -o ../ortfogui
 
 format:
 	go mod tidy
