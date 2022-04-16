@@ -9,7 +9,7 @@
     "frontend-start": "vite preview",
     "frontend-check": "svelte-check --tsconfig ./tsconfig.json",
     "backend-build": "cd backend && go build",
-    "backend-dev": "cd backend && nodemon --signal SIGINT --exec 'go run . || exit 1' -e go",
+    "backend-dev": "cd backend && nodemon --signal SIGINT --exec 'DEV=yes go run . || exit 1' -e go",
     "dev": "concurrently npm:frontend-dev npm:backend-dev",
     "format": "pnpm prettier frontend/ --write --plugin-search-dir=. && cd backend && gofmt -s -w *.go"
   },
