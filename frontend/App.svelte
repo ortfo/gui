@@ -164,7 +164,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	font-variation-settings: "wght" 400;
 }
 
-:global(*:focus-visible) {
+:global(*:not(input):not(select):not(textarea):not(.ProseMirror):focus-visible) {
 	outline: 1px solid var(--ortforange);
 }
 
@@ -236,7 +236,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 :global(input:hover, textarea:hover, ._markdown-editor:hover) {
 	border-radius: 0;
 }
-:global(input:focus, textarea:focus, ._markdown-editor:focus) {
+:global(input:focus, textarea:focus, ._markdown-editor:focus-within) {
 	border-radius: 0;
 	border-color: var(--ortforange);
 }

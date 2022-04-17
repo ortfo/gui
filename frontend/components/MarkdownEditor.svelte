@@ -271,6 +271,7 @@ $: if (editor && !editor.isFocused && !onToolbar) {
 	border: none;
 }
 
+
 :global(.editor sup) {
 	font-size: 0.9em;
 	line-height: 0.8em;
