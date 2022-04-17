@@ -50,6 +50,8 @@ import { _ } from "svelte-i18n"
 import UnsavedChanges from "../modals/UnsavedChanges.svelte"
 import { create } from "lodash"
 import { getContext } from "svelte"
+import { slide } from "svelte/transition"
+import { cubicOut } from "svelte/easing"
 
 const summon = createModalSummoner(getContext("simple-modal"))
 
@@ -74,12 +76,16 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			{$_("works")}
 		</a>
 		{#if $state.editingWorkID}
-			<span class="separator">/</span>
+			<span
+				class="separator"
+				transition:slide={{ duration: 500, easing: cubicOut }}>/</span
+			>
 			<a
 				on:click={() => {
 					$state.openTab = "editor"
 				}}
 				href="#editor"
+				transition:slide={{ duration: 500, easing: cubicOut }}
 				class:current={$state.openTab === "editor"}
 				>{$state.editingWorkID}</a
 			>
