@@ -219,7 +219,10 @@ let titleH1: HTMLHeadingElement
 		<div class="float dev-only">
 			<div id="debug" />
 			<ObjectDiffTable
-				a={toParsedDescription($workOnDisk || null) || {}}
+				a={toParsedDescription(
+					$workOnDisk || null,
+					$settings.portfoliolanguages
+				) || {}}
 				b={$workInEditor}
 				aLabel="on disk"
 				bLabel="in editor"
