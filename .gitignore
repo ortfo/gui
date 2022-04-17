@@ -57,3 +57,5 @@ ortfogui
 ortfogui-linux
 ortfogui-macos
 ortfogui-windows
+
+fixtures/
