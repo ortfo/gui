@@ -121,7 +121,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 	<button
 		use:tooltip={$_("Quit ortfo")}
 		class="quit"
-		data-variant="a"
+		data-variant="none"
 		on:click={() => {
 			backend.saveUIState($state)
 			backend.quit()
@@ -184,7 +184,7 @@ nav {
 }
 .close-current-work {
 	display: inline-block;
-	margin-left: -0.9rem;
+	margin-left: -1.2rem;
 	width: 1.2rem;
 	cursor: pointer;
 }
@@ -195,7 +195,7 @@ nav {
 }
 .close-current-work.unsaved-changes::after {
 	content: "●";
-	font-size: 1.2em;
+	font-size: 1em;
 }
 .close-current-work:not(.unsaved-changes) {
 	opacity: 0;
