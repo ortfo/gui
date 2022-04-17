@@ -8,14 +8,15 @@ export let options: { [value: string]: string }
 export let key: string
 export let help: string = ""
 export let oneline: boolean = false
-export let radio: boolean = Object.keys(options).length <= 4
+export let radio: boolean | null = null
 
-let optionValues: string[]
-$: optionValues = Object.keys(options)
+function useRadioButtons() {
+	return radio === null ? Object.keys(options).length <= 4 : radio
+}
 </script>
 
 <MetadataField {key} {help} {oneline} nolabel={radio}>
-	{#if radio}
+	{#if useRadioButtons()}
 		{#each Object.entries(options) as [val, display]}
 			<label for="metadata-field-{noSpaces(key)}-{val}">
 				<input
