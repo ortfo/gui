@@ -9,13 +9,12 @@ import {
     Work,
     WorkMetadata,
 } from "./ortfo"
-import { except, lcm, mapToTranslated } from "./utils"
+import { except, lcm, logExpr, mapToTranslated } from "./utils"
 
 export function toParsedDescription(
     work: Work,
     portfolioLanguages: string[]
 ): ParsedDescription | null {
-    console.log("toParsedDescription", work)
     if (!work) {
         return null
     }

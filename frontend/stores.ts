@@ -11,7 +11,6 @@ import type {
     WorkOneLang,
 } from "./ortfo"
 import { inLanguage } from "./ortfo"
-import { logExpr } from "./utils"
 
 export type Settings = {
     theme: string
@@ -93,15 +92,15 @@ export const workOnDisk: Readable<Work | null> = derived(
     ([$database, $state]) =>
         // FIXME #5 everything breaks down if the work is not found
         // (try setting the state to a non-existent work)
-        logExpr($database)?.works.find(w => w.id === $state.editingWorkID) ??
+        $database?.works.find(w => w.id === $state.editingWorkID) ??
         null
 )
 
 export const unsavedChanges: Readable<
     { op: Operation; path: (string | number)[]; value: any }[]
-> = derived([workInEditor, workOnDisk], ([workInEditor, workOnDisk]) => {
+> = derived([workInEditor, workOnDisk, settings], ([workInEditor, workOnDisk, settings]) => {
     try {
-        return diff(toParsedDescription(workOnDisk), workInEditor)
+        return diff(toParsedDescription(workOnDisk, settings.portfoliolanguages), workInEditor)
     } catch (err) {
         return []
     }

@@ -21,7 +21,6 @@ const languageCodes = Object.fromEntries([
 ])
 
 settings.subscribe(async settings => {
-	console.log("Writing settings", settings)
 	await backend.settingsWrite(settings)
 })
 

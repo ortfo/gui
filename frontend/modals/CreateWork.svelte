@@ -3,7 +3,7 @@ import { backend, DirEntry } from "../backend"
 import { scrollStates } from "../actions"
 import { i18n } from "../actions"
 import type { Work } from "../ortfo"
-import { logExpr, unslug } from "../utils"
+import { unslug } from "../utils"
 import UnsavedChanges from "../modals/UnsavedChanges.svelte"
 import { getContext } from "svelte"
 import Fuse from "fuse.js"
@@ -85,7 +85,7 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 			refIndex: i,
 		}))
 	}
-	return logExpr(searcher.search(query))
+	return searcher.search(query)
 }
 </script>
 
