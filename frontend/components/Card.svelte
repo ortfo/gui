@@ -46,7 +46,7 @@ const emit = createEventDispatcher()
 
 .card.clickable {
 	cursor: pointer;
-	transition: all 0.25s;
+	transition: all 0.25s ease, background-color 0.5s ease;
 }
 .card.clickable:not(.creates):hover {
 	background-color: var(--ortforange-light);
