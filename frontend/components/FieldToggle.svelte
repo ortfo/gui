@@ -13,7 +13,7 @@ export let oneline: boolean = true
 		id="metadata-field-{noSpaces(key)}"
 		type="checkbox"
 		name={key}
-		bind:value
+		bind:checked={value}
 	/>
 </MetadataField>
 
