@@ -237,10 +237,10 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	transition: all 0.2s ease;
 }
 
-:global(input:hover, textarea:hover, ._markdown-editor:hover) {
+:global(input:hover, textarea:hover, select:hover, ._markdown-editor:hover) {
 	border-radius: 0;
 }
-:global(input:focus, textarea:focus, ._markdown-editor:focus-within) {
+:global(input:focus, textarea:focus, select:focus-visible, ._markdown-editor:focus-within) {
 	border-radius: 0;
 	border-color: var(--ortforange);
 }
