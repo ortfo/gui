@@ -2,7 +2,12 @@
 import Card from "../components/Card.svelte"
 import CardWork from "../components/CardWork.svelte"
 import NewWork from "../modals/NewWork.svelte"
-import { settings, databaseCurrentLanguage } from "../stores"
+import {
+	settings,
+	databaseCurrentLanguage,
+	volatileWorks,
+	WorkID,
+} from "../stores"
 import { createModalSummoner } from "../modals"
 import { _ } from "svelte-i18n"
 import { getContext, onMount } from "svelte"
@@ -15,26 +20,32 @@ let creatingWork = false
 let query: string = ""
 let searcher: Fuse<WorkOneLang>
 
-$: searcher = new Fuse($databaseCurrentLanguage.works, {
+function withoutVolatiles<W extends WorkOneLang | Work>(works: W[]): W[] {
+	return works.filter(work => !$volatileWorks.includes(work.id))
+}
+
+$: searcher = new Fuse(withoutVolatiles($databaseCurrentLanguage.works), {
 	keys: ["id", "title"],
 	includeMatches: true,
 	includeScore: true,
 })
 
 onMount(() => {
-	if ($databaseCurrentLanguage.works.length === 0) {
+	if (withoutVolatiles($databaseCurrentLanguage.works).length === 0) {
 		creatingWork = true
 	}
 })
 
 function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 	if (query.length === 0) {
-		return $databaseCurrentLanguage.works.map((work, i) => ({
-			item: work,
-			matches: [],
-			refIndex: i,
-			score: 1,
-		}))
+		return withoutVolatiles($databaseCurrentLanguage.works).map(
+			(work, i) => ({
+				item: work,
+				matches: [],
+				refIndex: i,
+				score: 1,
+			})
+		)
 	}
 
 	return searcher.search(query)
