@@ -6,7 +6,6 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
-	"github.com/mitchellh/mapstructure"
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
 	"github.com/skratchdot/open-golang/open"
@@ -50,10 +49,7 @@ func startWebview() {
 	w.Bind("backend__settingsRead", func() (Settings, error) {
 		return LoadSettings()
 	})
-	w.Bind("backend__settingsWrite", func(newSettings interface{}) error {
-		settings, _ := LoadSettings()
-		mapstructure.Decode(newSettings, &settings)
-		fmt.Printf("Writing settings %#v\n", settings)
+	w.Bind("backend__settingsWrite", func(settings Settings) error {
 		return SaveSettings(settings)
 	})
 	w.Bind("backend__quit", func() error {
@@ -72,9 +68,7 @@ func startWebview() {
 		settings, _ := LoadSettings()
 		return settings.RebuildDatabase()
 	})
-	w.Bind("backend__layout", func(workUntyped interface{}) (map[string][]LayedOutElement, error) {
-		var description ortfodb.ParsedDescription
-		mapstructure.Decode(workUntyped, &description)
+	w.Bind("backend__layout", func(description ortfodb.ParsedDescription) (map[string][]LayedOutElement, error) {
 		layedout, err := Layout(description)
 		if err != nil {
 			return nil, fmt.Errorf("while laying out: %w", err)
@@ -115,9 +109,7 @@ func startWebview() {
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "sites.yaml"), tagsBytes, 0644)
 	})
-	w.Bind("backend__saveState", func(stateUntyped interface{}) error {
-		var state UIState
-		mapstructure.Decode(stateUntyped, &state)
+	w.Bind("backend__saveState", func(state UIState) error {
 		err := SaveUIState(state)
 		if err != nil {
 			return fmt.Errorf("while saving UI state: %w", err)
