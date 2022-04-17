@@ -152,9 +152,6 @@ textarea {
 	width: 100%;
 	min-height: 1em;
 }
-.entry.richText dt input {
-	margin-top: 27px; /* XXX: height of markdown toolbar for value field */
-}
 button.remove {
 	font-size: 2em;
 	line-height: 0.7;
