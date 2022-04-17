@@ -1,11 +1,16 @@
 <script lang="ts">
-import type { WorkOneLang } from "../ortfo"
+import type { Tag, WorkOneLang } from "../ortfo"
 import JSONTree from "svelte-json-tree"
 import Card from "./Card.svelte"
 import { settings, state } from "../stores"
 import { backend, localDatabase, relativeToDatabase } from "../backend"
 import type { Fuse } from "fuse.js"
 import HighlightText from "./HighlightText.svelte"
+import { _ } from "svelte-i18n"
+import { tooltip } from "../actions"
+import { createEventDispatcher } from "svelte"
+
+const dispatch = createEventDispatcher()
 
 function thumbPath() {
 	const absolutePath =
@@ -21,6 +26,7 @@ function editWork() {
 }
 export let work: WorkOneLang
 export let highlightTitle: readonly Fuse.FuseRangeTuple[] = []
+export let selectedTag: Tag["singular"] | "" = ""
 </script>
 
 <Card clickable on:click={editWork}>
@@ -41,19 +47,36 @@ export let highlightTitle: readonly Fuse.FuseRangeTuple[] = []
 			/>
 		</h2>
 		<!-- {@html work.paragraphs[0]?.content || ""} -->
-		<p class="path">
-			{$settings.projectsfolder.replaceAll("\\", "/")}/{work.id}
-		</p>
+		<ul class="tags">
+			{#each work.metadata?.tags || [] as tag}
+				<li>
+					<button
+						class:selected={selectedTag === tag}
+						use:tooltip={$settings.showTips
+							? $_("Click to only show works tagged {tag}", {
+									values: { tag },
+							  })
+							: ""}
+						on:click|stopPropagation={e => {
+							dispatch("tag-click", tag)
+							e.target.blur()
+						}}
+						data-variant="none"
+						class="tag filter">{tag}</button
+					>
+				</li>
+			{/each}
+		</ul>
 	</div>
 </Card>
 
-<style>
+<style lang="scss">
 .thumb {
 	width: 100%;
 	flex-grow: 1;
 	background-repeat: no-repeat;
 	background-size: cover;
-	background-color: lightgray;
+	background-color: var(--gray-light);
 }
 
 .text {
@@ -61,8 +84,38 @@ export let highlightTitle: readonly Fuse.FuseRangeTuple[] = []
 	padding: 1.125rem;
 }
 
-.path {
-	font-family: var(--mono);
-	color: var(--gray);
+.tags {
+	margin-top: 0.5em;
+	width: 100%;
+	display: flex;
+	min-width: 0;
+	flex-flow: row wrap;
+	gap: 0.5em;
+	justify-content: center;
+}
+.tags li {
+	list-style: none;
+	padding: 0;
+	display: inline-block;
+}
+
+.tag {
+	padding: 0.125em 0.5em;
+	border-radius: 4em;
+	background-color: var(--gray-light);
+
+	&.selected {
+		background-color: var(--ortforange-light);
+	}
+
+	&::before {
+		content: "#";
+	}
+
+	&:hover,
+	&:focus {
+		background-color: var(--ortforange);
+		color: black;
+	}
 }
 </style>

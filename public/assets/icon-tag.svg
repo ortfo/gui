@@ -1,0 +1,33 @@
+<svg id="screenshot" viewBox="0 0 53 53" width="53" height="53" version="1.1" xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink" style="-webkit-print-color-adjust: exact;">
+	<g id="shape-22975080-be91-11ec-bd45-3f4e8df02c4d"
+		clip-path="url(#frame-clip-22975080-be91-11ec-bd45-3f4e8df02c4d-d8d277d0-be91-11ec-a379-a7083b908371)">
+		<defs>
+			<clipPath id="frame-clip-22975080-be91-11ec-bd45-3f4e8df02c4d-d8d277d0-be91-11ec-a379-a7083b908371"
+				class="frame-clip">
+				<rect x="0" y="0" width="53" height="53" />
+			</clipPath>
+		</defs>
+		<g id="shape-904d6790-be91-11ec-bd45-3f4e8df02c4d">
+			<defs>
+				<clipPath id="inner-stroke-d8d36230-be91-11ec-a379-a7083b908371">
+					<use xlink:href="#stroke-shape-d8d36230-be91-11ec-a379-a7083b908371" />
+				</clipPath>
+			</defs>
+			<g class="inner-stroke-shape">
+				<defs>
+					<path
+						d="M29.025850898444787,-0.025850898444787163L0,29L23.99999964860035,52.99999964860035L53.01723586513003,23.982763432070897L53.01723586513003,4.320709194871597e-7L53.01723586513003,4.320709194871597e-7L29.025850898444787,-0.025850898444787163Z"
+						id="stroke-shape-d8d36230-be91-11ec-a379-a7083b908371"
+						style="fill: none; stroke-width: 8; stroke: rgb(0, 0, 0); stroke-opacity: 1;" />
+				</defs>
+				<use xlink:href="#stroke-shape-d8d36230-be91-11ec-a379-a7083b908371"
+					clip-path="url('#inner-stroke-d8d36230-be91-11ec-a379-a7083b908371')" />
+			</g>
+		</g>
+		<g id="shape-d12793d1-be91-11ec-bd45-3f4e8df02c4d">
+			<ellipse cx="38" cy="16" rx="5" ry="5" transform="matrix(1,0,0,1,0,0)"
+				style="fill: rgb(0, 0, 0); fill-opacity: 1;" />
+		</g>
+	</g>
+</svg>

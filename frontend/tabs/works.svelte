@@ -7,16 +7,19 @@ import {
 	databaseCurrentLanguage,
 	volatileWorks,
 	WorkID,
+	database,
 } from "../stores"
 import { createModalSummoner } from "../modals"
 import { _ } from "svelte-i18n"
 import { getContext, onMount } from "svelte"
 import CreateWork from "../modals/CreateWork.svelte"
-import type { Work, WorkOneLang } from "../ortfo"
+import type { Tag, Work, WorkOneLang } from "../ortfo"
 import Fuse from "fuse.js"
 import SearchBar from "../components/SearchBar.svelte"
+import FieldSelect from "../components/FieldSelect.svelte"
 
 let creatingWork = false
+let filterByTag: Tag["singular"] | "" = ""
 let query: string = ""
 let searcher: Fuse<WorkOneLang>
 
@@ -37,8 +40,9 @@ onMount(() => {
 })
 
 function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
+	let results: Fuse.FuseResult<WorkOneLang>[] = []
 	if (query.length === 0) {
-		return withoutVolatiles($databaseCurrentLanguage.works).map(
+		results = withoutVolatiles($databaseCurrentLanguage.works).map(
 			(work, i) => ({
 				item: work,
 				matches: [],
@@ -46,9 +50,17 @@ function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 				score: 1,
 			})
 		)
+	} else {
+		results = searcher.search(query)
 	}
 
-	return searcher.search(query)
+	if (filterByTag !== "") {
+		results = results.filter(r =>
+			r.item.metadata?.tags?.includes(filterByTag)
+		)
+	}
+
+	return results
 }
 </script>
 
@@ -66,6 +78,18 @@ function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 
 <section class="filters">
 	<SearchBar bind:query />
+	<!-- TODO use a tag icon -->
+	<div class="tag-filter">
+		<label for="filter-by-tags">
+			<img src="assets/icon-tag.svg" alt="tagged" class="icon" />
+		</label>
+		<select id="filter-by-tags" class="tags" bind:value={filterByTag}>
+			{#each ["", ...$database.tags.map(t => t.singular)] as tag}
+				<option value={tag}>{tag === "" ? $_("All tags") : tag}</option>
+			{/each}
+		</select>
+		<span class="arrow">↓</span>
+	</div>
 </section>
 
 <ul class="cards">
@@ -78,12 +102,17 @@ function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 				work={result.item}
 				highlightTitle={result.matches.find(m => m.key === "title")
 					?.indices}
+				selectedTag={filterByTag}
+				on:tag-click={e => {
+					console.log(e)
+					filterByTag = e.detail
+				}}
 			/>
 		</li>
 	{/each}
 </ul>
 
-<style>
+<style lang="scss">
 h1 {
 	margin: 1.5em 0;
 }
@@ -101,5 +130,41 @@ section.filters {
 	display: flex;
 	padding: 0 2em;
 	margin-bottom: 1em;
+	align-items: center;
+}
+
+.tag-filter {
+	margin-left: 2em;
+	display: flex;
+	align-items: center;
+	position: relative;
+}
+.tag-filter img.icon {
+	height: 1.7rem;
+	transform: translateY(0.2rem); /* optical alignement */
+}
+select.tags {
+	appearance: none;
+	background-color: transparent;
+	font-size: 1em;
+	height: 2rem;
+	padding: 0 0.5em;
+	margin-left: 1em;
+}
+.tag-filter .arrow {
+	position: absolute;
+	right: 0.5em;
+	font-size: 1.2em;
+	pointer-events: none;
+	display: inline-block;
+	color: var(--black);
+	z-index: 10;
+	transform: translateY(0);
+	opacity: 1;
+	transition: all 0.25s ease;
+}
+select.tags:not(:focus):not(:hover) + .arrow {
+	transform: translateY(-0.5rem);
+	opacity: 0;
 }
 </style>

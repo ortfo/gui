@@ -8,6 +8,9 @@ export const tooltip = (
 ) => {
     let content: string
     let delay: number = 50
+    if (parameters === "") {
+        return
+    }
     if (typeof parameters === "string") {
         content = parameters
     } else if (Array.isArray(parameters)) {
