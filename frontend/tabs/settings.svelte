@@ -11,16 +11,17 @@ import { LANGUAGES } from "../languagecodes"
 
 const languageCodes = Object.fromEntries([
 	...Object.entries(LANGUAGES).map(([code, l]) => [
-		code,
-		`${l.language} (${l.country})`,
-	]),
-	...Object.entries(LANGUAGES).map(([code, l]) => [
 		code.replace(/-\w+$/, ""),
 		`${l.language} (${$_("All countries")})`,
+	]),
+	...Object.entries(LANGUAGES).map(([code, l]) => [
+		code,
+		`${l.language} (${l.country})`,
 	]),
 ])
 
 settings.subscribe(async settings => {
+	console.log("Writing settings", settings)
 	await backend.settingsWrite(settings)
 })
 
@@ -66,6 +67,6 @@ onMount(() => {
 <style>
 dl {
 	margin: 0 auto;
-	width: clamp(100px, 500px, 100%);
+	width: clamp(100px, 800px, 100%);
 }
 </style>

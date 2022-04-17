@@ -94,9 +94,11 @@ export function lcm(...integers: number[]): number {
 }
 
 export function logExpr(expr) {
-    console.log("logExpr", expr)
+    console.log("<<<LOG EXPR>>> ", expr)
     return expr
 }
+
+export const noSpaces = s => s.replace(" ", "-")
 
 export function mapToTranslated<I, O>(
     map: (item: I) => O,
@@ -120,4 +122,16 @@ export async function mapToTranslatedAsync<I, O>(
 
 export function unslug(slug: string): string {
     return uppercaseFirstCharacter(slug.replace(/-/g, " ")).trim()
+}
+
+export function sortObject<T>(
+    compare: (a: T, b: T) => number
+): (obj: { [k: string]: T }) => { [k: string]: T } {
+    return obj =>
+        Object.keys(obj)
+            .sort((a, b) => compare(obj[a], obj[b]))
+            .reduce((result, key) => {
+                result[key] = obj[key]
+                return result
+            }, {})
 }

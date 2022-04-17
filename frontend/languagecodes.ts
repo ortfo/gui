@@ -1,6 +1,25 @@
+import { sortObject } from "./utils"
+
+function compareLanguages(
+    a: { country: string; language: string },
+    b: { country: string; language: string }
+): 1 | -1 | 0 {
+    if (a.language < b.language) {
+        return -1
+    } else if (a.language > b.language) {
+        return 1
+    }
+    if (a.country < b.country) {
+        return -1
+    } else if (a.country > b.country) {
+        return 1
+    }
+    return 0
+}
+
 export const LANGUAGES: {
     [code: string]: { country: string; language: string }
-} = {
+} = sortObject(compareLanguages)({
     "ps-AF": { country: "Afghanistan", language: "Pashto" },
     "fa-AF": { country: "Afghanistan", language: "Persian" },
     "uz-AF": { country: "Afghanistan", language: "Uzbek" },
@@ -17,8 +36,8 @@ export const LANGUAGES: {
     "pt-AO": { country: "Angola", language: "Portuguese" },
     "en-AI": { country: "Anguilla", language: "English" },
     "es-AI": { country: "Anguilla", language: "Spanish" },
-    "en-AG": { country: "Antigua &amp; Barbuda", language: "English" },
-    "es-AG": { country: "Antigua &amp; Barbuda", language: "Spanish" },
+    "en-AG": { country: "Antigua & Barbuda", language: "English" },
+    "es-AG": { country: "Antigua & Barbuda", language: "Spanish" },
     "en-AR": { country: "Argentina", language: "English" },
     "es-AR": { country: "Argentina", language: "Spanish" },
     "hy-AM": { country: "Armenia", language: "Armenian" },
@@ -52,10 +71,10 @@ export const LANGUAGES: {
     "dz-BT": { country: "Bhutan", language: "Dzongkha" },
     "qu-BO": { country: "Bolivia", language: "Quechua" },
     "es-BO": { country: "Bolivia", language: "Spanish" },
-    "bs-BA": { country: "Bosnia &amp; Herzegovina", language: "Bosnian" },
-    "hr-BA": { country: "Bosnia &amp; Herzegovina", language: "Croatian" },
-    "en-BA": { country: "Bosnia &amp; Herzegovina", language: "English" },
-    "sr-BA": { country: "Bosnia &amp; Herzegovina", language: "Serbian" },
+    "bs-BA": { country: "Bosnia & Herzegovina", language: "Bosnian" },
+    "hr-BA": { country: "Bosnia & Herzegovina", language: "Croatian" },
+    "en-BA": { country: "Bosnia & Herzegovina", language: "English" },
+    "sr-BA": { country: "Bosnia & Herzegovina", language: "Serbian" },
     "en-BW": { country: "Botswana", language: "English" },
     "tn-BW": { country: "Botswana", language: "Tswana" },
     "en-BR": { country: "Brazil", language: "English" },
@@ -103,7 +122,7 @@ export const LANGUAGES: {
     "fr-CF": { country: "Central African Republic", language: "French" },
     "ln-CF": { country: "Central African Republic", language: "Lingala" },
     "sg-CF": { country: "Central African Republic", language: "Sango" },
-    "es-EA": { country: "Ceuta &amp; Melilla", language: "Spanish" },
+    "es-EA": { country: "Ceuta & Melilla", language: "Spanish" },
     "ar-TD": { country: "Chad", language: "Arabic" },
     "fr-TD": { country: "Chad", language: "French" },
     "en-CL": { country: "Chile", language: "English" },
@@ -467,7 +486,7 @@ export const LANGUAGES: {
     "rw-RW": { country: "Rwanda", language: "Kinyarwanda" },
     "en-WS": { country: "Samoa", language: "English" },
     "it-SM": { country: "San Marino", language: "Italian" },
-    "pt-ST": { country: "São Tomé &amp; Príncipe", language: "Portuguese" },
+    "pt-ST": { country: "São Tomé & Príncipe", language: "Portuguese" },
     "ar-SA": { country: "Saudi Arabia", language: "Arabic" },
     "en-SA": { country: "Saudi Arabia", language: "English" },
     "fr-SN": { country: "Senegal", language: "French" },
@@ -521,22 +540,22 @@ export const LANGUAGES: {
     "fr-BL": { country: "St. Barthélemy", language: "French" },
     "es-BL": { country: "St. Barthélemy", language: "Spanish" },
     "en-SH": { country: "St. Helena", language: "English" },
-    "en-KN": { country: "St. Kitts &amp; Nevis", language: "English" },
-    "es-KN": { country: "St. Kitts &amp; Nevis", language: "Spanish" },
+    "en-KN": { country: "St. Kitts & Nevis", language: "English" },
+    "es-KN": { country: "St. Kitts & Nevis", language: "Spanish" },
     "en-LC": { country: "St. Lucia", language: "English" },
     "es-LC": { country: "St. Lucia", language: "Spanish" },
     "fr-MF": { country: "St. Martin", language: "French" },
     "es-MF": { country: "St. Martin", language: "Spanish" },
-    "fr-PM": { country: "St. Pierre &amp; Miquelon", language: "French" },
-    "es-PM": { country: "St. Pierre &amp; Miquelon", language: "Spanish" },
-    "en-VC": { country: "St. Vincent &amp; Grenadines", language: "English" },
-    "es-VC": { country: "St. Vincent &amp; Grenadines", language: "Spanish" },
+    "fr-PM": { country: "St. Pierre & Miquelon", language: "French" },
+    "es-PM": { country: "St. Pierre & Miquelon", language: "Spanish" },
+    "en-VC": { country: "St. Vincent & Grenadines", language: "English" },
+    "es-VC": { country: "St. Vincent & Grenadines", language: "Spanish" },
     "ar-SD": { country: "Sudan", language: "Arabic" },
     "en-SD": { country: "Sudan", language: "English" },
     "nl-SR": { country: "Suriname", language: "Dutch" },
     "es-SR": { country: "Suriname", language: "Spanish" },
     "nb-SJ": {
-        country: "Svalbard &amp; Jan Mayen",
+        country: "Svalbard & Jan Mayen",
         language: "Norwegian Bokmål",
     },
     "en-SE": { country: "Sweden", language: "English" },
@@ -578,16 +597,16 @@ export const LANGUAGES: {
     "en-TK": { country: "Tokelau", language: "English" },
     "en-TO": { country: "Tonga", language: "English" },
     "to-TO": { country: "Tonga", language: "Tongan" },
-    "en-TT": { country: "Trinidad &amp; Tobago", language: "English" },
-    "es-TT": { country: "Trinidad &amp; Tobago", language: "Spanish" },
+    "en-TT": { country: "Trinidad & Tobago", language: "English" },
+    "es-TT": { country: "Trinidad & Tobago", language: "Spanish" },
     "ar-TN": { country: "Tunisia", language: "Arabic" },
     "fr-TN": { country: "Tunisia", language: "French" },
     "en-TR": { country: "Turkey", language: "English" },
     "ku-TR": { country: "Turkey", language: "Kurdish" },
     "tr-TR": { country: "Turkey", language: "Turkish" },
     "tk-TM": { country: "Turkmenistan", language: "Turkmen" },
-    "en-TC": { country: "Turks &amp; Caicos Islands", language: "English" },
-    "es-TC": { country: "Turks &amp; Caicos Islands", language: "Spanish" },
+    "en-TC": { country: "Turks & Caicos Islands", language: "English" },
+    "es-TC": { country: "Turks & Caicos Islands", language: "Spanish" },
     "en-TV": { country: "Tuvalu", language: "English" },
     "en-UM": { country: "U.S. Outlying Islands", language: "English" },
     "en-VI": { country: "U.S. Virgin Islands", language: "English" },
@@ -609,7 +628,7 @@ export const LANGUAGES: {
     "gd-GB": { country: "United Kingdom", language: "Scottish Gaelic" },
     "cy-GB": { country: "United Kingdom", language: "Welsh" },
     "chr-US": { country: "United States", language: "Cherokee" },
-    "en-US": { country: "United States", language: "English (United States)" },
+    "en-US": { country: "United States", language: "English" },
     "haw-US": { country: "United States", language: "Hawaiian" },
     "lkt-US": { country: "United States", language: "Lakota" },
     "es-US": { country: "United States", language: "Spanish" },
@@ -620,7 +639,7 @@ export const LANGUAGES: {
     "it-VA": { country: "Vatican City", language: "Italian" },
     "es-VE": { country: "Venezuela", language: "Spanish" },
     "vi-VN": { country: "Vietnam", language: "Vietnamese" },
-    "fr-WF": { country: "Wallis &amp; Futuna", language: "French" },
+    "fr-WF": { country: "Wallis & Futuna", language: "French" },
     "ar-EH": { country: "Western Sahara", language: "Arabic" },
     "ar-001": { country: "World", language: "Arabic" },
     "en-001": { country: "World", language: "English" },
@@ -635,4 +654,4 @@ export const LANGUAGES: {
     "en-ZW": { country: "Zimbabwe", language: "English" },
     "nd-ZW": { country: "Zimbabwe", language: "North Ndebele" },
     "sn-ZW": { country: "Zimbabwe", language: "Shona" },
-}
+})
