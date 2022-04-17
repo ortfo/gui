@@ -186,7 +186,6 @@ nav {
 	display: inline-block;
 	margin-left: -0.9rem;
 	width: 1.2rem;
-	font-size: 1em;
 	cursor: pointer;
 }
 .close-current-work::after,

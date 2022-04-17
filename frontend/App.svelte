@@ -218,6 +218,10 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	transform: scaleX(0.75);
 }
 
+:global(button[data-variant="none"]) {
+	font-size: 1em;
+}
+
 :global(h1) {
 	text-align: center;
 	font-size: 3em;

@@ -491,7 +491,6 @@ h2 {
 	transition: all 0.25s ease, font-varation-settings 1s ease,
 		box-shadow 0.25s ease 0.125s;
 	outline: none;
-	font-size: 1em;
 	border: 1px solid transparent;
 }
 
