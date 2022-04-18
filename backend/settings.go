@@ -72,7 +72,7 @@ func SaveSettings(settings Settings) error {
 }
 
 func DefaultSettings() Settings {
-	return Settings{Theme: "light", Language: "en"}
+	return Settings{Theme: "light", Language: "en", PortfolioLanguages: []string{"en"}}
 }
 
 func DefaultUIState() UIState {
