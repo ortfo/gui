@@ -279,9 +279,15 @@ main {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	background-color: rgb(247, 188, 188);
-	color: rgb(187, 16, 16);
+	background-color: rgb(167, 4, 4);
+	--black: white;
+	--white: black;
+	color: var(--black);
 	padding: 2rem;
 	min-height: 100vh;
+}
+
+.error h2 {
+	margin-top: 5em;
 }
 </style>
