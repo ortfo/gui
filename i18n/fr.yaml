@@ -1,6 +1,8 @@
 Abbreviations: Abbréviations
 Add a new block?: Ajouter un nouveau bloc ?
 Add a tag: Ajouter un tag
+Add a technology: Ajouter une technologie
+Add an external site: Ajouter un site externe
 Add a…: Ajouter un…
 "An error occured: ": "Une erreur est survenue : "
 Another one?: Un autre ?
@@ -9,12 +11,15 @@ Bold: Gras
 Bullet list: Liste à puces
 Cancel: Annuler
 Can’t find what you want?: Vous ne trouvez pas ce que vous cherchez ?
+Can’t find what you’re looking for?: Vous ne trouvez pas ce que vous cherchez ?
 Categorize your works with <em>tags</em>: Catégorisez vos projets avec des <em>tags</em>
+Change your projects folder: Changez votre dossier de projets
+Click to only show works tagged {tag}: Cliquez pour ne montrer que les projets avec le tag {tag}
 Code: Code
-? Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.
-: >-
+Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.: >-
     Faites glisser les blocs pour réorganiser la page. Double-cliquez sur un
     bloc pour le modifier.
+External sites: Sites externes
 Footnotes: Notes de bas de page
 Good to see you, {name}.: Heureux de vous revoir, {name}.
 Good to see you.: Heureux de vous revoir.
@@ -24,25 +29,35 @@ Insert media: Insérer un média
 It looks like <em>{id}</em>’s folder has gone missing.: Apparemment, le dossier de <em>{id}</em> a disparu.
 Italic: Italique
 Let’s describe a work: Décrivons un projet.
+Let’s get this portfolio started.: Démarrons votre portfolio.
 Link: Lien
 List of definitions: Liste de définitions
 Loading…: Chargement…
+'Make people aware of your online presence elsewhere on the web: social media, YouTube channel, et cætera.': >-
+    Informez de votre présence autre part sur le web: réseaux sociaux, YouTube,
+    et cætera.
 Metadata: Métadonnées
 No content yet.: Aucun contenu pour l'instant.
 No description: Aucune description
 No results: Aucun résultat
 No results.: Aucun résultat.
 Numbered list: Liste numérotée
+Pick a work to write a portfolio article about it. We’ll take care of the rest.: >-
+    Choisissez un projet pour en écrire un article sur votre portfolio. Nous
+    nous occupons du reste.
 Remove this footnote: Supprimer cette note de bas de page
 Remove this one: Supprimer ceci
 Search: Rechercher
 Settings: Réglages
-? This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?
-: >-
+'Specify what you use in your projects: languages, materials, textures, samples, frameworks, you name it.': >-
+    Spécifiez ce que vous utilisez dans vos projets: langages, matériaux,
+    textures, samples, frameworks, et autres.
+This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?: >-
     Ce projet a des modifications non enregistrées qui seront perdues si vous
     fermez cet onglet. Êtes-vous sûr de vouloir continuer ?
 Try changing your projects folder in: Essayez de changer votre dossier de projets dans
 Unsaved changes: Modifications non enregistrées
+Well, this is weird.: Hmmm, étrange.
 a link to a website: un lien vers un site
 add something: ajouter quelque chose
 aliases: alias
@@ -50,30 +65,39 @@ another one?: un autre ?
 block of code: bloc de code
 bold: gras
 bullet list: liste à puces
+by: par
 chosen image for {key}: image choisie pour {key}
 close: fermer
 close without saving: fermer sans enregistrer
 code: code
-code block: ""
+code block: ''
 colors: couleurs
 content: contenu
+create_external_site_tip: >-
+    Astuce : utilisez <strong><code>mailto:<em>votre adresse
+    email</em></code></strong> comme lien,<br>et en cliquant dessus, vous
+    pourrez commencer un nouveau courriel à vous !
 dark: sombre
-definition: ""
-definition list: ""
+definition: ''
+definition list: ''
 delete: supprimer
 delete block: supprimer le bloc
 describe your media: décrivez votre média
 describe your tag: décrivez votre tag
+describe your technology: décrivez votre technologie
 description: description
 don't close: ne pas fermer
 edit: modifier
 finish: terminer
 go back to all projects: retour aux projets
 heading: titre
+in the URLs: dans les URLs
+in the pages: dans les pages
 insert media: insérer un média
 italic: italique
 key: clé
 language: langue
+languages to translate your portfolio into: langages pour lesquels vous voulez traduire votre portfolio
 learn more at: en savoir plus à
 light: clair
 link: lien
@@ -91,11 +115,15 @@ numbered list: liste numérotée
 page background: fond de page
 paragraph: paragraphe
 paragraph icon: icône de paragraphe
+pick: choisir
 pick from image: depuis une image
 plural form: au pluriel
+portfolio languages: langues du portfolio
 primary: principale
 projects folder: dossier des projets
 publish!: publier !
+purpose: but
+put the link here: mettez le lien ici
 put the path or url to the media here: mettez le chemin ou l'URL du média ici
 put the url here: mettez l'URL ici
 rebuild: reconstruire
@@ -114,31 +142,9 @@ tertiary: tertiaire
 theme: thème
 unset: non défini
 unset values inherit their defaults, set in: les valeurs non définies héritent de leurs valeurs par défaut, définies dans
-value: valeur
-works: projets
-write some text here: écrivez du texte ici
-purpose: but
-in the pages: dans les pages
-in the URLs: dans les URLs
 username: nom d’utilisateur
-describe your technology: décrivez votre technologie
-Add a technology: Ajouter une technologie
-Add an external site: Ajouter un site externe
-External sites: Sites externes
-"Make people aware of your online presence elsewhere on the web: social media, YouTube channel, et cætera.": "Informez de votre présence autre part sur le web: réseaux sociaux, YouTube, et cætera."
-"Specify what you use in your projects: languages, materials, textures, samples, frameworks, you name it.": "Spécifiez ce que vous utilisez dans vos projets: langages, matériaux, textures, samples, frameworks, et autres."
-create_external_site_tip: "Astuce : utilisez <strong><code>mailto:<em>votre adresse email</em></code></strong> comme lien,<br>et en cliquant dessus, vous pourrez commencer un nouveau courriel à vous !"
+value: valeur
 what do you use it for?: pour quoi l’utilisez-vous ?
 without the leading @: sans le préfixe "@"
-put the link here: mettez le lien ici
-by: par
-Let’s get this portfolio started.: Démarrons votre portfolio.
-Pick a work to write a portfolio article about it. We’ll take care of the rest.: Choisissez un projet pour en écrire un article sur votre portfolio. Nous nous occupons du reste.
-Can’t find what you’re looking for?: Vous ne trouvez pas ce que vous cherchez ?
-Change your projects folder: Changez votre dossier de projets
-portfolio languages: langues du portfolio
-languages to translate your portfolio into: langages pour lesquels vous voulez traduire votre portfolio
-All countries: Tout les pays
-Well, this is weird.: Hmmm, étrange.
-Click to only show works tagged {tag}: Cliquez pour ne montrer que les projets avec le tag {tag}
-pick: choisir
+works: projets
+write some text here: écrivez du texte ici

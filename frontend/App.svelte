@@ -18,7 +18,7 @@ import messagesEnglish from "../i18n/en.yaml"
 import Technologies from "./tabs/technologies.svelte"
 import Externalsites from "./tabs/externalsites.svelte"
 import FieldText from "./components/FieldText.svelte"
-import FieldFilepath from "./components/FieldFilepath.svelte";
+import FieldFilepath from "./components/FieldFilepath.svelte"
 
 function loadLocales() {
 	addMessages("fr", messagesFrench)

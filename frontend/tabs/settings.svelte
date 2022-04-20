@@ -8,8 +8,8 @@ import FieldText from "../components/FieldText.svelte"
 import FieldSelect from "../components/FieldSelect.svelte"
 import FieldToggle from "../components/FieldToggle.svelte"
 import { LANGUAGES } from "../languagecodes"
-import FieldFilepath from "../components/FieldFilepath.svelte";
-import { rebuildDatabase } from "../components/Navbar.svelte";
+import FieldFilepath from "../components/FieldFilepath.svelte"
+import { rebuildDatabase } from "../components/Navbar.svelte"
 
 const languageCodes = Object.fromEntries([
 	...Object.entries(LANGUAGES).map(([code, l]) => [
