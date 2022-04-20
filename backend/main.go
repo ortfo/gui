@@ -38,7 +38,7 @@ func startWebview() {
 	w = webview.New(true)
 	defer w.Destroy()
 	w.SetTitle("ortfo")
-	w.SetSize(800, 600, webview.HintNone)
+	w.SetSize(800, 600, webview.HintMin)
 	w.Navigate("http://localhost:" + func() string {
 		if os.Getenv("DEV") == "yes" {
 			return "3000"
