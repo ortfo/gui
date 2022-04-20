@@ -107,8 +107,12 @@ function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 					?.indices}
 				selectedTag={filterByTag}
 				on:tag-click={e => {
-					console.log(e)
-					filterByTag = e.detail
+					let clickedTag = e.detail
+					if (clickedTag === filterByTag) {
+						filterByTag = ""
+					} else {
+						filterByTag = clickedTag
+					}
 				}}
 			/>
 		</li>
