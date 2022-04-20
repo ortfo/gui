@@ -157,6 +157,7 @@ select.tags {
 	height: 2rem;
 	padding: 0 0.5em;
 	margin-left: 1em;
+	padding-right: calc(0.5em + 1.2em);
 }
 .tag-filter .arrow {
 	position: absolute;
