@@ -21,7 +21,7 @@ import { _ } from "svelte-i18n"
 import SearchBar from "../components/SearchBar.svelte"
 import HighlightText from "../components/HighlightText.svelte"
 import { escapeRegExp } from "lodash"
-const summon = createModalSummoner(getContext("simple-modal"))
+const summon = createModalSummoner()
 
 // TODO use <SearchableList>
 

@@ -6,7 +6,7 @@ import MetadataField from "./MetadataField.svelte"
 import { _ } from "svelte-i18n"
 
 const emit = createEventDispatcher()
-const summon = createModalSummoner(getContext("simple-modal"))
+const summon = createModalSummoner()
 
 export let value: {
 	primary: string

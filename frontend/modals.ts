@@ -1,5 +1,8 @@
-export function createModalSummoner(simpleModalContext) {
+import { getContext } from "svelte"
+
+export function createModalSummoner() {
+    const modalContext = getContext("simple-modal")
     return modal => {
-        simpleModalContext.open(modal)
+        modalContext.open(modal)
     }
 }

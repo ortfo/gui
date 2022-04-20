@@ -12,7 +12,7 @@ import type { Tag } from "../ortfo"
 import { backend } from "../backend"
 import MarkdownEditor from "../components/MarkdownEditor.svelte"
 import { except } from "../utils"
-const summon = createModalSummoner(getContext("simple-modal"))
+const summon = createModalSummoner()
 
 let editingTag: Tag | null = null
 let tagsWithEditingStatus: (Tag & { editing: boolean })[] = $database.tags.map(

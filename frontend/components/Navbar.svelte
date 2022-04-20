@@ -53,7 +53,7 @@ import { getContext } from "svelte"
 import { slide } from "svelte/transition"
 import { cubicOut } from "svelte/easing"
 
-const summon = createModalSummoner(getContext("simple-modal"))
+const summon = createModalSummoner()
 
 let rebuildErrored = false
 let rebuildError = ""

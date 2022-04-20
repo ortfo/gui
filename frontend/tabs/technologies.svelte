@@ -12,7 +12,7 @@ import type { Tag, Technology } from "../ortfo"
 import { backend } from "../backend"
 import MarkdownEditor from "../components/MarkdownEditor.svelte"
 import { except } from "../utils"
-const summon = createModalSummoner(getContext("simple-modal"))
+const summon = createModalSummoner()
 
 let editingTech: Technology | null = null
 let techsWithEditingStatus: (Technology & { editing: boolean })[] =
