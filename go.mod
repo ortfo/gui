@@ -11,6 +11,8 @@ require (
 	github.com/webview/webview v0.0.0-20220407190137-85a0d5c36d07
 )
 
+require github.com/TheTitanrain/w32 v0.0.0-20180517000239-4f5cfb03fabf // indirect
+
 require (
 	github.com/EdlinOrg/prominentcolor v1.0.0 // indirect
 	github.com/JohannesKaufmann/html-to-markdown v1.2.0 // indirect
@@ -54,6 +56,7 @@ require (
 	github.com/relvacode/iso8601 v1.1.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
+	github.com/sqweek/dialog v0.0.0-20220227145630-7a1c9e333fcf
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/ssttevee/go-ffmpeg v0.2.1 // indirect
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300 // indirect

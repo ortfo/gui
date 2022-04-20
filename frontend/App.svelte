@@ -17,6 +17,7 @@ import messagesFrench from "../i18n/fr.yaml"
 import Technologies from "./tabs/technologies.svelte"
 import Externalsites from "./tabs/externalsites.svelte"
 import FieldText from "./components/FieldText.svelte"
+import FieldFilepath from "./components/FieldFilepath.svelte";
 
 function loadLocales() {
 	addMessages("fr", messagesFrench)
@@ -126,7 +127,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 		</ol>
 		<h2 use:i18n>Try changing these settings</h2>
 		<dl>
-			<FieldText
+			<FieldFilepath
 				key={$_("projects folder")}
 				bind:value={$settings.projectsfolder}
 			/>
@@ -194,6 +195,12 @@ settings.subscribe(settings => applyTheme(settings.theme))
 :global(button[data-variant="inline"]) {
 	border: 1px solid var(--black);
 	padding: 2px 5px;
+	transition: all 0.25s ease;
+}
+
+:global(button[data-variant="inline"]):active {
+	background-color: var(--black);
+	color: var(--white);
 }
 
 :global(button[data-variant="link"]) {

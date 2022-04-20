@@ -43,6 +43,13 @@ export type BuildProgress = {
     }
 }
 
+export type PickFileConstraint = {
+    accept:
+        | "directory"
+        | "*"
+        | `.${string}`
+}
+
 export const localProjects = path => `http://localhost:4444/projects/${path}`
 export const localDatabase = path => `http://localhost:4444/database/${path}`
 export const relativeToDatabase = path => path.split("portfolio-database/")[1]
@@ -135,5 +142,9 @@ export const backend = {
     openInBrowser: async (url: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__openInBrowser(url)) as MaybeError
+    },
+    pickFile: async (title: string, startIn: string, constraint: PickFileConstraint) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__pickFile(title, startIn, constraint)) as string
     },
 }

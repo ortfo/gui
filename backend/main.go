@@ -9,6 +9,7 @@ import (
 	ortfodb "github.com/ortfo/db"
 	ortfomk "github.com/ortfo/mk"
 	"github.com/skratchdot/open-golang/open"
+	"github.com/sqweek/dialog"
 	"github.com/webview/webview"
 	"gopkg.in/yaml.v2"
 )
@@ -20,10 +21,14 @@ type DirEntry struct {
 	Info  os.FileInfo
 }
 
+type PickFileConstraint struct {
+	Accept string
+}
+
 var w webview.WebView
 
 const (
-	Port = "4444"
+	Port    = "4444"
 	Version = "0.1.0-alpha.1"
 )
 
@@ -147,6 +152,14 @@ func startWebview() {
 	})
 	w.Bind("backend__openInBrowser", func(url string) error {
 		return open.Start(url)
+	})
+	w.Bind("backend__pickFile", func(title string, startIn string, constraint PickFileConstraint) (string, error) {
+		fmt.Printf("Starting in %s, with title %q\n", title, startIn)
+		if constraint.Accept == "directory" {
+			return dialog.Directory().Title(title).SetStartDir(startIn).Browse()
+		} else {
+			return dialog.File().Title(title).SetStartDir(startIn).Filter(constraint.Accept).Load()
+		}
 	})
 	w.Run()
 }

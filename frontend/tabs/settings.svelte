@@ -8,6 +8,8 @@ import FieldText from "../components/FieldText.svelte"
 import FieldSelect from "../components/FieldSelect.svelte"
 import FieldToggle from "../components/FieldToggle.svelte"
 import { LANGUAGES } from "../languagecodes"
+import FieldFilepath from "../components/FieldFilepath.svelte";
+import { rebuildDatabase } from "../components/Navbar.svelte";
 
 const languageCodes = Object.fromEntries([
 	...Object.entries(LANGUAGES).map(([code, l]) => [
@@ -47,9 +49,14 @@ onMount(() => {
 
 	<FieldText key={$_("surname")} bind:value={$settings.surname} />
 
-	<FieldText
+	<FieldFilepath
+		directory
 		key={$_("projects folder")}
 		bind:value={$settings.projectsfolder}
+		on:change={() => {
+			console.log("change fired")
+			rebuildDatabase()
+		}}
 	/>
 
 	<FieldList
