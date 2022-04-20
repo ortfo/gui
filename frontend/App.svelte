@@ -14,6 +14,7 @@ import { addMessages, init as i18nInit, locale } from "svelte-i18n"
 import { _ } from "svelte-i18n"
 import { i18n } from "./actions"
 import messagesFrench from "../i18n/fr.yaml"
+import messagesEnglish from "../i18n/en.yaml"
 import Technologies from "./tabs/technologies.svelte"
 import Externalsites from "./tabs/externalsites.svelte"
 import FieldText from "./components/FieldText.svelte"
@@ -21,6 +22,7 @@ import FieldFilepath from "./components/FieldFilepath.svelte";
 
 function loadLocales() {
 	addMessages("fr", messagesFrench)
+	addMessages("en", messagesEnglish)
 	i18nInit({
 		fallbackLocale: "en",
 		initialLocale: $settings.language,
