@@ -51,6 +51,7 @@ input[type="radio"] {
 	flex-grow: 0;
 	margin-right: 0.25em;
 	appearance: none;
+	-webkit-appearance: none;
 	width: $height;
 	height: $height;
 	border-radius: $height;

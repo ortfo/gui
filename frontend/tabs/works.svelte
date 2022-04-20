@@ -152,6 +152,7 @@ section.filters {
 }
 select.tags {
 	appearance: none;
+	-webkit-appearance: none;
 	background-color: transparent;
 	font-size: 1em;
 	height: 2rem;

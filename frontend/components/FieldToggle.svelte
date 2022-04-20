@@ -24,6 +24,7 @@ $pad: 0.25em;
 input[type="checkbox"] {
 	border: 0;
 	appearance: none;
+	-webkit-appearance: none;
 	border-radius: $height;
 	width: $height * 2;
 	height: $height;
