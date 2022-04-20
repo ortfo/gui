@@ -78,18 +78,21 @@ function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 
 <section class="filters">
 	<SearchBar bind:query />
-	<!-- TODO use a tag icon -->
-	<div class="tag-filter">
-		<label for="filter-by-tags">
-			<img src="assets/icon-tag.svg" alt="tagged" class="icon" />
-		</label>
-		<select id="filter-by-tags" class="tags" bind:value={filterByTag}>
-			{#each ["", ...$database.tags.map(t => t.singular)] as tag}
-				<option value={tag}>{tag === "" ? $_("All tags") : tag}</option>
-			{/each}
-		</select>
-		<span class="arrow">↓</span>
-	</div>
+	{#if $database.tags.length > 0}
+		<div class="tag-filter">
+			<label for="filter-by-tags">
+				<img src="assets/icon-tag.svg" alt="tagged" class="icon" />
+			</label>
+			<select id="filter-by-tags" class="tags" bind:value={filterByTag}>
+				{#each ["", ...$database.tags.map(t => t.singular)] as tag}
+					<option value={tag}
+						>{tag === "" ? $_("All tags") : tag}</option
+					>
+				{/each}
+			</select>
+			<span class="arrow">↓</span>
+		</div>
+	{/if}
 </section>
 
 <ul class="cards">
