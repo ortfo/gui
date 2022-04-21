@@ -19,6 +19,7 @@ import Technologies from "./tabs/technologies.svelte"
 import Externalsites from "./tabs/externalsites.svelte"
 import FieldText from "./components/FieldText.svelte"
 import FieldFilepath from "./components/FieldFilepath.svelte"
+import Notifications from "svelte-notifications"
 
 function loadLocales() {
 	addMessages("fr", messagesFrench)
@@ -95,54 +96,56 @@ onMount(() => {
 settings.subscribe(settings => applyTheme(settings.theme))
 </script>
 
-{#await load()}
-	<h1>Sit tight, loading your stuff…</h1>
-{:then _}
-	<Modal closeButton={ModalButtonClose}>
-		<Navbar />
-		<main>
-			{#if $state.openTab == "works"}
-				<Works />
-			{:else if $state.openTab == "tags"}
-				<Tags />
-			{:else if $state.openTab == "technologies"}
-				<Technologies />
-			{:else if $state.openTab == "sites"}
-				<Externalsites />
-			{:else if $state.openTab == "settings"}
-				<Settings />
-			{:else if $state.openTab == "editor"}
-				<Editor />
-			{:else}
-				404
-			{/if}
-		</main>
-	</Modal>
-{:catch e}
-	<div class="error">
-		<h1 use:i18n>Woops!</h1>
-		<p use:i18n>Couldn't load your stuff:</p>
-		<ol>
-			{#each e.toString().split(": ") as reason}
-				<li>{reason}</li>
-			{/each}
-		</ol>
-		<h2 use:i18n>Try changing these settings</h2>
-		<dl>
-			<FieldFilepath
-				key={$_("projects folder")}
-				bind:value={$settings.projectsfolder}
-			/>
-		</dl>
-		<button
-			on:click={_ => {
-				backend.settingsWrite($settings)
-				window.location.reload()
-			}}
-			use:i18n>Reload</button
-		>
-	</div>
-{/await}
+<Notifications>
+	{#await load()}
+		<h1>Sit tight, loading your stuff…</h1>
+	{:then _}
+		<Modal closeButton={ModalButtonClose}>
+			<Navbar />
+			<main>
+				{#if $state.openTab == "works"}
+					<Works />
+				{:else if $state.openTab == "tags"}
+					<Tags />
+				{:else if $state.openTab == "technologies"}
+					<Technologies />
+				{:else if $state.openTab == "sites"}
+					<Externalsites />
+				{:else if $state.openTab == "settings"}
+					<Settings />
+				{:else if $state.openTab == "editor"}
+					<Editor />
+				{:else}
+					404
+				{/if}
+			</main>
+		</Modal>
+	{:catch e}
+		<div class="error">
+			<h1 use:i18n>Woops!</h1>
+			<p use:i18n>Couldn't load your stuff:</p>
+			<ol>
+				{#each e.toString().split(": ") as reason}
+					<li>{reason}</li>
+				{/each}
+			</ol>
+			<h2 use:i18n>Try changing these settings</h2>
+			<dl>
+				<FieldFilepath
+					key={$_("projects folder")}
+					bind:value={$settings.projectsfolder}
+				/>
+			</dl>
+			<button
+				on:click={_ => {
+					backend.settingsWrite($settings)
+					window.location.reload()
+				}}
+				use:i18n>Reload</button
+			>
+		</div>
+	{/await}
+</Notifications>
 
 <style>
 :global(body) {
@@ -169,6 +172,11 @@ settings.subscribe(settings => applyTheme(settings.theme))
 
 :global(*:not(input):not(select):not(textarea):not(.ProseMirror):focus-visible) {
 	outline: 1px solid var(--ortforange);
+}
+
+:global(.notifications) {
+	position: fixed;
+	z-index: 1000;
 }
 
 :global(button) {

@@ -1,4 +1,5 @@
 import type { Translated } from "./ortfo"
+import { getNotificationsContext } from "svelte-notifications"
 
 export const transformKeys =
     (transformer: (input: string) => string) => (obj: any) => {
@@ -134,4 +135,42 @@ export function sortObject<T>(
                 result[key] = obj[key]
                 return result
             }, {})
+}
+
+export function createNotificationSpawner() {
+    const context = getNotificationsContext()
+    const position = "bottom-center"
+    const removeAfter = 4000
+
+    return {
+        add: (text: string) =>
+            context.addNotification({
+                removeAfter,
+                position: "top-center",
+                text,
+            }),
+        error: (text: string) =>
+            context.addNotification({
+                removeAfter: removeAfter * 1.25,
+                position,
+                text,
+                type: "danger",
+            }),
+        warn: (text: string) =>
+            context.addNotification({
+                removeAfter,
+                position,
+                text,
+                type: "warning",
+            }),
+        success: (text: string) =>
+            context.addNotification({
+                removeAfter,
+                position,
+                text,
+                type: "success",
+            }),
+        remove: context.removeNotification,
+        clear: context.clearNotifications,
+    }
 }

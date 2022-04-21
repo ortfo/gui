@@ -1,10 +1,11 @@
 <script lang="ts">
 import MetadataField from "./MetadataField.svelte"
 import { backend, PickFileConstraint } from "../backend"
-import { except, noSpaces } from "../utils"
+import { createNotificationSpawner, except, noSpaces } from "../utils"
 import { i18n } from "../actions"
 import { createEventDispatcher } from "svelte"
 const dispatch = createEventDispatcher()
+const notifications = createNotificationSpawner()
 
 export let value: string
 export let key: string
@@ -47,7 +48,10 @@ function parentDirectory(path: string): string {
 						}
 					)
 				} catch (e) {
-					console.error(e)
+					if (e.toString() === "Cancelled") {
+						return
+					}
+					notifications.error(e)
 				}
 			}}>pick</button
 		>
