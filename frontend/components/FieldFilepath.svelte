@@ -2,6 +2,7 @@
 import MetadataField from "./MetadataField.svelte"
 import { backend, PickFileConstraint } from "../backend"
 import { createNotificationSpawner, except, noSpaces } from "../utils"
+import { _ } from "svelte-i18n"
 import { i18n } from "../actions"
 import { createEventDispatcher } from "svelte"
 const dispatch = createEventDispatcher()
@@ -11,6 +12,8 @@ export let value: string
 export let key: string
 export let directory: boolean = false
 export let accept: PickFileConstraint["accept"] = "*"
+export let relativeTo: string = ""
+export let startIn: string = relativeTo
 export let oneline: boolean = true
 export let help: string = ""
 export let placeholder: string = ""
@@ -34,21 +37,26 @@ function parentDirectory(path: string): string {
 		<button
 			data-variant="inline"
 			use:i18n
-			on:click={async () => {
+			on:click={async event => {
 				try {
-					value = await backend.pickFile(
-						"Lorem ipsum",
-						value
+					value = await backend.pickFile({
+						title: $_(
+							`Pick a {key} ${directory ? "directory" : "file"}`,
+							{
+								values: { key },
+							}
+						),
+						startIn: value
 							? directory
 								? value
 								: parentDirectory(value)
-							: "~",
-						{
-							accept: directory ? "directory" : accept,
-						}
-					)
+							: startIn || "~",
+						relativeTo,
+						accept: directory ? "directory" : accept,
+					})
 				} catch (e) {
 					if (e.toString() === "Cancelled") {
+						event.target.blur()
 						return
 					}
 					notifications.error(e)

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
@@ -153,13 +154,30 @@ func startWebview() {
 	w.Bind("backend__openInBrowser", func(url string) error {
 		return open.Start(url)
 	})
-	w.Bind("backend__pickFile", func(title string, startIn string, constraint PickFileConstraint) (string, error) {
+	w.Bind("backend__pickFile", func(title string, startIn string, constraint PickFileConstraint, relativeTo string) (picked string, err error) {
+		startIn, err = homedir.Expand(startIn)
+		if err != nil {
+			return
+		}
+		err = os.MkdirAll(startIn, 0755)
+		if err != nil {
+			return "", fmt.Errorf("while creating directories for %q: %w", startIn, err)
+		}
+
 		fmt.Printf("Starting in %s, with title %q\n", title, startIn)
 		if constraint.Accept == "directory" {
-			return dialog.Directory().Title(title).SetStartDir(startIn).Browse()
+			picked, err = dialog.Directory().Title(title).SetStartDir(startIn).Browse()
 		} else {
-			return dialog.File().Title(title).SetStartDir(startIn).Filter(constraint.Accept).Load()
+			picked, err = dialog.File().Title(title).SetStartDir(startIn).Filter(constraint.Accept).Load()
 		}
+		if err != nil {
+			return
+		}
+
+		if relativeTo != "" {
+			picked, err = filepath.Rel(relativeTo, picked)
+		}
+		return
 	})
 	w.Run()
 }

@@ -140,12 +140,22 @@ export const backend = {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__openInBrowser(url)) as MaybeError
     },
-    pickFile: async (
-        title: string,
-        startIn: string,
-        constraint: PickFileConstraint
-    ) => {
+    pickFile: async ({
+        title,
+        startIn,
+        relativeTo,
+        ...constraint
+    }: {
+        title: string
+        startIn: string
+        relativeTo: string
+    } & PickFileConstraint) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return (await backend__pickFile(title, startIn, constraint)) as string
+        return (await backend__pickFile(
+            title,
+            startIn,
+            constraint,
+            relativeTo
+        )) as string
     },
 }

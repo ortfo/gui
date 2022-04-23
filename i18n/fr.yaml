@@ -149,3 +149,7 @@ what do you use it for?: pour quoi l’utilisez-vous ?
 without the leading @: sans le préfixe "@"
 works: projets
 write some text here: écrivez du texte ici
+"link #{n}": lien n°{n}
+"media #{n}": média n°{n}
+Pick a {key} directory: Choisissez un dossier {key}
+Pick a {key} file: Choisissez un fichier {key}

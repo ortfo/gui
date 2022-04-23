@@ -19,10 +19,12 @@ import {
 	ParsedDescription,
 	Translated,
 } from "../ortfo"
-import { state, workOnDisk } from "../stores"
+import { settings, state, workOnDisk } from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
 import { _ } from "svelte-i18n"
+import FieldFilepath from "./FieldFilepath.svelte"
+import FieldText from "./FieldText.svelte"
 
 const dispatch = createEventDispatcher()
 
@@ -190,7 +192,7 @@ $: updateWork(blocks)
 				  )})`
 				: ""}
 		>
-			<div class="content">
+			<div class="content" data-theme={$settings.theme}>
 				{#if item.data.type === "paragraph"}
 					<MarkdownEditor
 						noBorder
@@ -201,38 +203,53 @@ $: updateWork(blocks)
 						placeholder={$_("write some text here")}
 					/>
 				{:else if item.data.type === "link"}
-					<span class="type">{$_("Link")}</span>
-					<input
-						class="name"
-						bind:value={blocks[language][index(item)].data.name}
-						on:focus={() => (activeBlock = item.id)}
-						on:blur={() => (activeBlock = null)}
-						placeholder={$_("name your link")}
-					/>
-					<input
-						class="url"
-						bind:value={blocks[language][index(item)].data.url}
-						on:focus={() => (activeBlock = item.id)}
-						on:blur={() => (activeBlock = null)}
-						placeholder={$_("put the url here")}
-					/>
+					<h2>
+						{$_("link #{n}", {
+							values: { n: parseInt(item.id.split(":")[1]) + 1 },
+						})}
+					</h2>
+					<dl>
+						<FieldText
+							key="name"
+							bind:value={blocks[language][index(item)].data.name}
+							on:focus={() => (activeBlock = item.id)}
+							on:blur={() => (activeBlock = null)}
+							placeholder={$_("name your link")}
+						/>
+						<FieldText
+							key="url"
+							bind:value={blocks[language][index(item)].data.url}
+							on:focus={() => (activeBlock = item.id)}
+							on:blur={() => (activeBlock = null)}
+							placeholder={$_("put the url here")}
+						/>
+					</dl>
 				{:else if item.data.type === "media"}
-					<input
-						class="name"
-						bind:value={blocks[language][index(item)].data.alt}
-						on:focus={() => (activeBlock = item.id)}
-						on:blur={() => (activeBlock = null)}
-						placeholder={$_("describe your media")}
-					/>
-					<input
-						class="url"
-						bind:value={blocks[language][index(item)].data.source}
-						on:focus={() => (activeBlock = item.id)}
-						on:blur={() => (activeBlock = null)}
-						placeholder={$_(
-							"put the path or url to the media here"
-						)}
-					/>
+					<h2>
+						{$_("media #{n}", {
+							values: { n: parseInt(item.id.split(":")[1]) + 1 },
+						})}
+					</h2>
+					<dl>
+						<FieldText
+							key="name"
+							bind:value={blocks[language][index(item)].data.alt}
+							on:focus={() => (activeBlock = item.id)}
+							on:blur={() => (activeBlock = null)}
+							placeholder={$_("describe your media")}
+						/>
+						<FieldFilepath
+							relativeTo={`${$settings.projectsfolder}/${work.id}/.portfoliodb`}
+							key="source"
+							bind:value={blocks[language][index(item)].data
+								.source}
+							on:focus={() => (activeBlock = item.id)}
+							on:blur={() => (activeBlock = null)}
+							placeholder={$_(
+								"put the path or url to the media here"
+							)}
+						/>
+					</dl>
 				{/if}
 			</div>
 			<div
@@ -335,7 +352,7 @@ $: updateWork(blocks)
 	- remove space (if any) at top: get minimum `y` and translate all items with `y <- y - minY`
 	- stretch items to fill horizontal space (spacers are here to fill empty space): group by `x`, for groups of length 1, set `w = number of columns on current breakpoint`
  -->
-<style>
+<style lang="scss">
 h2 {
 	text-align: center;
 	color: var(--ortforange);
@@ -351,8 +368,9 @@ h2 {
 .block {
 	border: 0.175em solid var(--gray);
 	border-radius: 0.5em;
-	transition: border-color 0.4s ease-in-out;
 	transition-delay: 100ms;
+	transition: border-color 0.4s ease-in-out;
+	overflow: hidden;
 }
 
 :global(.toolbar) {
@@ -368,46 +386,50 @@ h2 {
 	background-color: var(--ortforange-light);
 }
 
-.block .name {
-	font-size: 1.4em;
-}
-.block .url {
-	color: var(--gray);
+.block:not([data-type="paragraph"]) .content {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	transition: all 0.25s ease, opacity 0.5s ease;
 }
 
-.block .type {
-	color: var(--gray);
-	/* position: absolute;
-	z-index: -1; */
-	margin: 0;
-	padding: 0;
-	font-size: 10em;
-	height: 0.5em;
-	line-height: 0.1;
-	font-variation-settings: "wght" 700;
-	opacity: 0.5;
+.block:not([data-type="paragraph"]) h2 {
+	margin-bottom: 1.5em;
+
+	&::before {
+		content: "— ";
+	}
+	&::after {
+		content: " —";
+	}
+}
+
+.block[data-type="media"]:hover,
+.block[data-type="media"]:focus-within {
+	background-size: cover;
+
+	.content {
+		-webkit-backdrop-filter: blur(10px);
+		backdrop-filter: blur(10px);
+
+		&[data-theme="dark"] {
+			background: rgba(0, 0, 0, 0.75);
+		}
+		&[data-theme="light"] {
+			background: rgba(255, 255, 255, 0.75);
+		}
+	}
+}
+
+.block[data-type="media"]:not(:hover):not(:focus-within) .content {
+	opacity: 0;
 	pointer-events: none;
-}
-
-.block input {
-	text-align: center;
-	transition: opacity 0.2s ease-in-out;
-}
-.block input.url {
-	width: 90%;
-}
-.block input.name {
-	width: 80%;
 }
 
 .block[data-type="media"] {
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
-}
-
-.block[data-type="media"]:not(:hover):not(.active) input {
-	opacity: 0;
 }
 
 .block.active {
