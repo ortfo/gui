@@ -55,7 +55,6 @@ onMount(() => {
 		key={$_("projects folder")}
 		bind:value={$settings.projectsfolder}
 		on:change={() => {
-			console.log("change fired")
 			rebuildDatabase()
 		}}
 	/>
