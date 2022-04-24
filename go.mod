@@ -5,8 +5,8 @@ go 1.18
 require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.3
-	github.com/ortfo/db v0.0.0-20220301190808-8fac2c7dbc30
-	github.com/ortfo/mk v0.0.0-20220406181020-b47878a991fa
+	github.com/ortfo/db v0.0.0-20220414153707-ce25f7f40e22
+	github.com/ortfo/mk v0.0.0-20220409233246-46d5b69d317a
 	github.com/rakyll/statik v0.1.7
 	github.com/webview/webview v0.0.0-20220407190137-85a0d5c36d07
 )
