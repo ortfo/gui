@@ -8,6 +8,7 @@ import (
 )
 
 var ThemeNames = [...]string{"dark", "light"}
+var TabNames = [...]string{"works", "editor", "tags", "sites", "technologies", "settings"}
 
 type Settings struct {
 	Theme              string   `json:"theme"`
@@ -171,6 +172,16 @@ func (settings *Settings) LoadUIState() (state UIState, err error) {
 		// Therefore we have to ighore errors, and discard UI state after an upgrade, if it fails.
 		// It won't result in any significant data loss anyways.
 		return DefaultUIState(settings.PortfolioLanguages), nil
+	}
+
+	if state.ScrollPositions == nil {
+		state.ScrollPositions = map[string]int{}
+	}
+
+	for _, tabName := range TabNames {
+		if _, ok := state.ScrollPositions[tabName]; !ok {
+			state.ScrollPositions[tabName] = 0
+		}
 	}
 
 	return
