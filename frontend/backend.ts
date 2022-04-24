@@ -52,39 +52,47 @@ export const localDatabase = path => `http://localhost:4444/database/${path}`
 export const relativeToDatabase = path => path.split("portfolio-database/")[1]
 
 export const backend = {
+    // ../backend/main.go
     initialize: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__initialize()) as MaybeError
     },
+    // ../backend/main.go
     settingsRead: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         const data = await backend__settingsRead()
         return lowercaseNoSpacesKeys(!!data ? data : {}) as Settings
     },
+    // ../backend/main.go
     settingsWrite: async (settings: Settings) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__settingsWrite(settings)) as MaybeError
     },
+    // ../backend/main.go
     quit: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__quit()) as void
     },
+    // ../backend/main.go
     databaseRead: async () => {
         return lowercaseNoSpacesKeys(
             // @ts-ignore backend__* functions are injected by webview (from the backend)
             (await backend__databaseRead()) || {}
         ) as Database
     },
+    // ../backend/main.go
     getBuildProgress: async () => {
         return lowercaseNoSpacesKeys(
             // @ts-ignore backend__* functions are injected by webview (from the backend)
             (await backend__getBuildProgress()) || {}
         ) as BuildProgress
     },
+    // ../backend/main.go
     rebuildDatabase: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__rebuildDatabase()) as MaybeError
     },
+    // ../backend/main.go
     layout: async (work: ParsedDescription, languages: string[]) => {
         const data = Object.fromEntries(
             Object.entries(
@@ -96,6 +104,7 @@ export const backend = {
         )
         return data as Translated<LayedOutElement[]>
     },
+    // ../backend/main.go
     writeToDisk: async (work: ParsedDescription, workID: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeback(
@@ -103,21 +112,25 @@ export const backend = {
             workID
         )) as MaybeError
     },
+    // ../backend/main.go
     saveUIState: async (state: State) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__saveState(state)) as MaybeError
     },
+    // ../backend/main.go
     readUIState: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         const data = await backend__loadState()
         return lowercaseFirstCharacter(!!data ? data : {}) as State
     },
+    // ../backend/main.go
     listDirectory: async (path: string) => {
         return lowercaseNoSpacesKeys(
             // @ts-ignore backend__* functions are injected by webview (from the backend)
             await backend__listDirectory(path)
         ) as DirEntry[]
     },
+    // ../backend/main.go
     writeSites: async (tags: Tag[]) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeTags(
@@ -130,18 +143,22 @@ export const backend = {
             }))
         )) as MaybeError
     },
+    // ../backend/main.go
     writeTechnologies: async (technologies: Technology[]) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeTechnologies(technologies)) as MaybeError
     },
+    // ../backend/main.go
     writeExternalSites: async (externalSites: ExternalSite[]) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeExternalSites(externalSites)) as MaybeError
     },
+    // ../backend/main.go
     openInBrowser: async (url: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__openInBrowser(url)) as MaybeError
     },
+    // ../backend/main.go:157
     pickFile: async ({
         title,
         startIn,
@@ -160,14 +177,17 @@ export const backend = {
             relativeTo
         )) as string
     },
+    // ../backend/main.go:182
     deleteWorks: async (workIDs: string[]) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__deleteWorks(workIDs)) as MaybeError
     },
+    // ../backend/main.go
     rawDescription: async (workID: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__rawDescription(workID)) as string
     },
+    // ../backend/main.go
     writeRawDescription: async (workID: string, content: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeRawDescription(
