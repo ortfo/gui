@@ -52,6 +52,7 @@ import { create } from "lodash"
 import { getContext } from "svelte"
 import { slide } from "svelte/transition"
 import { cubicOut } from "svelte/easing"
+import { closeWork } from "../tabs/editor.svelte"
 import AboutOrtfo from "../modals/AboutOrtfo.svelte"
 
 const summon = createModalSummoner()
@@ -101,12 +102,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 				class="close-current-work"
 				class:unsaved-changes={$hasUnsavedChanges}
 				on:click={() => {
-					if ($hasUnsavedChanges) {
-						summon(UnsavedChanges)
-					} else {
-						$state.openTab = "works"
-						$state.editingWorkID = ""
-					}
+					closeWork(summon)
 				}}
 			/>
 		{/if}

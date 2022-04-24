@@ -8,6 +8,18 @@ export async function saveWork(
 	volatileWorks.set(get(volatileWorks).filter(workID => workID !== id))
 	rebuildDatabase(reloadWhenDone)
 }
+
+export function closeWork(summoner) {
+	if (get(hasUnsavedChanges)) {
+		summoner(UnsavedChanges)
+	} else {
+		state.set({
+			...get(state),
+			openTab: "works",
+			editingWorkID: "",
+		})
+	}
+}
 </script>
 
 <script lang="ts">
@@ -21,6 +33,7 @@ import {
 	workOnDisk,
 	WorkID,
 	volatileWorks,
+	hasUnsavedChanges,
 } from "../stores"
 import JSONTree from "svelte-json-tree"
 import { i18n } from "../actions"
@@ -39,6 +52,7 @@ import FieldMap from "../components/FieldMap.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
 import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
+import UnsavedChanges from "../modals/UnsavedChanges.svelte"
 import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
 import { objectFilter } from "../utils"
 

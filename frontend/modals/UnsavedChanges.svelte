@@ -1,16 +1,22 @@
+<script lang="ts" context="module">
+export function closeWork() {
+	state.set({
+		...get(state),
+		openTab: "works",
+		editingWorkID: "",
+	})
+}
+</script>
+
 <script lang="ts">
 import { getContext } from "svelte"
 import { _ } from "svelte-i18n"
+import { get } from "svelte/store"
 import { backend } from "../backend"
 import { state, workInEditor, workOnDisk } from "../stores"
 import { saveWork } from "../tabs/editor.svelte"
 
 const { close } = getContext("simple-modal")
-
-function closeWork() {
-	$state.openTab = "works"
-	$state.editingWorkID = ""
-}
 </script>
 
 <h2>{$_("Unsaved changes")}</h2>
