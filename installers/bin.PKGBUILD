@@ -1,7 +1,7 @@
 # Maintainer: ewen-lbh <hey@ewen.works>
 
 pkgname=ortfo-bin
-pkgver=0.1.0.alpha.1
+pkgver=0.1.0.alpha.2
 pkgrel=1
 pkgdesc="The GUI for ortfo, a portfolio manager (pre-built binary)"
 arch=('x86_64')

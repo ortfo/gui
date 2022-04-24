@@ -31,7 +31,7 @@ var w webview.WebView
 
 const (
 	Port    = "4444"
-	Version = "0.1.0-alpha.1"
+	Version = "0.1.0-alpha.2"
 )
 
 func main() {
