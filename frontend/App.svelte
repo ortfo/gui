@@ -20,6 +20,7 @@ import Externalsites from "./tabs/externalsites.svelte"
 import FieldText from "./components/FieldText.svelte"
 import FieldFilepath from "./components/FieldFilepath.svelte"
 import Notifications from "svelte-notifications"
+import { vimkeys } from "./vimkeys"
 import { createModalSummoner } from "./modals"
 
 const summon = createModalSummoner()
@@ -95,6 +96,7 @@ onMount(() => {
 		"$mod+w": () => {
 			closeWork(summon)
 		},
+		...vimkeys(60),
 	})
 
 	window.addEventListener("scroll", () => {
