@@ -170,7 +170,10 @@ export function createNotificationSpawner() {
                 text,
                 type: "success",
             }),
-        remove: context.removeNotification,
-        clear: context.clearNotifications,
+        remove: (...notificationIDs: string[]) =>
+            notificationIDs.forEach(notificationID =>
+                context.removeNotification(notificationID)
+            ),
+        clear: () => context.clearNotifications(),
     }
 }
