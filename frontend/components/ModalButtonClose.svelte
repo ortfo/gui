@@ -11,7 +11,7 @@ export let onClose
 
 <style>
 button {
-	font-size: 2rem;
+	font-size: 2rem !important;
 	height: 1.5rem;
 	line-height: 1.2;
 	margin: 0 0.5em;
