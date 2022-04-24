@@ -30,7 +30,7 @@ export function rebuildDatabase(reloadWhenDone: boolean = true) {
 </script>
 
 <script lang="ts">
-import { tooltip } from "../actions"
+import { helptip, tooltip } from "../actions"
 import {
 	settings,
 	state,
@@ -52,6 +52,7 @@ import { create } from "lodash"
 import { getContext } from "svelte"
 import { slide } from "svelte/transition"
 import { cubicOut } from "svelte/easing"
+import AboutOrtfo from "../modals/AboutOrtfo.svelte"
 
 const summon = createModalSummoner()
 
@@ -62,7 +63,13 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 </script>
 
 <nav>
-	<img src={`assets/${$settings.theme}-logo.svg`} alt="ortfo's logo" />
+	<img
+		src={`assets/${$settings.theme}-logo.svg`}
+		alt="ortfo's logo"
+		role="button"
+		use:helptip={$_("about ortfo")}
+		on:click={() => summon(AboutOrtfo)}
+	/>
 	{#if rebuildErrored}
 		{rebuildError}
 	{:else}

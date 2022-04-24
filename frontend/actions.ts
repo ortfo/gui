@@ -1,6 +1,17 @@
 import { MessageFormater, _ } from "svelte-i18n"
 import { element } from "svelte/internal"
+import { get } from "svelte/store"
 import tippy from "sveltejs-tippy"
+import { settings } from "./stores"
+
+export const helptip = (
+    node: HTMLElement,
+    parameters: string | [string, number] | Object
+) => {
+    if (get(settings)?.showTips) {
+        return tooltip(node, parameters)
+    }
+}
 
 export const tooltip = (
     node: HTMLElement,

@@ -23,4 +23,8 @@ textarea, input {
 	outline: none;
 }
 
+*[role="button"] {
+	cursor: pointer;
+}
+
 /* Fonts */
