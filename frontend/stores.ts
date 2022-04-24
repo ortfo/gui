@@ -39,19 +39,20 @@ export type State = {
     scrollPositions: { [tab in PageName]: number }
 }
 
-export const settings: Writable<Settings> = writable({
+export const DEFAULT_SETTINGS: Settings = {
     theme: "light",
-    portfolioLanguages: ["en"],
+    portfoliolanguages: ["en"],
     surname: "",
     projectsfolder: "",
     language: "en",
     showTips: true,
-})
+}
+export const settings: Writable<Settings> = writable(DEFAULT_SETTINGS)
 
-export const state: Writable<State> = writable({
+export const DEFAULT_UI_STATE: State = {
     openTab: "works",
     editingWorkID: "",
-    lang: "en",
+    lang: null,
     metadataPaneSplitRatio: 0.333,
     scrollPositions: {
         works: 0,
@@ -61,7 +62,8 @@ export const state: Writable<State> = writable({
         settings: 0,
         editor: 0,
     },
-})
+}
+export const state: Writable<State> = writable(DEFAULT_UI_STATE)
 
 export const buildProgress: Writable<BuildProgress> = writable({
     current: {

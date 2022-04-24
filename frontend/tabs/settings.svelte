@@ -1,8 +1,9 @@
 <script lang="ts">
 import { onMount } from "svelte"
 import { backend } from "../backend"
-import { settings, state } from "../stores"
+import { DEFAULT_SETTINGS, DEFAULT_UI_STATE, settings, state } from "../stores"
 import { _ } from "svelte-i18n"
+import { i18n } from "../actions"
 import FieldList from "../components/FieldList.svelte"
 import FieldText from "../components/FieldText.svelte"
 import FieldSelect from "../components/FieldSelect.svelte"
@@ -70,9 +71,32 @@ onMount(() => {
 	<FieldToggle bind:value={$settings.showTips} key={$_("show tips")} />
 </dl>
 
+<section class="reset">
+	<button
+		use:i18n
+		data-variant="inline"
+		on:click={() => {
+			$state = DEFAULT_UI_STATE
+		}}>reset UI state</button
+	>
+	<button
+		use:i18n
+		data-variant="inline"
+		on:click={() => {
+			$settings = DEFAULT_SETTINGS
+		}}>reset settings</button
+	>
+</section>
+
 <style>
 dl {
 	margin: 0 auto;
 	width: clamp(100px, 800px, 100%);
+}
+
+section.reset {
+	margin: auto auto 3em auto;
+	width: clamp(100px, 800px, 100%);
+	text-align: center;
 }
 </style>
