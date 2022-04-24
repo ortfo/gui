@@ -164,4 +164,15 @@ export const backend = {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__deleteWorks(workIDs)) as MaybeError
     },
+    rawDescription: async (workID: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__rawDescription(workID)) as string
+    },
+    writeRawDescription: async (workID: string, content: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__writeRawDescription(
+            workID,
+            content
+        )) as MaybeError
+    },
 }

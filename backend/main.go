@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -190,6 +191,22 @@ func startWebview() {
 			return fmt.Errorf("while loading settings: %w", err)
 		}
 		return settings.DeleteWorks(workIDs)
+	})
+	w.Bind("backend__rawDescription", func(workID string) (string, error) {
+		settings, err := LoadSettings()
+		if err != nil {
+			return "", fmt.Errorf("while loading settings: %w", err)
+		}
+		bytes, err := ioutil.ReadFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"))
+		return string(bytes), err
+	})
+	w.Bind("backend__writeRawDescription", func(workID string, content string) error {
+		settings, err := LoadSettings()
+		if err != nil {
+			return fmt.Errorf("while loading settigns: %w", err)
+		}
+
+		return ioutil.WriteFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"), []byte(content), 0644)
 	})
 	w.Run()
 }

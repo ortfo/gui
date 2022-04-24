@@ -42,6 +42,8 @@ import { get } from "svelte/store"
 import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
 import { objectFilter } from "../utils"
 
+let rawDescription: string = ""
+
 onMount(async () => {
 	tinykeys(window, {
 		"$mod+s": async () => {
@@ -56,6 +58,7 @@ async function initialize() {
 	if ($workOnDisk === null) {
 		throw MissingWork(`Work ${$state.editingWorkID} not found.`)
 	} else {
+		rawDescription = await backend.rawDescription($state.editingWorkID)
 		$workInEditor = toParsedDescription(
 			$workOnDisk,
 			$settings.portfoliolanguages
@@ -272,8 +275,28 @@ let titleH1: HTMLHeadingElement
 		<p>{error}</p>
 	{/if}
 {/await}
+<details class="raw-description">
+	<summary use:i18n>Raw description</summary>
+	<textarea
+		name="raw-description"
+		id="raw-description"
+		rows={rawDescription.split("\n").length}
+		cols="80"
+		bind:value={rawDescription}
+	/>
+	<button
+		use:i18n
+		on:click={async () => {
+			await backend.writeRawDescription(
+				$state.editingWorkID,
+				rawDescription
+			)
+			rebuildDatabase(true)
+		}}>save</button
+	>
+</details>
 
-<style>
+<style lang="scss">
 .title {
 	text-align: left;
 	margin-top: -0.25em;
@@ -347,5 +370,19 @@ aside h2 {
 	background: var(--gray-light);
 	padding: 2em;
 	border-radius: 0.5em;
+}
+
+.raw-description {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	gap: 1em;
+	margin: 0 auto;
+
+	textarea {
+		font-family: var(--mono);
+	}
 }
 </style>
