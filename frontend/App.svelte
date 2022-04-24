@@ -1,10 +1,10 @@
 <script lang="ts">
-import Navbar from "./components/Navbar.svelte"
+import Navbar, { rebuildDatabase } from "./components/Navbar.svelte"
 import { database, settings, state } from "./stores"
 import { backend } from "./backend"
 import Works from "./tabs/works.svelte"
 import Tags from "./tabs/tags.svelte"
-import Editor from "./tabs/editor.svelte"
+import Editor, { closeWork } from "./tabs/editor.svelte"
 import Settings from "./tabs/settings.svelte"
 import { onMount } from "svelte"
 import Modal from "svelte-simple-modal"
@@ -20,6 +20,9 @@ import Externalsites from "./tabs/externalsites.svelte"
 import FieldText from "./components/FieldText.svelte"
 import FieldFilepath from "./components/FieldFilepath.svelte"
 import Notifications from "svelte-notifications"
+import { createModalSummoner } from "./modals"
+
+const summon = createModalSummoner()
 
 function loadLocales() {
 	addMessages("fr", messagesFrench)
@@ -85,6 +88,12 @@ onMount(() => {
 		"$mod+r": () => {
 			backend.saveUIState($state)
 			window.location.reload()
+		},
+		"$mod+b": () => {
+			rebuildDatabase(true)
+		},
+		"$mod+w": () => {
+			closeWork(summon)
 		},
 	})
 
