@@ -219,6 +219,11 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	transition: all 0.25s ease;
 }
 
+:global(button[data-variant="inline"]:hover, button[data-variant="inline"]:focus) {
+	background-color: var(--ortforange);
+	color: black;
+}
+
 :global(button[data-variant="inline"]):active {
 	background-color: var(--black);
 	color: var(--white);
