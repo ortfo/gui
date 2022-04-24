@@ -1,25 +1,40 @@
 <script lang="ts">
 import { createEventDispatcher } from "svelte"
+import { settings } from "../stores"
 
 export let creates: boolean = false
 export let clickable: boolean = creates
+export let selectable: boolean = false
+export let selected: boolean = false
 export let hasIcon: boolean = false
 const emit = createEventDispatcher()
 </script>
 
-<div
+<article
 	class="card"
 	class:creates
 	class:clickable
+	class:selectable
+	class:selected
 	class:has-icon={hasIcon}
 	on:click={() => {
 		if (clickable) emit("click")
 	}}
 >
+	{#if selectable}
+		<input
+			class="select"
+			type="checkbox"
+			name="select"
+			data-theme={$settings.theme}
+			bind:checked={selected}
+			on:click|stopPropagation={() => {}}
+		/>
+	{/if}
 	<slot />
-</div>
+</article>
 
-<style>
+<style lang="scss">
 .card {
 	border: 0.175em solid var(--gray-light);
 	border-radius: 0.7rem;
@@ -28,8 +43,8 @@ const emit = createEventDispatcher()
 	width: 15rem;
 	display: flex;
 	flex-direction: column;
-	overflow: hidden;
 	box-shadow: 0 1rem 3rem transparent;
+	position: relative;
 }
 
 .card.creates {
@@ -68,5 +83,49 @@ const emit = createEventDispatcher()
 	background-color: var(--ortforange-light);
 	color: var(--black);
 	font-size: 5em;
+}
+
+@mixin absolute-center-padding($size) {
+	top: $size;
+	left: $size;
+	bottom: $size;
+	right: $size;
+}
+
+.card .select {
+	position: absolute;
+	top: -1em;
+	right: -1em;
+	width: 2em;
+	height: 2em;
+	z-index: 20;
+	appearance: none;
+	-webkit-appearance: none;
+	border-radius: 100%;
+	background: var(--black);
+	cursor: pointer;
+
+	&::after {
+		content: "";
+		position: absolute;
+		@include absolute-center-padding(0.4em);
+		background: url("/assets/icon-confirm-thick.svg") no-repeat
+			center/contain;
+		z-index: 11;
+	}
+	&[data-theme="light"]::after {
+		filter: invert(100%);
+	}
+}
+
+.card:not(:hover):not(:focus) .select {
+	opacity: 0;
+}
+
+.card.selected {
+	border-color: var(--black);
+	.select::after {
+		opacity: 0.75;
+	}
 }
 </style>

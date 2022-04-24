@@ -1,1 +1,4 @@
 create_external_site_tip: "Cool tip: use <strong><code>mailto:<em>your email address</em></code></strong> as a link,<br>and clicking on it will start a new email to you!"
+selected_works_label: "{count, plural, one {# work} other {# works}} selected: "
+deleting_works_warning: "You are about to delete {ids}. This action cannot be undone."
+delete_works: delete {count, plural, one {this work} other {# works}}

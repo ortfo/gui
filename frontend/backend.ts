@@ -158,4 +158,8 @@ export const backend = {
             relativeTo
         )) as string
     },
+    deleteWorks: async (workIDs: string[]) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__deleteWorks(workIDs)) as MaybeError
+    },
 }

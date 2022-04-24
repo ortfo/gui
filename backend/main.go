@@ -179,6 +179,13 @@ func startWebview() {
 		}
 		return
 	})
+	w.Bind("backend__deleteWorks", func(workIDs []string) error {
+		settings, err := LoadSettings()
+		if err != nil {
+			return fmt.Errorf("while loading settings: %w", err)
+		}
+		return settings.DeleteWorks(workIDs)
+	})
 	w.Run()
 }
 

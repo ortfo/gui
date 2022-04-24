@@ -153,3 +153,19 @@ write some text here: écrivez du texte ici
 "media #{n}": média n°{n}
 Pick a {key} directory: Choisissez un dossier {key}
 Pick a {key} file: Choisissez un fichier {key}
+selected_works_label: "{count, plural, one {# projet sélectionné} other {# projets sélectionnés}} : "
+add a tag: ajouter un tag
+remove a tag: supprimer un tag
+set tags: définir les tags
+Deleting this work will remove the <code>.portfoliodb</code> folder associated with <em>{id}</em>: Supprimer ce projet supprimera le dossier <code>.portfoliodb</code> associé à <em>{id}</em>.
+"The following files will be removed: ": "Les fichiers suivants seront supprimés : "
+Are you sure?: Êtes-vous sûr ?
+deleting_works_warning: Vous êtes sur le point de supprimer {ids}. Cette action ne peut pas être annulée.
+delete_works: supprimer {count, plural, one {ce projet} other {# projets}}
+cancel: annuler
+reset UI state: réinitialiser l'état de l'interface
+reset settings: réinitialiser les réglages
+created by: créé par
+code available on github: code disponible sur github
+licensed under: sous licence
+build date: date de compilation

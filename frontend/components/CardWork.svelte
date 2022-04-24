@@ -27,9 +27,13 @@ function editWork() {
 export let work: WorkOneLang
 export let highlightTitle: readonly Fuse.FuseRangeTuple[] = []
 export let selectedTag: Tag["singular"] | "" = ""
+export let selectable: boolean = true
+export let selected: boolean = false
+
+$: dispatch(selected ? "select" : "deselect", { work })
 </script>
 
-<Card clickable on:click={editWork}>
+<Card clickable {selectable} bind:selected on:click={editWork}>
 	{#await thumbPath()}
 		<div class="thumb loading" />
 	{:then _}
@@ -77,6 +81,7 @@ export let selectedTag: Tag["singular"] | "" = ""
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-color: var(--gray-light);
+	border-radius: 0.7rem 0.7rem 0 0;
 }
 
 .text {

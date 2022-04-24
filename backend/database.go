@@ -88,6 +88,19 @@ func (settings *Settings) RebuildDatabase() error {
 	return nil
 }
 
+func (settings *Settings) DeleteWorks(ids []string) error {
+	var err error
+	for _, id := range ids {
+		LogToBrowser("Deleting %s", JoinPaths(settings.ProjectsFolder, id, ".portfoliodb"))
+		err = os.RemoveAll(JoinPaths(settings.ProjectsFolder, id, ".portfoliodb"))
+		if err != nil {
+			ErrorToBrowser(err.Error())
+			return err
+		}
+	}
+	return nil
+}
+
 func (settings *Settings) ProgressFile() ortfomk.ProgressFile {
 	var progressFile ortfomk.ProgressFile
 	progressFilePath := ConfigurationDirectory("portfolio-database", "progress.json")
