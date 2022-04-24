@@ -300,6 +300,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 main {
 	max-width: 1400px;
 	margin: 0 auto;
+	padding-bottom: 4em;
 	padding-top: calc(3.25rem + 2rem);
 	display: flex;
 	flex-direction: column;
