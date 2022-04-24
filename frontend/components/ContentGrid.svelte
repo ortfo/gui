@@ -4,7 +4,12 @@ import Grid from "svelte-grid"
 import MarkdownEditor from "./MarkdownEditor.svelte"
 import { scale } from "svelte/transition"
 import { tooltip } from "../actions"
-import { localDatabase, localProjects, relativeToDatabase } from "../backend"
+import {
+	backend,
+	localDatabase,
+	localProjects,
+	relativeToDatabase,
+} from "../backend"
 import {
 	ContentBlock,
 	eachLanguage,
@@ -19,12 +24,21 @@ import {
 	ParsedDescription,
 	Translated,
 } from "../ortfo"
-import { settings, state, workOnDisk } from "../stores"
+import {
+	settings,
+	state,
+	workOnDisk,
+	workOnDiskCurrentLanguage,
+} from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
 import { _ } from "svelte-i18n"
+import { i18n } from "../actions"
 import FieldFilepath from "./FieldFilepath.svelte"
 import FieldText from "./FieldText.svelte"
+import { rebuildDatabase } from "./Navbar.svelte"
+import CardContentBlock from "./CardContentBlock.svelte"
+import { deleteWorks } from "../modals/ConfirmDeleteWorks.svelte"
 
 const dispatch = createEventDispatcher()
 
@@ -102,18 +116,6 @@ const addBlock = (type: LayedOutElement["type"]) => e => {
 	})
 }
 
-function thumbnailOfSource(source: string): string {
-	let absolutePath =
-		$workOnDisk.metadata.thumbnails?.[
-			inLanguage(language)($workOnDisk).media.find(
-				m => m.source === source
-			)?.path
-		]?.[700]
-	return absolutePath
-		? localDatabase(relativeToDatabase(absolutePath))
-		: localProjects(`${$workOnDisk.id}/.portfoliodb/${source}`)
-}
-
 const removeBlock = (item: ContentBlock) => e => {
 	blocks = Object.fromEntries(
 		Object.entries(blocks).map(([lang, blocks]) => [
@@ -184,112 +186,14 @@ $: updateWork(blocks)
 			updateWork(blocks)
 		}}
 	>
-		<div
-			in:scale
-			class="block"
-			data-type={item.data.type}
-			class:active={activeBlock === item.id}
-			style={item.data.type === "media"
-				? `background-image: url(${thumbnailOfSource(
-						item.data.source
-				  )})`
-				: ""}
-		>
-			<div class="content" data-theme={$settings.theme}>
-				{#if item.data.type === "paragraph"}
-					<MarkdownEditor
-						noBorder
-						bind:value={blocks[language][index(item)].data.content}
-						active={activeBlock === item.id}
-						on:blur={() => (activeBlock = null)}
-						on:focus={() => (activeBlock = item.id)}
-						placeholder={$_("write some text here")}
-					/>
-				{:else if item.data.type === "link"}
-					<h2>
-						{$_("link #{n}", {
-							values: { n: parseInt(item.id.split(":")[1]) + 1 },
-						})}
-					</h2>
-					<dl>
-						<FieldText
-							key="name"
-							bind:value={blocks[language][index(item)].data.name}
-							on:focus={() => (activeBlock = item.id)}
-							on:blur={() => (activeBlock = null)}
-							placeholder={$_("name your link")}
-						/>
-						<FieldText
-							key="url"
-							bind:value={blocks[language][index(item)].data.url}
-							on:focus={() => (activeBlock = item.id)}
-							on:blur={() => (activeBlock = null)}
-							placeholder={$_("put the url here")}
-						/>
-					</dl>
-				{:else if item.data.type === "media"}
-					<h2>
-						{$_("media #{n}", {
-							values: { n: parseInt(item.id.split(":")[1]) + 1 },
-						})}
-					</h2>
-					<dl>
-						<FieldText
-							key="name"
-							bind:value={blocks[language][index(item)].data.alt}
-							on:focus={() => (activeBlock = item.id)}
-							on:blur={() => (activeBlock = null)}
-							placeholder={$_("describe your media")}
-						/>
-						<FieldFilepath
-							relativeTo={`${$settings.projectsfolder}/${work.id}/.portfoliodb`}
-							key="source"
-							bind:value={blocks[language][index(item)].data
-								.source}
-							on:focus={() => (activeBlock = item.id)}
-							on:blur={() => (activeBlock = null)}
-							placeholder={$_(
-								"put the path or url to the media here"
-							)}
-						/>
-					</dl>
-				{/if}
-			</div>
-			<div
-				class="deleter"
-				use:tooltip={[$_("delete block"), 500]}
-				on:click={removeBlock(item)}
-			>
-				<img
-					src="/assets/icon-delete.svg"
-					class="icon"
-					alt={$_("delete")}
-				/>
-			</div>
-			<div
-				class="dragger"
-				use:tooltip={[$_("move"), 500]}
-				on:mousedown={movePointerDown}
-			>
-				<img
-					src="/assets/icon-move.svg"
-					class="icon"
-					alt={$_("move")}
-				/>
-			</div>
-			<div
-				class="resizer"
-				use:tooltip={[$_("resize"), 500]}
-				on:mousedown={resizePointerDown}
-			>
-				<img
-					src="/assets/icon-resize.svg"
-					class="icon"
-					alt={$_("resize")}
-					draggable="false"
-				/>
-			</div>
-		</div>
+		<CardContentBlock
+			bind:block={blocks[language][index(item)]}
+			bind:activeBlock
+			work={inLanguage(language)($workOnDisk)}
+			on:movePointerDown
+			on:resizePointerDown
+			on:remove={removeBlock(item)}
+		/>
 	</Grid>
 	<div class="create-block">
 		<h2>{$_("Add a new block?")}</h2>
@@ -362,20 +266,6 @@ h2 {
 	font-variation-settings: "wght" 700;
 }
 
-:global(.svlt-grid-item) {
-	display: flex;
-}
-:global(.svlt-grid-item input) {
-	background-color: var(--white);
-}
-.block {
-	border: 0.175em solid var(--gray);
-	border-radius: 0.5em;
-	transition-delay: 100ms;
-	transition: border-color 0.4s ease-in-out;
-	overflow: hidden;
-}
-
 :global(.toolbar) {
 	align-self: flex-start;
 }
@@ -389,115 +279,12 @@ h2 {
 	background-color: var(--ortforange-light);
 }
 
-.block:not([data-type="paragraph"]) .content {
+:global(.svlt-grid-item) {
 	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	transition: all 0.25s ease, opacity 0.5s ease;
 }
-
-.block:not([data-type="paragraph"]) h2 {
-	margin-bottom: 1.5em;
-
-	&::before {
-		content: "— ";
-	}
-	&::after {
-		content: " —";
-	}
+:global(.svlt-grid-item input) {
+	background-color: var(--white);
 }
-
-.block[data-type="media"]:hover,
-.block[data-type="media"]:focus-within {
-	background-size: cover;
-
-	.content {
-		-webkit-backdrop-filter: blur(10px);
-		backdrop-filter: blur(10px);
-
-		&[data-theme="dark"] {
-			background: rgba(0, 0, 0, 0.75);
-		}
-		&[data-theme="light"] {
-			background: rgba(255, 255, 255, 0.75);
-		}
-	}
-}
-
-.block[data-type="media"]:not(:hover):not(:focus-within) .content {
-	opacity: 0;
-	pointer-events: none;
-}
-
-.block[data-type="media"] {
-	background-repeat: no-repeat;
-	background-size: contain;
-	background-position: center;
-}
-
-.block.active {
-	border-color: var(--ortforange);
-}
-
-.block,
-.create-block {
-	position: relative;
-	height: 100%;
-	width: 100%;
-}
-.block .content,
-.create-block {
-	padding: 1em;
-}
-
-.block .content {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-}
-
-.block:not([data-type="paragraph"]) .content {
-	justify-content: center;
-	align-items: center;
-}
-
-.block:not(:hover) .dragger,
-.block:not(:hover) .resizer,
-.block:not(:hover) .deleter {
-	opacity: 0;
-}
-
-.resizer,
-.dragger,
-.deleter {
-	position: absolute;
-	transition: all 0.2s ease;
-}
-.resizer {
-	cursor: nwse-resize;
-	bottom: 1rem;
-	right: 1rem;
-}
-
-.dragger {
-	cursor: move;
-	bottom: 1rem;
-	left: 1rem;
-}
-
-.deleter {
-	cursor: pointer;
-	top: 1rem;
-	right: 1rem;
-}
-
-.dragger img,
-.resizer img,
-.deleter img {
-	height: 2rem;
-	width: 2rem;
-}
-
 .create-block .types {
 	display: flex;
 	justify-content: space-between;
