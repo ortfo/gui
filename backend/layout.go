@@ -30,14 +30,14 @@ type LayedOutElement struct {
 	URL                string
 }
 
-func Layout(description ortfodb.ParsedDescription) (layouts map[string][]LayedOutElement, err error) {
+func Layout(description ortfodb.ParsedDescription, languages []string) (layouts map[string][]LayedOutElement, err error) {
 	// Create a stubbed-out WorkOneLang from a ParsedDescription,
 	// because LayedOut() needs a WorkOneLang
 	// (for good reasons, we need those when actually building the site from the layout,
 	// and I won't make two separate .LayedOut(), it's too much of a hassle
 	// (looked into it, not feasible without duplicating code))
 	layouts = make(map[string][]LayedOutElement)
-	for _, language := range LanguagesIn(description) {
+	for _, language := range languages {
 		layout, err := StubOutWorkOneLang(description, language).LayedOut()
 		if err != nil {
 			return layouts, fmt.Errorf("while laying out work in %s: %w", language, err)

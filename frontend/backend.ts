@@ -85,11 +85,13 @@ export const backend = {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__rebuildDatabase()) as MaybeError
     },
-    layout: async (work: ParsedDescription) => {
+    layout: async (work: ParsedDescription, languages: string[]) => {
         const data = Object.fromEntries(
             Object.entries(
                 // @ts-ignore backend__* functions are injected by webview (from the backend)
-                (await backend__layout(work)) as Translated<unknown[]>
+                (await backend__layout(work, languages)) as Translated<
+                    unknown[]
+                >
             ).map(([lang, val]) => [lang, val.map(lowercaseNoSpacesKeys)])
         )
         return data as Translated<LayedOutElement[]>

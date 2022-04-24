@@ -75,10 +75,10 @@ func DefaultSettings() Settings {
 	return Settings{Theme: "light", Language: "en", PortfolioLanguages: []string{"en"}}
 }
 
-func DefaultUIState() UIState {
+func DefaultUIState(portfolioLanguages []string) UIState {
 	return UIState{
 		OpenTab:                "works",
-		Lang:                   "en",
+		Lang:                   portfolioLanguages[0],
 		MetadataPaneSplitRatio: 0.333333333,
 		ScrollPositions: map[string]int{
 			"works":        0,
@@ -145,11 +145,11 @@ func SaveUIState(settings UIState) error {
 	return nil
 }
 
-func LoadUIState() (state UIState, err error) {
+func (settings *Settings) LoadUIState() (state UIState, err error) {
 	// check if file exists
 	if _, err = os.Stat(ConfigurationDirectory("ui_state.json")); os.IsNotExist(err) {
 		// file does not exist, use default settings
-		state = DefaultUIState()
+		state = DefaultUIState(settings.PortfolioLanguages)
 		err = SaveUIState(state)
 		if err != nil {
 			return state, fmt.Errorf("UI state file not found, but couldn't create one with default values: %w", err)
@@ -170,7 +170,7 @@ func LoadUIState() (state UIState, err error) {
 		// it isn't the user's responsability to fix it (as the change does not constitute a breaking change).
 		// Therefore we have to ighore errors, and discard UI state after an upgrade, if it fails.
 		// It won't result in any significant data loss anyways.
-		return DefaultUIState(), nil
+		return DefaultUIState(settings.PortfolioLanguages), nil
 	}
 
 	return

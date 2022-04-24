@@ -40,7 +40,10 @@ let error: Error | null = null
 
 onMount(async () => {
 	try {
-		;[blocks, rowCapacity] = await toBlocks(work, ["fr", "en"])
+		;[blocks, rowCapacity] = await toBlocks(
+			work,
+			$settings.portfoliolanguages
+		)
 		cols = [[400, rowCapacity]]
 		// Need timeout because of the scale transition
 		setTimeout(() => {

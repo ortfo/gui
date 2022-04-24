@@ -18,10 +18,10 @@ export function toParsedDescription(
     if (!work) {
         return null
     }
-    const { media, metadata, ...rest } = replaceLanguageDefault(work, [
-        "fr",
-        "en",
-    ])
+    const { media, metadata, ...rest } = replaceLanguageDefault(
+        work,
+        portfolioLanguages
+    )
     const [paragraphs, abbreviations] = collectAbbreviations(
         work.paragraphs,
         portfolioLanguages

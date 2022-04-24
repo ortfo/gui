@@ -39,6 +39,8 @@ import FieldMap from "../components/FieldMap.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
 import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
+import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
+import { objectFilter } from "../utils"
 
 onMount(async () => {
 	tinykeys(window, {
@@ -82,11 +84,25 @@ let titleH1: HTMLHeadingElement
 {#await initialize() then}
 	<Split initialPrimarySize="{100 - $state.metadataPaneSplitRatio * 100}%">
 		<section class="layout" slot="primary">
-			<SwitchButton
-				bind:value={$state.lang}
-				options={{ en: "english", fr: "français" }}
-				showCodes
-			/>
+			{#if $settings.portfoliolanguages.length > 1}
+				<SwitchButton
+					bind:value={$state.lang}
+					options={Object.fromEntries(
+						Object.entries(LANGUAGES_ALL)
+							.filter(([code, l]) =>
+								$settings.portfoliolanguages.includes(code)
+							)
+							.map(([code, l]) => [
+								code,
+								`${$_(l.language)}` +
+									(l.country === "All countries"
+										? ""
+										: ` (${l.country})`),
+							])
+					)}
+					showCodes
+				/>
+			{/if}
 			<p class="url">/{$workOnDisk?.id}</p>
 
 			<div class="title" id="title">

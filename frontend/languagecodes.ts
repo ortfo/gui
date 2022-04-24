@@ -655,3 +655,16 @@ export const LANGUAGES: {
     "nd-ZW": { country: "Zimbabwe", language: "North Ndebele" },
     "sn-ZW": { country: "Zimbabwe", language: "Shona" },
 })
+
+/*
+ * Includes country-less languages
+ */
+export const LANGUAGES_ALL = {
+    ...LANGUAGES,
+    ...Object.fromEntries(
+        Object.entries(LANGUAGES).map(([code, l]) => [
+            code.split("-")[0],
+            { ...l, country: "All countries" },
+        ])
+    ),
+}

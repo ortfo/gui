@@ -99,7 +99,7 @@ export async function toBlocks(
         ? layoutWidth(description.metadata.layout)
         : 1
     let layouts: Translated<LayedOutElement[]>
-    layouts = await backend.layout(description)
+    layouts = await backend.layout(description, languages)
     layouts = replaceLanguageDefaultInObject(layouts, languages)
     return [
         eachLanguage<LayedOutElement, ContentBlock>(layouts).map(

@@ -75,8 +75,8 @@ func startWebview() {
 		settings, _ := LoadSettings()
 		return settings.RebuildDatabase()
 	})
-	w.Bind("backend__layout", func(description ortfodb.ParsedDescription) (map[string][]LayedOutElement, error) {
-		layedout, err := Layout(description)
+	w.Bind("backend__layout", func(description ortfodb.ParsedDescription, languages []string) (map[string][]LayedOutElement, error) {
+		layedout, err := Layout(description, languages)
 		if err != nil {
 			return nil, fmt.Errorf("while laying out: %w", err)
 		}
@@ -124,7 +124,12 @@ func startWebview() {
 		return nil
 	})
 	w.Bind("backend__loadState", func() (UIState, error) {
-		return LoadUIState()
+		settings, err := LoadSettings()
+		if err != nil {
+			return UIState{}, fmt.Errorf("couldn't load settings: %w", err)
+		}
+
+		return settings.LoadUIState()
 	})
 	w.Bind("backend__getBuildProgress", func() ortfomk.ProgressFile {
 		settings, _ := LoadSettings()
