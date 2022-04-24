@@ -38,12 +38,11 @@ dd {
 	flex-direction: row;
 	align-items: center;
 }
-dt {
-	font-variation-settings: "wght" 700;
+dt * {
+	font-variation-settings: "wght" 800;
 }
 dt .help {
 	color: var(--gray);
-	font-variation-settings: "wght" 700;
 	margin-left: 1ch;
 }
 dt .help::before {
@@ -57,7 +56,7 @@ dt.colon::after {
 }
 .part-of-object > dt::before {
 	content: "└";
-	font-variation-settings: "wght" 700;
+	font-variation-settings: "wght" 800;
 	font-size: 2em;
 	color: var(--gray);
 	margin-right: 0.25em;
