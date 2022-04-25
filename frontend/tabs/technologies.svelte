@@ -95,6 +95,7 @@ function cancelEditing(tech: Technology) {
 							type="text"
 							bind:value={editingTech.displayname}
 						/>
+						{$_("by")}
 						<input type="text" bind:value={editingTech.author} />
 					{:else}
 						<HighlightText
