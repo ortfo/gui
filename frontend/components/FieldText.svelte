@@ -10,6 +10,7 @@ export let key: string
 export let help: string = ""
 export let rich: boolean = false
 export let required: boolean = false
+export let oneline: boolean = null
 export let type: string = "text"
 export let placeholder: string = ""
 export let partOfObject: boolean = false
@@ -20,7 +21,12 @@ let inputElement: HTMLElement
 $: inputElement?.setAttribute("type", type)
 </script>
 
-<MetadataField {key} {help} {partOfObject} oneline={!rich}>
+<MetadataField
+	{key}
+	{help}
+	{partOfObject}
+	oneline={oneline !== null ? oneline : !rich}
+>
 	{#if rich}
 		<MarkdownEditor
 			id="metadata-field-{noSpaces(key)}"

@@ -51,6 +51,7 @@ async function addTech() {
 		/>
 		<FieldText
 			rich
+			oneline
 			bind:value={newTech.description}
 			key={$_("description")}
 			placeholder={$_("describe your technology")}
