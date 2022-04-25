@@ -17,7 +17,8 @@ Categorize your works with <em>tags</em>: Catégorisez vos projets avec des <em>
 Change your projects folder: Changez votre dossier de projets
 Click to only show works tagged {tag}: Cliquez pour ne montrer que les projets avec le tag {tag}
 Code: Code
-Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.: >-
+? Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.
+: >-
     Faites glisser les blocs pour réorganiser la page. Double-cliquez sur un
     bloc pour le modifier.
 External sites: Sites externes
@@ -34,7 +35,8 @@ Let’s get this portfolio started.: Démarrons votre portfolio.
 Link: Lien
 List of definitions: Liste de définitions
 Loading…: Chargement…
-'Make people aware of your online presence elsewhere on the web: social media, YouTube channel, et cætera.': >-
+? "Make people aware of your online presence elsewhere on the web: social media, YouTube channel, et cætera."
+: >-
     Informez de votre présence autre part sur le web: réseaux sociaux, YouTube,
     et cætera.
 Metadata: Métadonnées
@@ -43,17 +45,20 @@ No description: Aucune description
 No results: Aucun résultat
 No results.: Aucun résultat.
 Numbered list: Liste numérotée
-Pick a work to write a portfolio article about it. We’ll take care of the rest.: >-
+Pick a work to write a portfolio article about it. We’ll take care of the rest.:
+    >-
     Choisissez un projet pour en écrire un article sur votre portfolio. Nous
     nous occupons du reste.
 Remove this footnote: Supprimer cette note de bas de page
 Remove this one: Supprimer ceci
 Search: Rechercher
 Settings: Réglages
-'Specify what you use in your projects: languages, materials, textures, samples, frameworks, you name it.': >-
+? "Specify what you use in your projects: languages, materials, textures, samples, frameworks, you name it."
+: >-
     Spécifiez ce que vous utilisez dans vos projets: langages, matériaux,
     textures, samples, frameworks, et autres.
-This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?: >-
+? This work has unsaved changes, which will be lost if you close the tab. Are you sure about this?
+: >-
     Ce projet a des modifications non enregistrées qui seront perdues si vous
     fermez cet onglet. Êtes-vous sûr de vouloir continuer ?
 Try changing your projects folder in: Essayez de changer votre dossier de projets dans
@@ -71,7 +76,7 @@ chosen image for {key}: image choisie pour {key}
 close: fermer
 close without saving: fermer sans enregistrer
 code: code
-code block: ''
+code block: ""
 colors: couleurs
 content: contenu
 create_external_site_tip: >-
@@ -79,8 +84,8 @@ create_external_site_tip: >-
     email</em></code></strong> comme lien,<br>et en cliquant dessus, vous
     pourrez commencer un nouveau courriel à vous !
 dark: sombre
-definition: ''
-definition list: ''
+definition: ""
+definition list: ""
 delete: supprimer
 delete block: supprimer le bloc
 describe your media: décrivez votre média
