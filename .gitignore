@@ -53,9 +53,10 @@ dist
 # embedded compiled frontend (js, css, index.html and images)
 statik/statik.go 
 # compiled binaries
-ortfogui
-ortfogui-linux
-ortfogui-macos
-ortfogui-windows
+ortfo
+ortfo-linux
+ortfo-macos
+ortfo-windows
+!ortfo/
 
 fixtures/
