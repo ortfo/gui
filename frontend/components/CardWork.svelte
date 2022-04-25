@@ -81,7 +81,7 @@ $: dispatch(selected ? "select" : "deselect", { work })
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-color: var(--gray-light);
-	border-radius: 0.7rem 0.7rem 0 0;
+	border-radius: 0.5rem 0.5rem 0 0;
 }
 
 .text {
