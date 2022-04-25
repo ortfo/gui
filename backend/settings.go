@@ -17,6 +17,7 @@ type Settings struct {
 	ShowTips           bool     `json:"showTips"`
 	Language           string   `json:"language"`
 	PortfolioLanguages []string `json:"portfolioLanguages"`
+	PowerUser          bool     `json:"powerUser"`
 }
 
 type UIState struct {

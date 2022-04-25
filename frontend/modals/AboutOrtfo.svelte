@@ -1,7 +1,11 @@
 <script lang="ts">
 import { _ } from "svelte-i18n"
 import { i18n } from "../actions"
+import { backend } from "../backend"
 import { settings } from "../stores"
+import { createNotificationSpawner } from "../utils"
+
+const notifications = createNotificationSpawner()
 </script>
 
 <h1>
@@ -30,7 +34,14 @@ import { settings } from "../stores"
 
 <p class="commit">
 	<code class="commit-hash"
-		>built from {__commitHash__} at {__buildDate__}</code
+		>built from <code
+			on:click={async () => {
+				$settings.powerUser = true
+				await backend.settingsWrite($settings)
+				notifications.add($_(`you are now a power user!`))
+			}}>{__commitHash__}</code
+		>
+		at {__buildDate__}</code
 	>
 </p>
 

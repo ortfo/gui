@@ -11,6 +11,9 @@ import FieldToggle from "../components/FieldToggle.svelte"
 import { LANGUAGES } from "../languagecodes"
 import FieldFilepath from "../components/FieldFilepath.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
+import { createNotificationSpawner } from "../utils"
+
+const notifications = createNotificationSpawner()
 
 const languageCodes = Object.fromEntries([
 	...Object.entries(LANGUAGES).map(([code, l]) => [
@@ -85,6 +88,17 @@ onMount(() => {
 			$settings = DEFAULT_SETTINGS
 		}}>reset settings</button
 	>
+	{#if $settings.powerUser}
+		<button
+			use:i18n
+			data-variant="inline"
+			on:click={async () => {
+				$settings.powerUser = false
+				await backend.settingsWrite($settings)
+				notifications.add($_("you are no longer a power user."))
+			}}>disable power user mode</button
+		>
+	{/if}
 </section>
 
 <style>
