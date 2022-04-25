@@ -17,7 +17,7 @@ function thumbPath() {
 	const chosenMedia = Object.keys(work.metadata.thumbnails)?.[0] // TODO allow user to set this (requires changes in ortfo/mk too)
 	const sizes = Object.keys(
 		work.metadata.thumbnails?.[chosenMedia] || {}
-	).map(parseInt)
+	).map(Number)
 	const thumbnailPath =
 		work.metadata.thumbnails?.[chosenMedia]?.[closestTo(400, sizes)]
 	return thumbnailPath ? localDatabase(thumbnailPath) : ""
