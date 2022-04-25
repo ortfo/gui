@@ -200,7 +200,7 @@ button.edit {
 	margin-right: 2em;
 }
 button.edit .icon {
-	height: 1.9em;
+	height: 1.5em;
 	transform: translateY(1px);
 }
 button.delete {
@@ -209,6 +209,9 @@ button.delete {
 }
 .description.empty {
 	color: var(--gray);
+}
+input {
+	width: 10ch;
 }
 button.create {
 	font-size: 3em;

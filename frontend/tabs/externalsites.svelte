@@ -230,7 +230,7 @@ button.edit {
 	margin-right: 2em;
 }
 button.edit .icon {
-	height: 1.9em;
+	height: 1.5em;
 	transform: translateY(1px);
 }
 button.delete {
@@ -257,6 +257,12 @@ button.create {
 	transform: scale(2);
 	width: 100%;
 	height: 100%;
+}
+input {
+	width: 10ch;
+}
+.url input {
+	width: 100%;
 }
 .site:not(:focus-within):not(:hover) button {
 	opacity: 0;
