@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/cloudfoundry-attic/jibber_jabber"
 )
 
 var ThemeNames = [...]string{"dark", "light"}
@@ -74,7 +76,21 @@ func SaveSettings(settings Settings) error {
 }
 
 func DefaultSettings() Settings {
-	return Settings{Theme: "light", Language: "en", PortfolioLanguages: []string{"en"}}
+	language, err := jibber_jabber.DetectLanguage()
+	if err != nil {
+		ErrorToBrowser("couldn't detect language: %v", err)
+	}
+
+	return Settings{
+		Theme: "light",
+		Language: func() string {
+			if language == "fr" {
+				return "fr"
+			}
+			return "en"
+		}(),
+		PortfolioLanguages: []string{"en"},
+	}
 }
 
 func DefaultUIState(portfolioLanguages []string) UIState {

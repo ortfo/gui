@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cloudfoundry-attic/jibber_jabber"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
 	ortfodb "github.com/ortfo/db"
@@ -55,6 +56,9 @@ func startWebview() {
 	}())
 	w.Bind("backend__fileserverPort", func() (int, error) {
 		return Port, nil
+	})
+	w.Bind("backend__getUserLanguage", func() (string, error) {
+		return jibber_jabber.DetectLanguage()
 	})
 	w.Bind("backend__initialize", Initialize)
 	w.Bind("backend__settingsRead", func() (Settings, error) {

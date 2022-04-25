@@ -207,4 +207,8 @@ export const backend = {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__clearThumbnails()) as MaybeError
     },
+    getUserLanguage: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__getUserLanguage()) as string
+    }
 }
