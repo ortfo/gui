@@ -208,6 +208,9 @@ func startWebview() {
 
 		return ioutil.WriteFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"), []byte(content), 0644)
 	})
+	w.Bind("backend__clearThumbnails", func() error {
+		return os.RemoveAll(ConfigurationDirectory("portfolio-database", "media"))
+	})
 	w.Run()
 }
 

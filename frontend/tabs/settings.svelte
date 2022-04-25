@@ -88,6 +88,14 @@ onMount(() => {
 			$settings = DEFAULT_SETTINGS
 		}}>reset settings</button
 	>
+	<button
+		use:i18n
+		data-variant="inline"
+		on:click={async () => {
+			await backend.clearThumbnails()
+			rebuildDatabase(false)
+		}}>re-create thumbnails</button
+	>
 	{#if $settings.powerUser}
 		<button
 			use:i18n

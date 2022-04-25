@@ -195,4 +195,9 @@ export const backend = {
             content
         )) as MaybeError
     },
+    // ../backend/main.go
+    clearThumbnails: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__clearThumbnails()) as MaybeError
+    },
 }
