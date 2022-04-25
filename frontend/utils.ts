@@ -145,33 +145,44 @@ export function closestTo(target: number, values: number[]): number {
 
 export function createNotificationSpawner() {
     const context = getNotificationsContext()
+    if (context === undefined)
+        return {
+            add: (text: string) => {},
+            error: (text: string) => {},
+            warn: (text: string) => {},
+            success: (text: string) => {},
+            remove: (...notificationIDs: string[]) => {},
+            clear: () => {},
+        }
     const position = "bottom-center"
-    const removeAfter = 4000
+    const timeToRead = (text: string) =>
+        text.split(" ").length *
+        (1 / (200 / 60)) /* average reading speed: 200 words·min⁻¹ */
 
     return {
         add: (text: string) =>
             context.addNotification({
-                removeAfter,
-                position: "top-center",
+                removeAfter: timeToRead(text) + 3000,
+                position,
                 text,
             }),
         error: (text: string) =>
             context.addNotification({
-                removeAfter: removeAfter * 1.25,
+                removeAfter: timeToRead(text) + 3000,
                 position,
                 text,
                 type: "danger",
             }),
         warn: (text: string) =>
             context.addNotification({
-                removeAfter,
+                removeAfter: timeToRead(text) + 3000,
                 position,
                 text,
                 type: "warning",
             }),
         success: (text: string) =>
             context.addNotification({
-                removeAfter,
+                removeAfter: timeToRead(text) + 3000,
                 position,
                 text,
                 type: "success",
