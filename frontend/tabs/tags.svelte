@@ -28,6 +28,9 @@ async function removeTag(tag: Tag) {
 }
 
 function editTag(tag: Tag) {
+	if ([tag.plural, tag.singular].includes("")) {
+		return
+	}
 	tagsWithEditingStatus = tagsWithEditingStatus.map(t => ({
 		...t,
 		editing: t.singular === tag.singular,

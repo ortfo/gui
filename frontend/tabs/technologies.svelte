@@ -27,6 +27,9 @@ async function removeTech(tech: Technology) {
 }
 
 function editTech(tech: Technology) {
+	if ([tech.urlname, tech.displayname].includes("")) {
+		return
+	}
 	techsWithEditingStatus = techsWithEditingStatus.map(t => ({
 		...t,
 		editing: t.urlname === tech.urlname,
