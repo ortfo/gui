@@ -28,9 +28,9 @@ type PickFileConstraint struct {
 }
 
 var w webview.WebView
+var Port = randomAvailablePort()
 
 const (
-	Port    = "4444"
 	Version = "0.1.0-alpha.2"
 )
 
@@ -50,9 +50,12 @@ func startWebview() {
 		if os.Getenv("DEV") == "yes" {
 			return "3000"
 		} else {
-			return Port + "/index.html"
+			return fmt.Sprintf("%d/index.html", Port)
 		}
 	}())
+	w.Bind("backend__fileserverPort", func() (int, error) {
+		return Port, nil
+	})
 	w.Bind("backend__initialize", Initialize)
 	w.Bind("backend__settingsRead", func() (Settings, error) {
 		return LoadSettings()

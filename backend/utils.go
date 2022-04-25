@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -73,4 +75,16 @@ func ChangeKeys[K string, V any](m map[K]V, replaceMap map[K]K) map[K]V {
 func LogExpression[T any](expression T) T {
 	fmt.Printf("[[[LOG EXPR]]] %#v", expression)
 	return expression
+}
+
+func randomAvailablePort() int {
+	for {
+		port := rand.Intn(65535)
+		ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+		if err != nil {
+			continue
+		}
+		ln.Close()
+		return port
+	}
 }

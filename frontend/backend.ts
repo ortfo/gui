@@ -47,13 +47,20 @@ export type PickFileConstraint = {
     accept: "directory" | "*" | `.${string}`
 }
 
-export const localProjects = path => `http://localhost:4444/projects/${path}`
-export const localDatabase = path => `http://localhost:4444/database/${path}`
+let FILESERVER_PORT
+
+export const localProjects = path =>
+    `http://localhost:${FILESERVER_PORT}/projects/${path}`
+export const localDatabase = path =>
+    `http://localhost:${FILESERVER_PORT}/database/${path}`
 export const relativeToDatabase = path => path.split("portfolio-database/")[1]
 
 export const backend = {
     // ../backend/main.go
     initialize: async () => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        FILESERVER_PORT = await backend__fileserverPort()
+        console.info(`Received fileserver port ${FILESERVER_PORT}`)
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__initialize()) as MaybeError
     },

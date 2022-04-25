@@ -34,13 +34,14 @@ func (m mediaRoot) Open(name string) (http.File, error) {
 }
 
 func startFilesystemServer(directory string) error {
+	fmt.Printf("Starting filesystem server on port %d\n", Port)
 	expandedPath, _ := homedir.Expand(directory)
 	statikFS, err := statikfs.New()
 	if err != nil {
 		return fmt.Errorf("while starting resources static server part: %w", err)
 	}
 
-	err = http.ListenAndServe(":"+Port, http.FileServer(mediaRoot{
+	err = http.ListenAndServe(fmt.Sprintf(":%d", Port), http.FileServer(mediaRoot{
 		projectsRoot:     expandedPath,
 		databaseRoot:     ConfigurationDirectory("portfolio-database"),
 		staticFileserver: statikFS,
