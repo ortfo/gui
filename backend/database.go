@@ -62,6 +62,7 @@ func (settings *Settings) LoadDatabase() (db ortfomk.Database, err error) {
 }
 
 func (settings *Settings) RebuildDatabase() error {
+	os.Chdir(ConfigurationDirectory("portfolio-database"))
 	LogToBrowser("Rebuilding database...")
 	projectsFolder, err := homedir.Expand(settings.ProjectsFolder)
 	if err != nil {
