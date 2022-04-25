@@ -122,7 +122,12 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 			</a>
 		{/each}
 	{/if}
-	<div class="spacer" />
+	<div class="spacer">
+		{#if $rebuildingDatabase && $settings.powerUser}
+			{$buildProgress.current.step}: {$buildProgress.current.file}
+			{$buildProgress.current.resolution || $buildProgress.current.output}
+		{/if}
+	</div>
 	<button on:click={_ => rebuildDatabase()}>
 		{#if $rebuildingDatabase}
 			{$_("rebuilding…")}
@@ -248,6 +253,13 @@ nav a.current {
 }
 .spacer {
 	margin-left: auto;
+	font-family: var(--mono);
+	opacity: 0.5;
+	font-size: 0.75em;
+}
+
+nav:not(:hover):not(:focus-within) .spacer {
+	opacity: 0;
 }
 
 .quit {
