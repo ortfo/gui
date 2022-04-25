@@ -24,6 +24,9 @@ export function startPolling(reloadWhenDone: boolean = true) {
 }
 
 export function rebuildDatabase(reloadWhenDone: boolean = true) {
+	if (get(rebuildingDatabase)) {
+		return
+	}
 	startPolling(reloadWhenDone)
 	backend.rebuildDatabase()
 }
@@ -54,6 +57,7 @@ import { slide } from "svelte/transition"
 import { cubicOut } from "svelte/easing"
 import { closeWork } from "../tabs/editor.svelte"
 import AboutOrtfo from "../modals/AboutOrtfo.svelte"
+import { get } from "svelte/store"
 
 const summon = createModalSummoner()
 
