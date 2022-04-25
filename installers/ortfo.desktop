@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=ortfo
+Comment=The graphical user interface to ortfo, a portfolio manager
+Exec=ortfo
+Icon=ortfo
+Terminal=false
+Type=Application
