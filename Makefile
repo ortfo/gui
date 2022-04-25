@@ -16,10 +16,13 @@ format:
 setup:
 # Install frontend dependencies
 	pnpm install || yarn install || npm install
+# Install the statik tool
+	go install github.com/rakyll/statik
+# Prepare statik content
+	mkdir -p dist/
+	statik -f -src=dist/
 # Install backend dependencies
 	go mod tidy
-# Install the statik tool
-	go mod install github.com/rakyll/statik
 
 test:
 	go test
