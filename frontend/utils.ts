@@ -137,6 +137,12 @@ export function sortObject<T>(
             }, {})
 }
 
+export function closestTo(target: number, values: number[]): number {
+    return values.reduce((prev, curr) =>
+        Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev
+    )
+}
+
 export function createNotificationSpawner() {
     const context = getNotificationsContext()
     const position = "bottom-center"

@@ -9,12 +9,17 @@ import HighlightText from "./HighlightText.svelte"
 import { _ } from "svelte-i18n"
 import { tooltip } from "../actions"
 import { createEventDispatcher } from "svelte"
+import { closestTo } from "../utils"
 
 const dispatch = createEventDispatcher()
 
 function thumbPath() {
 	const chosenMedia = Object.keys(work.metadata.thumbnails)?.[0] // TODO allow user to set this (requires changes in ortfo/mk too)
-	const thumbnailPath = work.metadata.thumbnails?.[chosenMedia]?.[400]
+	const sizes = Object.keys(
+		work.metadata.thumbnails?.[chosenMedia] || {}
+	).map(parseInt)
+	const thumbnailPath =
+		work.metadata.thumbnails?.[chosenMedia]?.[closestTo(400, sizes)]
 	return thumbnailPath ? localDatabase(thumbnailPath) : ""
 }
 
