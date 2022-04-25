@@ -73,7 +73,7 @@ onMount(() => {
 	<FieldToggle bind:value={$settings.showTips} key={$_("show tips")} />
 </dl>
 
-<section class="reset">
+<section class="actions">
 	<button
 		use:i18n
 		data-variant="inline"
@@ -109,15 +109,19 @@ onMount(() => {
 	{/if}
 </section>
 
-<style>
+<style lang="scss">
 dl {
 	margin: 0 auto;
 	width: clamp(100px, 800px, 100%);
 }
 
-section.reset {
+section.actions {
 	margin: auto auto 3em auto;
 	width: clamp(100px, 800px, 100%);
 	text-align: center;
+
+	button:not(:first-child) {
+		margin-left: 1em;
+	}
 }
 </style>
