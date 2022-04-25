@@ -8,23 +8,12 @@ import FieldList from "../components/FieldList.svelte"
 import FieldText from "../components/FieldText.svelte"
 import FieldSelect from "../components/FieldSelect.svelte"
 import FieldToggle from "../components/FieldToggle.svelte"
-import { LANGUAGES } from "../languagecodes"
+import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
 import FieldFilepath from "../components/FieldFilepath.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
-import { createNotificationSpawner } from "../utils"
+import { createNotificationSpawner, objectMapValues } from "../utils"
 
 const notifications = createNotificationSpawner()
-
-const languageCodes = Object.fromEntries([
-	...Object.entries(LANGUAGES).map(([code, l]) => [
-		code.replace(/-\w+$/, ""),
-		`${l.language} (${$_("All countries")})`,
-	]),
-	...Object.entries(LANGUAGES).map(([code, l]) => [
-		code,
-		`${l.language} (${l.country})`,
-	]),
-])
 
 settings.subscribe(async settings => {
 	await backend.settingsWrite(settings)
@@ -66,7 +55,10 @@ onMount(() => {
 		bind:value={$settings.portfoliolanguages}
 		key={$_("portfolio languages")}
 		help={$_("languages to translate your portfolio into")}
-		suggestions={languageCodes}
+		suggestions={objectMapValues(
+			LANGUAGES_ALL,
+			l => `${l.language} (${$_(l.country)})`
+		)}
 		disallowed={["default"]}
 	/>
 

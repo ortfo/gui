@@ -1,4 +1,10 @@
 import { sortObject } from "./utils"
+import { _ } from "svelte-i18n"
+import { get } from "svelte/store"
+
+export function formatLanguage(lang: { country: string; language: string }) {
+    return `${lang.language} (${get(_)(lang.country)})`
+}
 
 function compareLanguages(
     a: { country: string; language: string },

@@ -121,7 +121,7 @@ numbered list: liste numérotée
 page background: fond de page
 paragraph: paragraphe
 paragraph icon: icône de paragraphe
-pick: choisir
+choose: choisir
 pick from image: depuis une image
 plural form: au pluriel
 portfolio languages: langues du portfolio
@@ -179,3 +179,16 @@ you are now a power user!: vous êtes maintenant un utilisateur avancé !
 you are no longer a power user.: vous n'êtes plus un utilisateur avancé. 
 disable power user mode: désactiver le mode utilisateur avancé
 re-create thumbnails: re-créer les miniatures
+click to browse: cliquez pour parcourir
+We’ll set you up so that you can start building your portfolio. Don’t worry, it’ll be quick.: Quelques petites questions avant de pouvoir commencer à écrire votre portfolio. N’ayez pas peur, cela ne sera pas long.
+Hi there!: Bonjour !
+first, the most important question: premièrement, une question cruciale
+then, where are your projects?: ensuite, où sont vos projets?
+this folder should contain a bunch of folders, one for each project: ce dossier devrait contenir un certain nombre de dossiers, un pour chaque projet
+Let’s get started: C’est parti
+light theme: thème clair
+dark theme: thème sombre
+and finally, in what language(s) do you want to write your portfolio?: enfin, dans quel(s) langage(s) voulez-vous écrire votre portfolio ?
+All countries: Tous les pays
+languages you want to write your portfolio in: langages pour lesquels vous voulez écrire votre portfolio 
+All done: Terminé

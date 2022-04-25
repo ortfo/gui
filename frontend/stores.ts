@@ -126,6 +126,11 @@ export const layoutChanged: Readable<boolean> = derived(
         unsavedChanges.some(change => change.path.includes("layout"))
 )
 
+export const onboardingNeeded: Readable<boolean> = derived(
+    [settings],
+    ([$settings]) => !$settings.projectsfolder
+)
+
 export const databaseLanguages: Readable<Set<string>> = derived(
     [database],
     ([$database]) =>

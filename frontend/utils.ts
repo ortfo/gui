@@ -143,6 +143,10 @@ export function closestTo(target: number, values: number[]): number {
     )
 }
 
+export const timeToRead = (text: string) =>
+    text.split(" ").length *
+    (1 / (200 / 60)) /* average reading speed: 200 words·min⁻¹ */
+
 export function createNotificationSpawner() {
     const context = getNotificationsContext()
     if (context === undefined)
@@ -155,9 +159,6 @@ export function createNotificationSpawner() {
             clear: () => {},
         }
     const position = "bottom-center"
-    const timeToRead = (text: string) =>
-        text.split(" ").length *
-        (1 / (200 / 60)) /* average reading speed: 200 words·min⁻¹ */
 
     return {
         add: (text: string) =>
@@ -193,4 +194,17 @@ export function createNotificationSpawner() {
             ),
         clear: () => context.clearNotifications(),
     }
+}
+
+export async function sleep(seconds: number) {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000))
+}
+
+export function objectMapValues<I, O>(
+    obj: { [key: string]: I },
+    fn: (value: I) => O
+): { [key: string]: O } {
+    return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [key, fn(value)])
+    )
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Navbar, { rebuildDatabase } from "./components/Navbar.svelte"
-import { database, settings, state } from "./stores"
+import { database, onboardingNeeded, settings, state } from "./stores"
 import { backend } from "./backend"
 import Works from "./tabs/works.svelte"
 import Tags from "./tabs/tags.svelte"
@@ -22,6 +22,7 @@ import FieldFilepath from "./components/FieldFilepath.svelte"
 import Notifications from "svelte-notifications"
 import { vimkeys } from "./vimkeys"
 import { createModalSummoner } from "./modals"
+import Onboarding from "./screens/Onboarding.svelte"
 
 const summon = createModalSummoner()
 
@@ -40,13 +41,6 @@ async function loadSettings() {
 	await backend.initialize()
 	$settings = await backend.settingsRead()
 	console.info(`Loaded settings from backend: ${JSON.stringify($settings)}`)
-	if (!$settings.surname) {
-		$settings.surname = prompt("What is your surname?", "")
-	}
-	if (!$settings.projectsfolder) {
-		$settings.projectsfolder = prompt("Where are your projects stored?", "")
-	}
-	await backend.settingsWrite($settings)
 	$state = await backend.readUIState()
 	console.info(`Loaded UI state save from backend: ${JSON.stringify($state)}`)
 }
@@ -81,6 +75,7 @@ async function loadDatabase() {
 async function load() {
 	await loadSettings()
 	loadLocales()
+	if ($onboardingNeeded) return
 	await loadDatabase()
 }
 
@@ -111,26 +106,30 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	{#await load()}
 		<h1>Sit tight, loading your stuff…</h1>
 	{:then _}
-		<Modal closeButton={ModalButtonClose}>
-			<Navbar />
-			<main>
-				{#if $state.openTab == "works"}
-					<Works />
-				{:else if $state.openTab == "tags"}
-					<Tags />
-				{:else if $state.openTab == "technologies"}
-					<Technologies />
-				{:else if $state.openTab == "sites"}
-					<Externalsites />
-				{:else if $state.openTab == "settings"}
-					<Settings />
-				{:else if $state.openTab == "editor"}
-					<Editor />
-				{:else}
-					404
-				{/if}
-			</main>
-		</Modal>
+		{#if $onboardingNeeded}
+			<Onboarding />
+		{:else}
+			<Modal closeButton={ModalButtonClose}>
+				<Navbar />
+				<main>
+					{#if $state.openTab == "works"}
+						<Works />
+					{:else if $state.openTab == "tags"}
+						<Tags />
+					{:else if $state.openTab == "technologies"}
+						<Technologies />
+					{:else if $state.openTab == "sites"}
+						<Externalsites />
+					{:else if $state.openTab == "settings"}
+						<Settings />
+					{:else if $state.openTab == "editor"}
+						<Editor />
+					{:else}
+						404
+					{/if}
+				</main>
+			</Modal>
+		{/if}
 	{:catch e}
 		<div class="error">
 			<h1 use:i18n>Woops!</h1>
@@ -143,6 +142,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 			<h2 use:i18n>Try changing these settings</h2>
 			<dl>
 				<FieldFilepath
+					directory
 					key={$_("projects folder")}
 					bind:value={$settings.projectsfolder}
 				/>

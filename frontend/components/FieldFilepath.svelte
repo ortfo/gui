@@ -3,7 +3,7 @@ import MetadataField from "./MetadataField.svelte"
 import { backend, PickFileConstraint } from "../backend"
 import { createNotificationSpawner, except, noSpaces } from "../utils"
 import { _ } from "svelte-i18n"
-import { i18n } from "../actions"
+import { i18n, helptip } from "../actions"
 import { createEventDispatcher } from "svelte"
 const dispatch = createEventDispatcher()
 const notifications = createNotificationSpawner()
@@ -18,6 +18,13 @@ export let oneline: boolean = true
 export let help: string = ""
 export let placeholder: string = ""
 export let required: boolean = false
+let _startIn: string
+
+$: _startIn = value
+	? directory
+		? value
+		: parentDirectory(value)
+	: startIn || "~"
 
 function parentDirectory(path: string): string {
 	return path.replaceAll("\\", "/").split("/").slice(0, -1).join("/")
@@ -30,13 +37,14 @@ function parentDirectory(path: string): string {
 			type="text"
 			id="metadata-field-{noSpaces(key)}"
 			bind:value
-			on:change={e => dispatch("change", e)}
+			on:change={e => dispatch("change", e.target.value)}
 			{required}
 			{placeholder}
 		/>
 		<button
 			data-variant="inline"
 			use:i18n
+			use:helptip={$_("click to browse")}
 			on:click={async event => {
 				try {
 					value = await backend.pickFile({
@@ -46,11 +54,7 @@ function parentDirectory(path: string): string {
 								values: { key },
 							}
 						),
-						startIn: value
-							? directory
-								? value
-								: parentDirectory(value)
-							: startIn || "~",
+						startIn: _startIn,
 						relativeTo,
 						accept: directory ? "directory" : accept,
 					})
@@ -61,7 +65,8 @@ function parentDirectory(path: string): string {
 					}
 					notifications.error(e)
 				}
-			}}>pick</button
+				dispatch("change", value)
+			}}>choose</button
 		>
 	</div>
 </MetadataField>
