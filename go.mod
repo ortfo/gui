@@ -11,7 +11,10 @@ require (
 	github.com/webview/webview v0.0.0-20220418180601-150aede5f486
 )
 
-require github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d // indirect
+require (
+	github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d // indirect
+	github.com/cloudfoundry-attic/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21 // indirect
+)
 
 require (
 	github.com/EdlinOrg/prominentcolor v1.0.0 // indirect
