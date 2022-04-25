@@ -13,11 +13,9 @@ import { createEventDispatcher } from "svelte"
 const dispatch = createEventDispatcher()
 
 function thumbPath() {
-	const absolutePath =
-		work.metadata.thumbnails?.[
-			Object.keys(work.metadata.thumbnails)?.[0]
-		]?.[400]
-	return absolutePath ? relativeToDatabase(absolutePath) : ""
+	const chosenMedia = Object.keys(work.metadata.thumbnails)?.[0] // TODO allow user to set this (requires changes in ortfo/mk too)
+	const thumbnailPath = work.metadata.thumbnails?.[chosenMedia]?.[400]
+	return thumbnailPath ? localDatabase(thumbnailPath) : ""
 }
 
 function editWork() {
@@ -37,10 +35,7 @@ $: dispatch(selected ? "select" : "deselect", { work })
 	{#await thumbPath()}
 		<div class="thumb loading" />
 	{:then _}
-		<div
-			class="thumb"
-			style={`background-image: url(${localDatabase(thumbPath())})`}
-		/>
+		<div class="thumb" style={`background-image: url(${thumbPath()})`} />
 	{/await}
 	<div class="text">
 		<h2>
