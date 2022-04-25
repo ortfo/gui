@@ -45,6 +45,11 @@ async function addTech() {
 			</dl>
 		</MetadataField>
 		<FieldText
+			bind:value={newTech.author}
+			key={$_("author")}
+			placeholder={$_("who made this?")}
+		/>
+		<FieldText
 			rich
 			bind:value={newTech.description}
 			key={$_("description")}
