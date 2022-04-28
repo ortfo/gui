@@ -60,3 +60,10 @@ ortfo-windows
 !ortfo/
 
 fixtures/
+
+# built installers
+installers/*.rpm
+installers/*.deb
+installers/*.slp
+installers/*.lsb
+installers/*.tgz

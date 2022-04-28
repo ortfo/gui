@@ -1,0 +1,9 @@
+INCLUDE linux.fsorg
+
+DEBIAN/control [
+	Package: ortfo
+	Version: {{version}}
+	Maintainer: Ewen Le Bihan
+	Architecture: amd64
+	Description: {{description}}
+]
