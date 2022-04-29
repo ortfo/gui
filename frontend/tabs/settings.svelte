@@ -62,7 +62,7 @@ onMount(() => {
 		disallowed={["default"]}
 	/>
 
-	<FieldToggle bind:value={$settings.showTips} key={$_("show tips")} />
+	<FieldToggle bind:value={$settings.showtips} key={$_("show tips")} />
 </dl>
 
 <section class="actions">
@@ -88,12 +88,12 @@ onMount(() => {
 			rebuildDatabase(false)
 		}}>re-create thumbnails</button
 	>
-	{#if $settings.powerUser}
+	{#if $settings.poweruser}
 		<button
 			use:i18n
 			data-variant="inline"
 			on:click={async () => {
-				$settings.powerUser = false
+				$settings.poweruser = false
 				await backend.settingsWrite($settings)
 				notifications.add($_("you are no longer a power user."))
 			}}>disable power user mode</button

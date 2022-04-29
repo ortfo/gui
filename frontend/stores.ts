@@ -18,8 +18,8 @@ export type Settings = {
     projectsfolder: string
     language: "en" | "fr"
     portfoliolanguages: string[]
-    showTips: boolean
-    powerUser: boolean
+    showtips: boolean
+    poweruser: boolean
 }
 
 export type PageName =
@@ -46,8 +46,8 @@ export const DEFAULT_SETTINGS: Settings = {
     surname: "",
     projectsfolder: "",
     language: "en",
-    showTips: true,
-    powerUser: false,
+    showtips: true,
+    poweruser: false,
 }
 export const settings: Writable<Settings> = writable(DEFAULT_SETTINGS)
 

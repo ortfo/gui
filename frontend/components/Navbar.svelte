@@ -123,7 +123,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 		{/each}
 	{/if}
 	<div class="spacer">
-		{#if $rebuildingDatabase && $settings.powerUser}
+		{#if $rebuildingDatabase && $settings.poweruser}
 			{$buildProgress.current.step}: {$buildProgress.current.file}
 			{$buildProgress.current.resolution || $buildProgress.current.output}
 		{/if}

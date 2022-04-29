@@ -155,7 +155,7 @@ let titleH1: HTMLHeadingElement
 				>
 			</div>
 
-			{#if $settings.showTips}
+			{#if $settings.showtips}
 				<p class="tip">
 					{$_(
 						"Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it."
@@ -169,7 +169,7 @@ let titleH1: HTMLHeadingElement
 		<aside slot="secondary">
 			<section class="metadata">
 				<h2>{$_("Metadata")}</h2>
-				{#if $settings.showTips}
+				{#if $settings.showtips}
 					<p class="tip">
 						{$_("unset values inherit their defaults, set in")}
 						<a

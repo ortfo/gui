@@ -15,11 +15,11 @@ var TabNames = [...]string{"works", "editor", "tags", "sites", "technologies", "
 type Settings struct {
 	Theme              string   `json:"theme"`
 	Surname            string   `json:"surname"`
-	ProjectsFolder     string   `json:"projectsFolder"`
-	ShowTips           bool     `json:"showTips"`
+	ProjectsFolder     string   `json:"projectsfolder"`
+	ShowTips           bool     `json:"showtips"`
 	Language           string   `json:"language"`
 	PortfolioLanguages []string `json:"portfolioLanguages"`
-	PowerUser          bool     `json:"powerUser"`
+	PowerUser          bool     `json:"poweruser"`
 }
 
 type UIState struct {

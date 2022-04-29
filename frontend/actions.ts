@@ -8,7 +8,7 @@ export const helptip = (
     node: HTMLElement,
     parameters: string | [string, number] | Object
 ) => {
-    if (get(settings)?.showTips) {
+    if (get(settings)?.showtips) {
         return tooltip(node, parameters)
     }
 }

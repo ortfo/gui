@@ -28,7 +28,7 @@ onMount(async () => {
 			$_("Could not get your language. Defaulting to english.")
 		)
 	}
-	$settings.showTips = true
+	$settings.showtips = true
 	$settings.theme = "dark"
 })
 

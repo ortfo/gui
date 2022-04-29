@@ -36,7 +36,7 @@ const notifications = createNotificationSpawner()
 	<code class="commit-hash"
 		>built from <code
 			on:click={async () => {
-				$settings.powerUser = true
+				$settings.poweruser = true
 				await backend.settingsWrite($settings)
 				notifications.add($_(`you are now a power user!`))
 			}}>{__commitHash__}</code

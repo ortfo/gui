@@ -56,7 +56,7 @@ $: dispatch(selected ? "select" : "deselect", { work })
 				<li>
 					<button
 						class:selected={selectedTag === tag}
-						use:tooltip={$settings.showTips
+						use:tooltip={$settings.showtips
 							? $_("Click to only show works tagged {tag}", {
 									values: { tag },
 							  })
