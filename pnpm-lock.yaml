@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@ctrl/tinycolor': ^3.4.1
   '@faker-js/faker': ^6.1.2
   '@geoffcox/svelte-splitter': ^1.0.1
   '@rollup/plugin-commonjs': ^21.1.0
@@ -54,6 +55,7 @@ specifiers:
   vitest: ^0.8.5
 
 dependencies:
+  '@ctrl/tinycolor': 3.4.1
   '@geoffcox/svelte-splitter': 1.0.1
   '@rollup/plugin-commonjs': 21.1.0_rollup@2.70.2
   '@rollup/plugin-node-resolve': 13.2.1_rollup@2.70.2
@@ -119,6 +121,11 @@ packages:
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
+
+  /@ctrl/tinycolor/3.4.1:
+    resolution: {integrity: sha512-ej5oVy6lykXsvieQtqZxCOaLT+xD4+QNarq78cIYISHmZXshCvROLudpQN3lfL8G0NL7plMSSK+zlyvCaIJ4Iw==}
+    engines: {node: '>=10'}
+    dev: false
 
   /@eslint/eslintrc/1.2.1:
     resolution: {integrity: sha512-bxvbYnBPN1Gibwyp6NrpnFzA3YtRL3BBAyEAFVIpNTm2Rn4Vy87GA5M4aSn3InRrlsbX5N0GW7XIx+U4SAEKdQ==}
