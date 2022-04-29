@@ -22,12 +22,28 @@ export let key: string
 </script>
 
 <MetadataField {key} colon>
-	<dl>
-		<FieldColor partOfObject key="primary" bind:value={value.primary} />
-		<FieldColor partOfObject key="secondary" bind:value={value.secondary} />
-		<FieldColor partOfObject key="tertiary" bind:value={value.tertiary} />
-	</dl>
-	<button data-variant="inline" on:click={autoSelect}
-		>{$_("pick from image")}</button
+	<button
+		slot="next-to-label"
+		data-variant="inline"
+		on:click={autoSelect}
+		class="pick-from-image">{$_("extract from an image")}</button
 	>
+	<dl>
+		<FieldColor compact key="primary" bind:value={value.primary} />
+		<FieldColor compact key="secondary" bind:value={value.secondary} />
+		<FieldColor compact key="tertiary" bind:value={value.tertiary} />
+	</dl>
 </MetadataField>
+
+<style>
+.pick-from-image {
+	display: inline-block;
+	margin-left: 1em;
+}
+
+dl {
+	margin-left: 2em;
+	display: flex;
+	gap: 1.2em;
+}
+</style>

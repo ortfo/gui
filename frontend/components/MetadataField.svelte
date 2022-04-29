@@ -8,10 +8,16 @@ export let help: string = ""
 export let colon: boolean = false
 export let partOfObject: boolean = false
 export let oneline: boolean = false
+export let compact: boolean = false
 export let nolabel: boolean = false
 </script>
 
-<div class="entry" class:oneline class:part-of-object={partOfObject}>
+<div
+	class="entry"
+	class:oneline
+	class:part-of-object={partOfObject}
+	class:compact
+>
 	<dt class:colon>
 		<svelte:element
 			this={nolabel ? "div" : "label"}
@@ -22,15 +28,30 @@ export let nolabel: boolean = false
 				<span class="help">{help}</span>
 			{/if}
 		</svelte:element>
+		<slot name="next-to-label"><!-- optional fallback --></slot>
 	</dt>
 	<dd><slot /></dd>
 </div>
 
-<style>
+<style lang="scss">
 .oneline {
 	display: grid;
 	grid-template-columns: 1fr auto;
 	gap: 1em;
+}
+.compact {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	dt {
+		font-size: 0.8em;
+	}
+	dd {
+		flex-direction: column;
+		justify-content: center;
+	}
 }
 dt,
 dd {
