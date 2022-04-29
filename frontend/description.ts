@@ -18,10 +18,11 @@ export function toParsedDescription(
     if (!work) {
         return null
     }
-    const { media, metadata, ...rest } = replaceLanguageDefault(
+    let { media, metadata, ...rest } = replaceLanguageDefault(
         work,
         portfolioLanguages
     )
+    metadata = JSON.parse(JSON.stringify(metadata)) // TODO find a faster way to DEEP-clone
     const [paragraphs, abbreviations] = collectAbbreviations(
         work.paragraphs,
         portfolioLanguages
