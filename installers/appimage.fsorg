@@ -1,0 +1,8 @@
+INCLUDE linux.fsorg
+
+# Using the files already created (see linux.fsorg)
+PUT ortfo.AppDir/usr/bin/ortfo AS AppRun
+PUT ortfo.AppDir/usr/share/icons/hicolor/256x256/apps/ortfo.png AS ortfo.png
+PUT ortfo.AppDir/usr/share/applications/ortfo.desktop AS ortfo.desktop
+
+# TODO AppStream metadata?

@@ -17,6 +17,7 @@ usr/share {
 			Icon=ortfo
 			Terminal=false
 			Type=Application
+			Categories=Office;ProjectManagement
 		}
 	}
 

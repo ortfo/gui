@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: build, installers
 
 build:
 # Build frontend
@@ -7,6 +7,10 @@ build:
 	statik -f -src=dist/
 # Build backend
 	cd backend && go build -o ../ortfo
+
+installers:
+	$(MAKE) build
+	cd installers && ./create.sh
 
 format:
 	go mod tidy
