@@ -96,7 +96,7 @@ export const workOnDisk: Readable<Work | null> = derived(
     ([$database, $state]) =>
         // FIXME #5 everything breaks down if the work is not found
         // (try setting the state to a non-existent work)
-        $database?.works.find(w => w.id === $state.editingWorkID) ?? null
+        $database?.works?.find(w => w.id === $state.editingWorkID) ?? null
 )
 
 export const unsavedChanges: Readable<
