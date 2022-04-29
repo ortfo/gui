@@ -6,9 +6,10 @@ export let value: boolean
 export let key: string
 export let help: string = ""
 export let oneline: boolean = true
+export let partOfObject: boolean = false
 </script>
 
-<MetadataField {key} {help} {oneline}>
+<MetadataField {key} {help} {oneline} {partOfObject}>
 	<input
 		id="metadata-field-{noSpaces(key)}"
 		type="checkbox"

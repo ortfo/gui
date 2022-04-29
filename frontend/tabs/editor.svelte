@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+import FieldToggle from "./../components/FieldToggle.svelte"
+import FieldDate from "./../components/FieldDate.svelte"
 export async function saveWork(
 	id: WorkID,
 	parsedDescription: ParsedDescription,
@@ -55,6 +57,7 @@ import { get } from "svelte/store"
 import UnsavedChanges from "../modals/UnsavedChanges.svelte"
 import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
 import { objectFilter } from "../utils"
+import MetadataField from "../components/MetadataField.svelte"
 
 let rawDescription: string = ""
 
@@ -188,6 +191,25 @@ let titleH1: HTMLHeadingElement
 						key="madewith"
 						bind:value={$workInEditor.metadata.madewith}
 					/>
+					<MetadataField key="dates" colon>
+						<dl>
+							<FieldDate
+								bind:value={$workInEditor.metadata.started}
+								key="started on"
+								partOfObject
+							/>
+							<FieldDate
+								bind:value={$workInEditor.metadata.finished}
+								key="finished on"
+								partOfObject
+							/>
+							<FieldToggle
+								bind:value={$workInEditor.metadata.wip}
+								key="wip"
+								partOfObject
+							/>
+						</dl>
+					</MetadataField>
 					<FieldColors
 						key="colors"
 						bind:value={$workInEditor.metadata.colors}
