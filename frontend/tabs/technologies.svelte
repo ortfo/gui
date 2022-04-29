@@ -211,7 +211,7 @@ section.technologies {
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
-	height: 70vh;
+	height: 65vh;
 	margin-bottom: 3em;
 }
 input {
