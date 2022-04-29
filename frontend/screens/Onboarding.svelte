@@ -217,21 +217,6 @@ button[type="submit"] {
 	margin: 0;
 }
 
-nav {
-	margin: 2rem 0;
-}
-
-nav ul {
-	display: flex;
-	justify-content: center;
-	gap: 2em;
-	font-size: 2em;
-
-	li {
-		list-style: none;
-	}
-}
-
 button.all-done {
 	margin-top: 5rem;
 }
@@ -245,39 +230,7 @@ section.building {
 	.log {
 		position: absolute;
 		bottom: 3rem;
-		color: var(--gray)
-	}
-}
-
-section.confirm {
-	dl {
-		margin-top: 3rem;
-		text-align: left;
-		justify-items: center;
-	}
-	dt {
-		font-variation-settings: "wght" 700;
-	}
-	dd {
-		margin-left: 2rem;
-	}
-	dd ul {
-		li::before {
-			content: "—";
-			margin-right: 0.5em;
-			font-variation-settings: "wght" 800;
-		}
-		li {
-			list-style: none;
-		}
-	}
-	.buttons {
-		margin-top: 3rem;
-		display: flex;
-		gap: 1em;
-		li {
-			list-style: none;
-		}
+		color: var(--gray);
 	}
 }
 </style>
