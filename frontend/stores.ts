@@ -6,6 +6,7 @@ import { toParsedDescription } from "./description"
 import type {
     Database,
     DatabaseOneLang,
+    ExtractedColors,
     ParsedDescription,
     Work,
     WorkOneLang,
@@ -66,6 +67,9 @@ export const DEFAULT_UI_STATE: State = {
     },
 }
 export const state: Writable<State> = writable(DEFAULT_UI_STATE)
+
+export const colorPickersSelectedColors: Writable<{ [hash: string]: ExtractedColors }> =
+    writable({})
 
 export const buildProgress: Writable<BuildProgress> = writable({
     current: {
@@ -148,13 +152,10 @@ export const databaseCurrentLanguage: Readable<DatabaseOneLang> = derived(
         if (!$settings.language) {
             throw Error("No language set")
         }
-        if (Object.keys($database).length) {
-            return {
-                ...$database,
-                works: $database.works.map(inLanguage($settings.language)),
-            }
+        return {
+            ...$database,
+            works: $database?.works.map(inLanguage($settings.language)),
         }
-        throw Error("No database")
     }
 )
 

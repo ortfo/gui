@@ -210,5 +210,15 @@ export const backend = {
     getUserLanguage: async () => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__getUserLanguage()) as string
-    }
+    },
+    extractColors: async (imagePath: string) => {
+        return lowercaseNoSpacesKeys(
+            // @ts-ignore backend__* functions are injected by webview (from the backend)
+            await backend__extractColors(imagePath)
+        ) as {
+            primary: string
+            secondary: string
+            tertiary: string
+        }
+    },
 }

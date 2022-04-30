@@ -18,6 +18,9 @@ $: {
 	if (value.startsWith("rgba(")) {
 		value = new TinyColor(value).setAlpha(1).toHexString() as `#${string}`
 	}
+	if (!value.startsWith("#") && value !== "") {
+		value = `#${value}`
+	}
 }
 </script>
 

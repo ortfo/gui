@@ -218,6 +218,9 @@ func startWebview() {
 	w.Bind("backend__clearThumbnails", func() error {
 		return os.RemoveAll(ConfigurationDirectory("portfolio-database", "media"))
 	})
+	w.Bind("backend__extractColors", func(imagePath string) (colors ortfodb.ExtractedColors, err error) {
+		return ortfodb.ExtractColors(ConfigurationDirectory("portfolio-database", imagePath))
+	})
 	w.Run()
 }
 

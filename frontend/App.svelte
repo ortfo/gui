@@ -213,20 +213,31 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	color: black;
 }
 
+:global(button):not([data-variant]):disabled {
+	color: var(--gray);
+	cursor: not-allowed;
+}
+
 :global(button[data-variant="inline"]) {
 	border: 1px solid var(--black);
 	padding: 2px 5px;
 	transition: all 0.25s ease;
 }
 
-:global(button[data-variant="inline"]:hover, button[data-variant="inline"]:focus) {
+:global(button[data-variant="inline"]:not(:disabled):hover, button[data-variant="inline"]:not(:disabled):focus) {
 	background-color: var(--ortforange);
 	color: black;
 }
 
-:global(button[data-variant="inline"]):active {
+:global(button[data-variant="inline"]):not(:disabled):active {
 	background-color: var(--black);
 	color: var(--white);
+}
+
+:global(button[data-variant="inline"]):disabled {
+	border-color: var(--gray);
+	color: var(--gray);
+	cursor: not-allowed;
 }
 
 :global(button[data-variant="link"]) {

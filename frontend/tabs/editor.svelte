@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+import { localDatabase } from "../backend"
 import FieldToggle from "./../components/FieldToggle.svelte"
 import FieldDate from "./../components/FieldDate.svelte"
 export async function saveWork(
@@ -49,15 +50,16 @@ import tinykeys from "tinykeys"
 import { backend } from "../backend"
 import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
-import type { ParsedDescription } from "../ortfo"
+import type { Media, MediaEmbedDeclaration, ParsedDescription } from "../ortfo"
 import FieldMap from "../components/FieldMap.svelte"
 import { rebuildDatabase } from "../components/Navbar.svelte"
 import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
 import UnsavedChanges from "../modals/UnsavedChanges.svelte"
 import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
-import { objectFilter } from "../utils"
+import { closestTo, objectFilter } from "../utils"
 import MetadataField from "../components/MetadataField.svelte"
+import FieldColors from "../components/FieldColors.svelte"
 
 let rawDescription: string = ""
 
@@ -82,6 +84,10 @@ async function initialize() {
 		)
 		$state.lang ||= "en"
 	}
+}
+
+function analyzed(media: MediaEmbedDeclaration): Media {
+	return $workOnDisk.media[$state.lang].find(m => m.source === media.source)
 }
 
 function editTitle(e) {
@@ -212,6 +218,24 @@ let titleH1: HTMLHeadingElement
 					</MetadataField>
 					<FieldColors
 						key="colors"
+						images={Object.fromEntries(
+							Object.entries($workOnDisk.metadata.thumbnails).map(
+								([image, resolutions]) => [
+									resolutions?.[
+										closestTo(
+											400,
+											Object.keys(resolutions).map(
+												parseFloat
+											)
+										)
+									],
+									$workInEditor.mediaembeddeclarations[
+										$state.lang
+									].find(m => analyzed(m)?.path === image)
+										?.alt,
+								]
+							)
+						)}
 						bind:value={$workInEditor.metadata.colors}
 					/>
 					<FieldImage

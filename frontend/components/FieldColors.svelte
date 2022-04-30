@@ -1,22 +1,41 @@
 <script lang="ts">
+import { tooltip } from "./../actions.ts"
+import { colorPickersSelectedColors } from "./../stores.ts"
 import { createEventDispatcher, getContext } from "svelte"
 import { createModalSummoner } from "../modals"
 import FieldColor from "./FieldColor.svelte"
 import MetadataField from "./MetadataField.svelte"
 import { _ } from "svelte-i18n"
+import type { Media, MediaEmbedDeclaration } from "../ortfo"
+import ExtractColorsFromImage from "../modals/ExtractColorsFromImage.svelte"
+import { uniqueId } from "lodash"
 
 const emit = createEventDispatcher()
 const summon = createModalSummoner()
+const colorPickerHash = uniqueId("color-picker-")
 
+export let images: { [url: string]: string }
+export let selectedImage: string | null = null
 export let value: {
 	primary: string
 	secondary: string
 	tertiary: string
 }
 
+let hasImagesToExtractColorsFrom: boolean
+
 function autoSelect(e) {
-	// summon(PickImage)
+	summon(ExtractColorsFromImage, {
+		images,
+		selected: selectedImage,
+		hash: colorPickerHash,
+		originalColors: value,
+	})
 }
+
+$: value = $colorPickersSelectedColors[colorPickerHash] || value
+$: hasImagesToExtractColorsFrom =
+	Object.keys(images).filter(url => !!url).length > 0
 
 export let key: string
 </script>
@@ -26,6 +45,10 @@ export let key: string
 		slot="next-to-label"
 		data-variant="inline"
 		on:click={autoSelect}
+		disabled={!hasImagesToExtractColorsFrom}
+		use:tooltip={hasImagesToExtractColorsFrom
+			? ""
+			: $_("This work has no media to extract colors from")}
 		class="pick-from-image">{$_("extract from an image")}</button
 	>
 	<dl>
@@ -44,6 +67,6 @@ export let key: string
 dl {
 	margin-left: 2em;
 	display: flex;
-	gap: 1.2em;
+	gap: 1.3em;
 }
 </style>

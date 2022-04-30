@@ -250,3 +250,9 @@ export interface LayedOutElement
     generalcontenttype: string
     metadata: WorkMetadata
 }
+
+export interface ExtractedColors {
+    primary: string
+    secondary: string
+    tertiary: string
+}
