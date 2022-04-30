@@ -14,7 +14,7 @@ export let partOfObject = false
 	<input
 		class:unset={!value}
 		type="date"
-		placeholder={$_("unset")}
+		placeholder={$_("unspecified")}
 		name={key}
 		id="metadata-field-{noSpaces(key)}"
 		bind:value

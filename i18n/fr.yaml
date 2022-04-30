@@ -146,7 +146,7 @@ tags: tags
 technologies: technologies
 tertiary: tertiaire
 theme: thème
-unset: non défini
+unspecified: non spécifié
 unset values inherit their defaults, set in: les valeurs non définies héritent de leurs valeurs par défaut, définies dans
 username: nom d’utilisateur
 value: valeur

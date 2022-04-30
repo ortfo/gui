@@ -29,7 +29,7 @@ $: {
 		class:unset={!value}
 		on:contextmenu={reset}
 	/>
-	<span class="hex">{value || $_("unset")}</span>
+	<span class="hex">{value || $_("unspecified")}</span>
 </MetadataField>
 
 <style lang="scss">
