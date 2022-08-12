@@ -226,4 +226,12 @@ export const backend = {
             tertiary: string
         }
     },
+    newDir: async (path: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__newDir(path)) as string
+    },
+    newFile: async (path: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__newFile(path)) as string
+    },
 }

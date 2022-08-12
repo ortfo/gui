@@ -58,6 +58,12 @@ async function createWork(dir: DirEntry) {
 		Object.fromEntries(
 			Array.from($settings.portfoliolanguages).map(l => [l, data])
 		)
+	await backend.newFile(
+		$settings.projectsfolder +
+			"/" +
+			dir.name +
+			"/.portfoliodb/description.md"
+	)
 	$database.works = [
 		...$database.works,
 		{
@@ -116,9 +122,9 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 			{#each search(dirs, query) as result (result.refIndex)}
 				<li>
 					<button
-						on:click={e => {
+						on:click={async e => {
 							open = false
-							createWork(result.item)
+							await createWork(result.item)
 							if ($hasUnsavedChanges) {
 								summon(UnsavedChanges)
 							}

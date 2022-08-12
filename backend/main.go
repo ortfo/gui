@@ -65,6 +65,7 @@ func startWebview() {
 		return LoadSettings()
 	})
 	w.Bind("backend__settingsWrite", func(settings Settings) error {
+		LogToBrowser("Writing %#v into settings", settings)
 		return SaveSettings(settings)
 	})
 	w.Bind("backend__quit", func() error {
@@ -232,6 +233,18 @@ func startWebview() {
 	})
 	w.Bind("backend__extractColors", func(imagePath string) (colors ortfodb.ExtractedColors, err error) {
 		return ortfodb.ExtractColors(ConfigurationDirectory("portfolio-database", imagePath))
+	})
+	w.Bind("backend__newDir", func(path string) error {
+		return os.MkdirAll(path, 0755)
+	})
+	w.Bind("backend__newFile", func(path string) error {
+		fmt.Println("creating file", path)
+		err := os.MkdirAll(filepath.Dir(path), 0755)
+		if err != nil {
+			return  fmt.Errorf("while creating parent directory: %w",  err)
+		}
+		
+		return os.WriteFile(path, []byte{}, 0666)
 	})
 	w.Run()
 }
