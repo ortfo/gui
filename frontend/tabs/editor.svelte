@@ -107,120 +107,124 @@ let editingTitle = false
 let titleH1: HTMLHeadingElement
 </script>
 
-{#await initialize() then}
-	<Split initialPrimarySize="{100 - $state.metadataPaneSplitRatio * 100}%">
-		<section class="layout" slot="primary">
-			{#if $settings.portfoliolanguages.length > 1}
-				<SwitchButton
-					bind:value={$state.lang}
-					options={Object.fromEntries(
-						Object.entries(LANGUAGES_ALL)
-							.filter(([code, l]) =>
-								$settings.portfoliolanguages.includes(code)
-							)
-							.map(([code, l]) => [
-								code,
-								`${$_(l.language)}` +
-									(l.country === "All countries"
-										? ""
-										: ` (${l.country})`),
-							])
-					)}
-					showCodes
-				/>
-			{/if}
-			<p class="url">/{$workOnDisk?.id}</p>
+{#if $state.editingWorkID}
+	{#await initialize() then}
+		<Split
+			initialPrimarySize="{100 - $state.metadataPaneSplitRatio * 100}%"
+		>
+			<section class="layout" slot="primary">
+				{#if $settings.portfoliolanguages.length > 1}
+					<SwitchButton
+						bind:value={$state.lang}
+						options={Object.fromEntries(
+							Object.entries(LANGUAGES_ALL)
+								.filter(([code, l]) =>
+									$settings.portfoliolanguages.includes(code)
+								)
+								.map(([code, l]) => [
+									code,
+									`${$_(l.language)}` +
+										(l.country === "All countries"
+											? ""
+											: ` (${l.country})`),
+								])
+						)}
+						showCodes
+					/>
+				{/if}
+				<p class="url">/{$workOnDisk?.id}</p>
 
-			<div class="title" id="title">
-				<h1
-					bind:this={titleH1}
-					on:dblclick={_ => {
-						window.getSelection().collapseToStart()
-						editingTitle = true
-					}}
-					on:keypress={e => {
-						switch (e.key) {
-							case "Enter":
-								e.preventDefault()
-								editTitle(e)
-								break
-							case "Escape":
-								e.preventDefault()
-								editingTitle = false
-								titleH1.textContent =
-									$workInEditor.title[$state.lang]
-								break
-						}
-					}}
-					on:blur={editTitle}
-					contenteditable={editingTitle}
-				>
-					{$workInEditor.title[$state.lang]}
-				</h1>
-				<button data-variant="inline" on:click={editTitle}
-					>{#if editingTitle}{$_("finish")}{:else}{$_(
-							"edit"
-						)}{/if}</button
-				>
-			</div>
+				<div class="title" id="title">
+					<h1
+						bind:this={titleH1}
+						on:dblclick={_ => {
+							window.getSelection().collapseToStart()
+							editingTitle = true
+						}}
+						on:keypress={e => {
+							switch (e.key) {
+								case "Enter":
+									e.preventDefault()
+									editTitle(e)
+									break
+								case "Escape":
+									e.preventDefault()
+									editingTitle = false
+									titleH1.textContent =
+										$workInEditor.title[$state.lang]
+									break
+							}
+						}}
+						on:blur={editTitle}
+						contenteditable={editingTitle}
+					>
+						{$workInEditor.title[$state.lang]}
+					</h1>
+					<button data-variant="inline" on:click={editTitle}
+						>{#if editingTitle}{$_("finish")}{:else}{$_(
+								"edit"
+							)}{/if}</button
+					>
+				</div>
 
-			{#if $settings.showtips}
-				<p class="tip">
-					{$_(
-						"Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it."
-					)}
-				</p>
-			{/if}
-
-			<ContentGrid bind:work={$workInEditor} language={$state.lang} />
-		</section>
-
-		<aside slot="secondary">
-			<section class="metadata">
-				<h2>{$_("Metadata")}</h2>
 				{#if $settings.showtips}
 					<p class="tip">
-						{$_("unset values inherit their defaults, set in")}
-						<a
-							href="#settings"
-							on:click={() => ($state.openTab = "settings")}
-							>{$_("settings")}</a
-						>
+						{$_(
+							"Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it."
+						)}
 					</p>
 				{/if}
-				<dl>
-					<FieldList
-						key="tags"
-						bind:value={$workInEditor.metadata.tags}
-					/>
-					<FieldList
-						key="madewith"
-						bind:value={$workInEditor.metadata.madewith}
-					/>
-					<MetadataField key="dates" colon>
-						<dl>
-							<FieldDate
-								bind:value={$workInEditor.metadata.started}
-								key="started on"
-								partOfObject
-							/>
-							<FieldDate
-								bind:value={$workInEditor.metadata.finished}
-								key="finished on"
-								partOfObject
-							/>
-							<FieldToggle
-								bind:value={$workInEditor.metadata.wip}
-								key="wip"
-								partOfObject
-							/>
-						</dl>
-					</MetadataField>
-					<FieldColors
-						key="colors"
-						images={Object.fromEntries(
-							Object.entries($workOnDisk.metadata.thumbnails).map(
-								([image, resolutions]) => [
+
+				<ContentGrid bind:work={$workInEditor} language={$state.lang} />
+			</section>
+
+			<aside slot="secondary">
+				<section class="metadata">
+					<h2>{$_("Metadata")}</h2>
+					{#if $settings.showtips}
+						<p class="tip">
+							{$_("unset values inherit their defaults, set in")}
+							<a
+								href="#settings"
+								on:click={() => ($state.openTab = "settings")}
+								>{$_("settings")}</a
+							>
+						</p>
+					{/if}
+					<dl>
+						<FieldList
+							key="tags"
+							bind:value={$workInEditor.metadata.tags}
+						/>
+						<FieldList
+							key="madewith"
+							bind:value={$workInEditor.metadata.madewith}
+						/>
+						<MetadataField key="dates" colon>
+							<dl>
+								<FieldDate
+									bind:value={$workInEditor.metadata.started}
+									key="started on"
+									partOfObject
+								/>
+								<FieldDate
+									bind:value={$workInEditor.metadata.finished}
+									key="finished on"
+									partOfObject
+								/>
+								<FieldToggle
+									bind:value={$workInEditor.metadata.wip}
+									key="wip"
+									partOfObject
+								/>
+							</dl>
+						</MetadataField>
+						<FieldColors
+							key="colors"
+							images={Object.fromEntries(
+								Object.entries(
+									$workOnDisk.metadata.thumbnails
+								).map(([image, resolutions]) => [
 									resolutions?.[
 										closestTo(
 											400,
@@ -233,128 +237,128 @@ let titleH1: HTMLHeadingElement
 										$state.lang
 									].find(m => analyzed(m)?.path === image)
 										?.alt,
-								]
-							)
-						)}
-						bind:value={$workInEditor.metadata.colors}
-					/>
-					<FieldImage
-						key="pagebackground"
-						bind:value={$workInEditor.metadata.pagebackground}
-					/>
-				</dl>
-			</section>
-
-			<section class="footnotes">
-				<h2>{$_("Footnotes")}</h2>
-				<!-- TODO when a key changes, update references. -->
-				<FieldMap
-					value={$workInEditor.footnotes[$state.lang]}
-					richText
-					on:input={({ detail }) => {
-						$workInEditor.footnotes = {
-							...$workInEditor.footnotes,
-							[$state.lang]: Object.fromEntries(
-								Object.entries(detail).map(([k, v]) => [
-									k,
-									v.replace(/<p>(.+)<\/p>/, "$1"),
 								])
-							),
-						}
-					}}
-					placeholderKey={$_("key")}
-					placeholderValue={$_("content")}
-					removeTooltip={$_("Remove this footnote")}
-				/>
-			</section>
+							)}
+							bind:value={$workInEditor.metadata.colors}
+						/>
+						<FieldImage
+							key="pagebackground"
+							bind:value={$workInEditor.metadata.pagebackground}
+						/>
+					</dl>
+				</section>
 
-			<section class="abbreviations">
-				<h2>{$_("Abbreviations")}</h2>
+				<section class="footnotes">
+					<h2>{$_("Footnotes")}</h2>
+					<!-- TODO when a key changes, update references. -->
+					<FieldMap
+						value={$workInEditor.footnotes[$state.lang]}
+						richText
+						on:input={({ detail }) => {
+							$workInEditor.footnotes = {
+								...$workInEditor.footnotes,
+								[$state.lang]: Object.fromEntries(
+									Object.entries(detail).map(([k, v]) => [
+										k,
+										v.replace(/<p>(.+)<\/p>/, "$1"),
+									])
+								),
+							}
+						}}
+						placeholderKey={$_("key")}
+						placeholderValue={$_("content")}
+						removeTooltip={$_("Remove this footnote")}
+					/>
+				</section>
 
-				<FieldMap
-					value={$workInEditor.abbreviations[$state.lang]}
-					on:input={({ detail }) => {
-						$workInEditor.abbreviations = {
-							...$workInEditor.abbreviations,
-							[$state.lang]: Object.fromEntries(
-								Object.entries(detail).map(([k, v]) => [
-									k,
-									v.replace(/<p>(.+)<\/p>/, "$1"),
-								])
-							),
-						}
-					}}
-					placeholderKey={$_("name")}
-					placeholderValue={$_("definition")}
+				<section class="abbreviations">
+					<h2>{$_("Abbreviations")}</h2>
+
+					<FieldMap
+						value={$workInEditor.abbreviations[$state.lang]}
+						on:input={({ detail }) => {
+							$workInEditor.abbreviations = {
+								...$workInEditor.abbreviations,
+								[$state.lang]: Object.fromEntries(
+									Object.entries(detail).map(([k, v]) => [
+										k,
+										v.replace(/<p>(.+)<\/p>/, "$1"),
+									])
+								),
+							}
+						}}
+						placeholderKey={$_("name")}
+						placeholderValue={$_("definition")}
+					/>
+				</section>
+			</aside>
+		</Split>
+		{#if import.meta.env.DEV}
+			<details class="raw-data dev-only">
+				<summary>Show raw data for this work</summary>
+				<JSONTree value={$workInEditor} />
+			</details>
+			<div class="float dev-only">
+				<div id="debug" />
+				<ObjectDiffTable
+					a={toParsedDescription(
+						$workOnDisk || null,
+						$settings.portfoliolanguages
+					) || {}}
+					b={$workInEditor}
+					aLabel="on disk"
+					bLabel="in editor"
 				/>
-			</section>
-		</aside>
-	</Split>
-	{#if import.meta.env.DEV}
-		<details class="raw-data dev-only">
-			<summary>Show raw data for this work</summary>
-			<JSONTree value={$workInEditor} />
-		</details>
-		<div class="float dev-only">
-			<div id="debug" />
-			<ObjectDiffTable
-				a={toParsedDescription(
-					$workOnDisk || null,
-					$settings.portfoliolanguages
-				) || {}}
-				b={$workInEditor}
-				aLabel="on disk"
-				bLabel="in editor"
-			/>
-		</div>
-	{/if}
-{:catch error}
-	{#if error.why === "missing_work"}
-		<h1 use:i18n>Well, this is weird.</h1>
-		<div class="error">
-			<p>
-				{@html $_(
-					"It looks like <em>{id}</em>’s folder has gone missing.",
-					{
-						values: {
-							id: $state.editingWorkID,
-						},
-					}
-				)}
-			</p>
-			<button
-				on:click={_ => {
-					$state.openTab = "works"
-					$state.editingWorkID = ""
-				}}>{$_("go back to all projects")}</button
-			>
-		</div>
-	{:else}
-		<h1>??</h1>
-		<p>{$_("An error occured: ")}</p>
-		<p>{error}</p>
-	{/if}
-{/await}
-<details class="raw-description">
-	<summary use:i18n>Raw description</summary>
-	<textarea
-		name="raw-description"
-		id="raw-description"
-		rows={rawDescription.split("\n").length}
-		cols="80"
-		bind:value={rawDescription}
-	/>
-	<button
-		use:i18n
-		on:click={async () => {
-			await backend.writeRawDescription(
-				$state.editingWorkID,
-				rawDescription
-			)
-			rebuildDatabase(true)
-		}}>save</button
-	>
-</details>
+			</div>
+		{/if}
+	{:catch error}
+		{#if error.why === "missing_work"}
+			<h1 use:i18n>Well, this is weird.</h1>
+			<div class="error">
+				<p>
+					{@html $_(
+						"It looks like <em>{id}</em>’s folder has gone missing.",
+						{
+							values: {
+								id: $state.editingWorkID,
+							},
+						}
+					)}
+				</p>
+				<button
+					on:click={_ => {
+						$state.openTab = "works"
+						$state.editingWorkID = ""
+					}}>{$_("go back to all projects")}</button
+				>
+			</div>
+		{:else}
+			<h1>??</h1>
+			<p>{$_("An error occured: ")}</p>
+			<p>{error}</p>
+		{/if}
+	{/await}
+	<details class="raw-description">
+		<summary use:i18n>Raw description</summary>
+		<textarea
+			name="raw-description"
+			id="raw-description"
+			rows={rawDescription.split("\n").length}
+			cols="80"
+			bind:value={rawDescription}
+		/>
+		<button
+			use:i18n
+			on:click={async () => {
+				await backend.writeRawDescription(
+					$state.editingWorkID,
+					rawDescription
+				)
+				rebuildDatabase(true)
+			}}>save</button
+		>
+	</details>
+{/if}
 
 <style lang="scss">
 .title {
