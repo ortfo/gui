@@ -39,6 +39,12 @@ func (settings *Settings) InitializeDatabase() error {
 		return fmt.Errorf("couldn't initialize portfolio sites database: %w", err)
 	}
 
+	// initialize collections database
+	err = WriteIfNotExist(ConfigurationDirectory("portfolio-database", "collections.yaml"), []byte("{}"))
+	if err != nil {
+		return fmt.Errorf("couldn't initialize portfolio collections database: %w", err)
+	}
+
 	return nil
 }
 

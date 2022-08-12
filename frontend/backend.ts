@@ -7,6 +7,7 @@ import type {
     Tag,
     Technology,
     Translated,
+    Collection,
 } from "./ortfo"
 import type { Settings, State } from "./stores"
 import { lowercaseFirstCharacter, lowercaseNoSpacesKeys } from "./utils"
@@ -159,6 +160,10 @@ export const backend = {
     writeExternalSites: async (externalSites: ExternalSite[]) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeExternalSites(externalSites)) as MaybeError
+    },
+    writeCollections: async (collections: Collection[]) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__writeCollections(collections)) as MaybeError
     },
     // ../backend/main.go
     openInBrowser: async (url: string) => {

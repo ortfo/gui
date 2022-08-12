@@ -41,7 +41,7 @@ export interface MediaEmbedDeclaration {
 }
 
 export interface MediaAttributes {
-    looped: boolean
+    loop: boolean
     autoplay: boolean
     muted: boolean
     playsinline: boolean
@@ -168,6 +168,7 @@ export interface WorkMetadata {
     }
     pagebackground?: string
     wip?: boolean
+    thumbnail: string;
     thumbnails: { [image: string]: { [resolution: number]: string } }
     aliases?: string[]
     titlestyle?: "filled" | "outlined"
@@ -255,4 +256,25 @@ export interface ExtractedColors {
     primary: string
     secondary: string
     tertiary: string
+}
+
+export interface CollectionOneLang {
+    language: string
+    id: string
+    title: string
+    description: string
+    learnmoreat: string
+    includes: string
+    aliases: string[]
+    works: WorkOneLang[]
+}
+
+export interface Collection {
+    id: string
+    title: Translated<string>
+    description: Translated<string>
+    learnmoreat: string
+    includes: string
+    aliases: string[]
+    works: Work[]
 }

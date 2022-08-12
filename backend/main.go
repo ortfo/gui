@@ -117,12 +117,24 @@ func startWebview() {
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "technologies.yaml"), tagsBytes, 0644)
 	})
 	w.Bind("backend__writeExternalSites", func(externalSites []ortfomk.ExternalSite) error {
-		tagsBytes, err := yaml.Marshal(externalSites)
+		sitesBytes, err := yaml.Marshal(externalSites)
 		if err != nil {
 			return fmt.Errorf("while converting to YAML: %w", err)
 		}
 
-		return os.WriteFile(ConfigurationDirectory("portfolio-database", "sites.yaml"), tagsBytes, 0644)
+		return os.WriteFile(ConfigurationDirectory("portfolio-database", "sites.yaml"), sitesBytes, 0644)
+	})
+	w.Bind("backend__writeCollection", func(collections []ortfomk.Collection) error {
+		collectionsByID := make(map[string]ortfomk.Collection)
+		for _, c := range collections {
+			collectionsByID[c.ID] = c
+		}
+		collectionsBytes, err := yaml.Marshal(collectionsByID)
+		if err != nil {
+			return fmt.Errorf("while converting to YAML: %w", err)
+		}
+
+		return os.WriteFile(ConfigurationDirectory("portfolio-database", "collections.yaml"), collectionsBytes, 0644)
 	})
 	w.Bind("backend__saveState", func(state UIState) error {
 		err := SaveUIState(state)
@@ -177,7 +189,7 @@ func startWebview() {
 			return "", fmt.Errorf("while creating directories for %q: %w", startIn, err)
 		}
 
-		fmt.Printf("Starting in %s, with title %q\n", title, startIn)
+		fmt.Printf("Starting in %s, with title %q\n", startIn, title)
 		if constraint.Accept == "directory" {
 			picked, err = dialog.Directory().Title(title).SetStartDir(startIn).Browse()
 		} else {
@@ -245,7 +257,7 @@ func Initialize() error {
 		return fmt.Errorf("couldn't initialize portfolio database: %w", err)
 	}
 
-	ortfomk.WarmUp(ortfomk.GlobalData{
+	ortfomk.WarmUp(&ortfomk.GlobalData{
 		Flags: ortfomk.Flags{
 			ProgressFile: ConfigurationDirectory(".progress.json"),
 			Silent:       true,
