@@ -10,7 +10,7 @@ import {
 	WorkID,
 	database,
 } from "../stores"
-import tinykeys from "tinykeys"
+import hotkeys from "../tinykeysInputDisabled"
 import { createModalSummoner } from "../modals"
 import { _ } from "svelte-i18n"
 import { getContext, onMount } from "svelte"
@@ -44,7 +44,7 @@ onMount(() => {
 		creatingWork = true
 	}
 
-	tinykeys(window, {
+	hotkeys(window, {
 		"$mod+a": e => {
 			if (
 				["INPUT", "SELECT", "TEXTAREA"].includes(

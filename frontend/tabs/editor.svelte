@@ -46,7 +46,7 @@ import FieldColors from "../components/FieldColors.svelte"
 import ContentGrid from "../components/ContentGrid.svelte"
 // @ts-ignore don't know why ts thinks Split does not exist, it does
 import { Split } from "@geoffcox/svelte-splitter"
-import tinykeys from "tinykeys"
+import hotkeys from "../tinykeysInputDisabled"
 import { backend } from "../backend"
 import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
 import { MissingWork } from "../errors"
@@ -64,7 +64,7 @@ import FieldColors from "../components/FieldColors.svelte"
 let rawDescription: string = ""
 
 onMount(async () => {
-	tinykeys(window, {
+	hotkeys(window, {
 		"$mod+s": async () => {
 			await saveWork($workOnDisk.id, $workInEditor, false)
 			await backend.saveUIState($state)

@@ -9,7 +9,7 @@ import Settings from "./tabs/settings.svelte"
 import { onMount } from "svelte"
 import Modal from "svelte-simple-modal"
 import ModalButtonClose from "./components/ModalButtonClose.svelte"
-import tinykeys from "tinykeys"
+import hotkeys from "./tinykeysInputDisabled"
 import { addMessages, init as i18nInit, locale } from "svelte-i18n"
 import { _ } from "svelte-i18n"
 import { i18n } from "./actions"
@@ -80,7 +80,7 @@ async function load() {
 }
 
 onMount(() => {
-	tinykeys(window, {
+	hotkeys(window, {
 		"$mod+r": () => {
 			backend.saveUIState($state)
 			window.location.reload()
