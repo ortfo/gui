@@ -22,9 +22,9 @@ function thumbnailOfSource(source: string): string {
 	let absolutePath =
 		$workOnDisk.metadata.thumbnails?.[
 			work.media.find(m => m.source === source)?.path
-		]?.[700]
+		]?.[600]
 	return absolutePath
-		? localDatabase(relativeToDatabase(absolutePath))
+		? localDatabase(absolutePath)
 		: localProjects(`${$workOnDisk.id}/.portfoliodb/${source}`)
 }
 </script>
