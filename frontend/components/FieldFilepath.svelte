@@ -18,13 +18,16 @@ export let oneline: boolean = true
 export let help: string = ""
 export let placeholder: string = ""
 export let required: boolean = false
-let _startIn: string
 
-$: _startIn = value
-	? directory
-		? value
-		: parentDirectory(value)
-	: startIn || "~"
+function _startIn() {
+	return (
+		(value
+			? directory
+				? relativeTo + "/" + value
+				: parentDirectory(relativeTo + "/" + value)
+			: startIn) || "~"
+	)
+}
 
 function parentDirectory(path: string): string {
 	return path.replaceAll("\\", "/").split("/").slice(0, -1).join("/")
@@ -54,7 +57,7 @@ function parentDirectory(path: string): string {
 								values: { key },
 							}
 						),
-						startIn: _startIn,
+						startIn: _startIn(),
 						relativeTo,
 						accept: directory ? "directory" : accept,
 					})
