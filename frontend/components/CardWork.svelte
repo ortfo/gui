@@ -14,7 +14,12 @@ import { closestTo } from "../utils"
 const dispatch = createEventDispatcher()
 
 function thumbPath() {
-	const chosenMedia = Object.keys(work.metadata.thumbnails)?.[0] // TODO allow user to set this (requires changes in ortfo/mk too)
+	let chosenMedia: string;
+	if (work.metadata?.thumbnail) {
+		chosenMedia = work.media.find(m => m.source === work.metadata.thumbnail)?.path
+	} else {
+		chosenMedia = Object.keys(work.metadata?.thumbnails || {})?.[0]
+	}
 	const sizes = Object.keys(
 		work.metadata.thumbnails?.[chosenMedia] || {}
 	).map(Number)

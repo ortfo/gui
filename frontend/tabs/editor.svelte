@@ -60,8 +60,12 @@ import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
 import { closestTo, objectFilter } from "../utils"
 import MetadataField from "../components/MetadataField.svelte"
 import FieldColors from "../components/FieldColors.svelte"
+import FieldFilepath from "../components/FieldFilepath.svelte"
 
 let rawDescription: string = ""
+
+const PATHS_RELATIVE_TO =
+	$settings.projectsfolder + "/" + $state.editingWorkID + "/.portfoliodb"
 
 onMount(async () => {
 	hotkeys(window, {
@@ -219,6 +223,12 @@ let titleH1: HTMLHeadingElement
 								/>
 							</dl>
 						</MetadataField>
+						<FieldFilepath
+							key="thumbnail"
+							relativeTo={PATHS_RELATIVE_TO}
+							accept=".png"
+							bind:value={$workInEditor.metadata.thumbnail}
+						/>
 						<FieldColors
 							key="colors"
 							images={Object.fromEntries(
