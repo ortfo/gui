@@ -4,7 +4,7 @@ import MetadataField from "./MetadataField.svelte"
 import { _ } from "svelte-i18n"
 import { noSpaces } from "../utils"
 
-export let value: `#${string}` | ""
+export let value: string
 export let key: string
 export let partOfObject: boolean = false
 export let compact: boolean = false
@@ -19,7 +19,7 @@ $: {
 		value = new TinyColor(value).setAlpha(1).toHexString() as `#${string}`
 	}
 	if (!value.startsWith("#") && value !== "") {
-		value = `#${value}`
+		value = new TinyColor(value).toHexString() as `#${string}`
 	}
 }
 </script>
