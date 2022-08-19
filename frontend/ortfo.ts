@@ -3,6 +3,9 @@ import { except, pick } from "./utils"
 
 export type Translated<T> = { [langage: string]: T }
 
+export type ContentType =
+    | `${"audio" | "video" | "image" | "text" | "application"}/${string}`
+
 export interface Abbreviations {
     [name: string]: string
 }
@@ -168,7 +171,7 @@ export interface WorkMetadata {
     }
     pagebackground?: string
     wip?: boolean
-    thumbnail: string;
+    thumbnail: string
     thumbnails: { [image: string]: { [resolution: number]: string } }
     aliases?: string[]
     titlestyle?: "filled" | "outlined"

@@ -1,10 +1,13 @@
 <script lang="ts">
 import { metadataReadableNames } from "../ortfo"
 import { noSpaces } from "../utils"
+import { tooltip as tooltipAction, helptip as helptipAction }  from "../actions"
 import { _ } from "svelte-i18n"
 
 export let key: string
 export let help: string = ""
+export let tooltip: string = ""
+export let helptip: string = ""
 export let colon: boolean = false
 export let partOfObject: boolean = false
 export let oneline: boolean = false
@@ -13,10 +16,12 @@ export let nolabel: boolean = false
 </script>
 
 <div
-	class="entry"
+	class="entry entry-{noSpaces(key)}"
 	class:oneline
 	class:part-of-object={partOfObject}
 	class:compact
+	use:tooltipAction={tooltip}
+	use:helptipAction={helptip}
 >
 	<dt class:colon>
 		<svelte:element

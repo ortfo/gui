@@ -2,6 +2,7 @@ import gridHelp from "svelte-grid/build/helper"
 import { backend } from "./backend"
 import { fromBlocksToLayout, layoutWidth } from "./layout"
 import {
+    ContentType,
     LayedOutElement,
     Link,
     MediaEmbedDeclaration,
@@ -38,7 +39,9 @@ export type ContentBlock = {
 
 export type ContentUnit =
     | ({ type: "paragraph" } & Paragraph)
-    | ({ type: "media" } & MediaEmbedDeclaration)
+    | ({ type: "media" } & MediaEmbedDeclaration & {
+              generalcontenttype: string
+          })
     | ({ type: "link" } & Link)
 
 export type ItemID = `${ContentUnit["type"]}:${number}`
@@ -136,6 +139,7 @@ export async function toBlocks(
                                 "source",
                                 "attributes"
                             ),
+                            generalcontenttype,
                         }
 
                         break
@@ -243,12 +247,13 @@ export function emptyContentUnit(type: LayedOutElement["type"]): ContentUnit {
                 attributes: {
                     autoplay: false,
                     controls: true,
-                    looped: false,
+                    loop: false,
                     muted: false,
                     playsinline: false,
                 },
                 source: "",
                 title: "",
+                generalcontenttype: ""
             }
         case "link":
             return {

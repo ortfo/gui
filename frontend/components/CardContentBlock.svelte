@@ -11,6 +11,7 @@ import { localDatabase, localProjects, relativeToDatabase } from "../backend"
 import type { WorkOneLang } from "../ortfo"
 import { _ } from "svelte-i18n"
 import { tooltip, i18n } from "../actions"
+import ContentBlockMedia from "./ContentBlockMedia.svelte"
 
 const dispatch = createEventDispatcher()
 
@@ -18,15 +19,6 @@ export let block: ContentBlock
 export let work: WorkOneLang
 export let activeBlock: string
 
-function thumbnailOfSource(source: string): string {
-	let absolutePath =
-		$workOnDisk.metadata.thumbnails?.[
-			work.media.find(m => m.source === source)?.path
-		]?.[600]
-	return absolutePath
-		? localDatabase(absolutePath)
-		: localProjects(`${$workOnDisk.id}/.portfoliodb/${source}`)
-}
 </script>
 
 <div
@@ -34,9 +26,6 @@ function thumbnailOfSource(source: string): string {
 	class="block"
 	data-type={block.data.type}
 	class:active={activeBlock === block.id}
-	style={block.data.type === "media"
-		? `background-image: url(${thumbnailOfSource(block.data.source)})`
-		: ""}
 >
 	<div class="content" data-theme={$settings.theme}>
 		{#if block.data.type === "paragraph"}
@@ -49,11 +38,6 @@ function thumbnailOfSource(source: string): string {
 				placeholder={$_("write some text here")}
 			/>
 		{:else if block.data.type === "link"}
-			<h2>
-				{$_("link #{n}", {
-					values: { n: parseInt(block.id.split(":")[1]) + 1 },
-				})}
-			</h2>
 			<dl>
 				<FieldText
 					key="name"
@@ -71,28 +55,7 @@ function thumbnailOfSource(source: string): string {
 				/>
 			</dl>
 		{:else if block.data.type === "media"}
-			<h2>
-				{$_("media #{n}", {
-					values: { n: parseInt(block.id.split(":")[1]) + 1 },
-				})}
-			</h2>
-			<dl>
-				<FieldText
-					key="name"
-					bind:value={block.data.alt}
-					on:focus={() => (activeBlock = block.id)}
-					on:blur={() => (activeBlock = null)}
-					placeholder={$_("describe your media")}
-				/>
-				<FieldFilepath
-					relativeTo={`${$settings.projectsfolder}/${work.id}/.portfoliodb`}
-					key="source"
-					bind:value={block.data.source}
-					on:focus={() => (activeBlock = block.id)}
-					on:blur={() => (activeBlock = null)}
-					placeholder={$_("put the path or url to the media here")}
-				/>
-			</dl>
+			<ContentBlockMedia {block} {work} {activeBlock} />
 		{/if}
 	</div>
 	<div
@@ -149,26 +112,6 @@ function thumbnailOfSource(source: string): string {
 	}
 }
 
-.block[data-type="media"]:hover,
-.block[data-type="media"]:focus-within {
-	background-size: cover;
-
-	.content {
-		-webkit-backdrop-filter: blur(10px);
-		backdrop-filter: blur(10px);
-
-		&[data-theme="dark"] {
-			background: rgba(0, 0, 0, 0.75);
-		}
-		&[data-theme="light"] {
-			background: rgba(255, 255, 255, 0.75);
-		}
-	}
-}
-
-.block[data-type="media"]:not(:hover):not(:focus-within) .content {
-	opacity: 0;
-	pointer-events: none;
 }
 
 .block[data-type="media"] {
@@ -196,11 +139,8 @@ function thumbnailOfSource(source: string): string {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-}
-
-.block:not([data-type="paragraph"]) .content {
-	justify-content: center;
-	align-items: center;
+	flex-grow: 0;
+	min-height: 0;
 }
 
 .block:not(:hover) .dragger,

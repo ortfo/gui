@@ -195,4 +195,10 @@ All done: Terminé
 started on: commencé le
 finished on: terminé le
 work in progress: non terminé
+This value is not set: Cette valeur n'est pas spécifiée
 Building, please wait…: Construction, veuillez patienter…
+loop: en boucle
+show controls: contrôles
+mutes the video: rend la vidéo muette
+expose play, pause, etc. buttons to the user: montrer les boutons de lectures (play, pause, etc.) à l'utilisateur
+thumbnail: miniature

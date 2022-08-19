@@ -1,20 +1,26 @@
 <script lang="ts">
 import MetadataField from "./MetadataField.svelte"
 import { noSpaces } from "../utils"
+import { createEventDispatcher } from "svelte"
 
 export let value: boolean
 export let key: string
 export let help: string = ""
+export let tooltip: string = ""
+export let helptip: string = ""
 export let oneline: boolean = true
 export let partOfObject: boolean = false
+
+const emit = createEventDispatcher()
 </script>
 
-<MetadataField {key} {help} {oneline} {partOfObject}>
+<MetadataField {key} {help} {oneline} {partOfObject} {tooltip} {helptip}>
 	<input
 		id="metadata-field-{noSpaces(key)}"
 		type="checkbox"
 		name={key}
 		bind:checked={value}
+		on:change={e => emit("change", e.target.checked)}
 	/>
 </MetadataField>
 

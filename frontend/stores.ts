@@ -68,8 +68,9 @@ export const DEFAULT_UI_STATE: State = {
 }
 export const state: Writable<State> = writable(DEFAULT_UI_STATE)
 
-export const colorPickersSelectedColors: Writable<{ [hash: string]: ExtractedColors }> =
-    writable({})
+export const colorPickersSelectedColors: Writable<{
+    [hash: string]: ExtractedColors
+}> = writable({})
 
 export const buildProgress: Writable<BuildProgress> = writable({
     current: {
@@ -97,10 +98,24 @@ export const workInEditor: Writable<ParsedDescription | null> = writable(null)
 
 export const workOnDisk: Readable<Work | null> = derived(
     [database, state],
-    ([$database, $state]) =>
+    ([$database, $state]) => {
         // FIXME #5 everything breaks down if the work is not found
         // (try setting the state to a non-existent work)
-        $database?.works?.find(w => w.id === $state.editingWorkID) ?? null
+        if ($state.editingWorkID === "") {
+            return null
+        }
+        try {
+            const found = $database.works.find(w => w.id === $state.editingWorkID)
+            if (!found) {
+                console.error(`While computing workOnDisk(${$state.editingWorkID}): not found`)
+                return null
+            }
+            return found
+        } catch (e) {
+            console.error(`Fatal error while getting workOnDisk ${e}`)
+            return null
+        }
+    }
 )
 
 export const unsavedChanges: Readable<
