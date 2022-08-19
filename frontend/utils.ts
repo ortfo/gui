@@ -208,3 +208,14 @@ export function objectMapValues<I, O>(
         Object.entries(obj).map(([key, value]) => [key, fn(value)])
     )
 }
+
+// Array.fill doesn't structuredClone, this one does.
+export function deepRepeat<T>(repeats: number, element: T): T[] {
+    let result = new Array(repeats)
+
+    for (let i = 0; i < repeats; i++) {
+        result[i] = structuredClone(element)
+    }
+
+    return result
+}

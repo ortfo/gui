@@ -1,17 +1,16 @@
 <script lang="ts">
 import { createEventDispatcher } from "svelte"
-
 import type { ContentBlock } from "../contentblocks"
-import FieldFilepath from "./FieldFilepath.svelte"
 import FieldText from "./FieldText.svelte"
 import MarkdownEditor from "./MarkdownEditor.svelte"
+import { clickOutside } from "../actions"
 import { scale } from "svelte/transition"
-import { settings, workOnDisk } from "../stores"
-import { localDatabase, localProjects, relativeToDatabase } from "../backend"
+import { settings } from "../stores"
 import type { WorkOneLang } from "../ortfo"
 import { _ } from "svelte-i18n"
-import { tooltip, i18n } from "../actions"
+import { tooltip } from "../actions"
 import ContentBlockMedia from "./ContentBlockMedia.svelte"
+import ClickOutside from "svelte-click-outside"
 
 const dispatch = createEventDispatcher()
 
@@ -19,12 +18,14 @@ export let block: ContentBlock
 export let work: WorkOneLang
 export let activeBlock: string
 
+let choosingWhatToInsert: boolean = false
 </script>
 
 <div
 	in:scale
 	class="block"
 	data-type={block.data.type}
+	id={`block-${block.id}`}
 	class:active={activeBlock === block.id}
 >
 	<div class="content" data-theme={$settings.theme}>
@@ -68,14 +69,67 @@ export let activeBlock: string
 	<div
 		class="dragger"
 		use:tooltip={[$_("move"), 500]}
-		on:mousedown={() => dispatch("movePointerDown")}
+		on:mousedown={e => dispatch("movePointerDown", e)}
 	>
 		<img src="/assets/icon-move.svg" class="icon" alt={$_("move")} />
 	</div>
+	{#if choosingWhatToInsert}
+		<ul
+			class="insert-below"
+			use:clickOutside
+			on:click-outside={() => {
+				choosingWhatToInsert = false
+			}}
+		>
+			<li>
+				<img
+					src="/assets/icon-media.svg"
+					alt="media"
+					class="icon"
+					on:click={() => {
+						choosingWhatToInsert = false
+						dispatch("insert-below", "media")
+					}}
+				/>
+			</li>
+			<li>
+				<img
+					src="/assets/icon-paragraph.svg"
+					alt="paragraph"
+					class="icon"
+					on:click={() => {
+						choosingWhatToInsert = false
+						dispatch("insert-below", "paragraph")
+					}}
+				/>
+			</li>
+			<li>
+				<img
+					src="/assets/icon-major-link.svg"
+					alt="link"
+					class="icon"
+					on:click={() => {
+						choosingWhatToInsert = false
+						dispatch("insert-below", "link")
+					}}
+				/>
+			</li>
+		</ul>
+	{:else}
+		<div
+			class="insert-below"
+			use:tooltip={[$_("insert below"), 500]}
+			on:click={() => {
+				choosingWhatToInsert = true
+			}}
+		>
+			<div class="icon open">+</div>
+		</div>
+	{/if}
 	<div
 		class="resizer"
 		use:tooltip={[$_("resize"), 500]}
-		on:mousedown={() => dispatch("resizePointerDown")}
+		on:mousedown={(e) => dispatch("resizePointerDown", e)}
 	>
 		<img
 			src="/assets/icon-resize.svg"
@@ -102,6 +156,7 @@ export let activeBlock: string
 }
 
 .block:not([data-type="paragraph"]) h2 {
+	margin-top: 0;
 	margin-bottom: 1.5em;
 
 	&::before {
@@ -112,6 +167,9 @@ export let activeBlock: string
 	}
 }
 
+.block[data-type="link"] .content {
+	justify-content: center;
+	align-items: center;
 }
 
 .block[data-type="media"] {
@@ -151,7 +209,8 @@ export let activeBlock: string
 
 .resizer,
 .dragger,
-.deleter {
+.deleter,
+.insert-below {
 	position: absolute;
 	transition: all 0.2s ease;
 }
@@ -173,10 +232,36 @@ export let activeBlock: string
 	right: 1rem;
 }
 
-.dragger img,
-.resizer img,
-.deleter img {
+.insert-below {
+	cursor: pointer;
+	bottom: 1rem;
+	transform: translateX(-50%);
+	left: 50%;
+}
+
+.dragger .icon,
+.resizer .icon,
+.deleter .icon,
+.insert-below .icon {
 	height: 2rem;
 	width: 2rem;
+}
+
+.insert-below .icon {
+	transform: scale(1.5);
+}
+
+.insert-below > .icon.open {
+	font-size: 1.7rem;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+}
+
+.insert-below li {
+	list-style: none;
+}
+ul.insert-below {
+	display: flex;
 }
 </style>

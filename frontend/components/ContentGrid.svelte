@@ -39,6 +39,9 @@ import FieldText from "./FieldText.svelte"
 import { rebuildDatabase } from "./Navbar.svelte"
 import CardContentBlock from "./CardContentBlock.svelte"
 import { deleteWorks } from "../modals/ConfirmDeleteWorks.svelte"
+import { layoutWidth, OrtfoMkLayout } from "../layout"
+import { deepRepeat } from "../utils"
+import hotkeys from "../tinykeysInputDisabled"
 
 const dispatch = createEventDispatcher()
 
@@ -48,6 +51,8 @@ export let language: string
 let blocks: Translated<ContentBlock[]> = {}
 let cols: number[][] = []
 let rowCapacity: number = 0
+let rowHeight: number = 500
+let _newRowCapacity = rowCapacity
 let activeBlock: number | null = null
 let initialized = false
 let error: Error | null = null
@@ -74,53 +79,138 @@ onMount(async () => {
 	}
 })
 
-const addBlock = (type: LayedOutElement["type"]) => e => {
-	Object.entries(blocks).forEach(([lang, blocksOneLang]) => {
-		const empty = blocksOneLang.length === 0
-		const geometry = {
-			x: empty
-				? 0
-				: Math.min(...blocksOneLang.map(block => block[rowCapacity].x)),
-			y: empty
-				? 0
-				: Math.max(
-						...blocksOneLang.map(block => block[rowCapacity].y)
-				  ) + 1,
-			w: rowCapacity,
-			h: 1,
-		}
-		const id = `${type}:${
-			empty
-				? 0
-				: Math.max(
-						...blocksOneLang
-							.map(b => b.id.split(":"))
-							.filter(([bType, _]) => bType === type)
-							.map(([_, id]) => parseInt(id))
-				  ) + 1
-		}` as ItemID
+const stretchLayout = (oldLayout: OrtfoMkLayout, oldRowCapacity, target) => {
+	if (target < layoutWidth(oldLayout)) {
+		throw Error("Impossible to stretch layout below minimum capacity")
+	}
 
-		blocks[lang] = [
-			...blocks[lang],
-			{
-				id,
-				[rowCapacity]: {
-					...gridHelp.item(geometry),
-					customDragger: true,
-					customResizer: true,
-				},
-				data: emptyContentUnit(type),
-			},
-		]
-		blocks[lang] = blocks[lang].map(gridHelp.item)
+	return oldLayout.map(row => {
+		if (!Array.isArray(row)) {
+			return deepRepeat(target, row)
+		}
+		const rate = target / row.length
+		if (!Number.isInteger(rate)) {
+			throw Error(
+				`Cannot stretch layout row of size ${row.length} into size ${target} (rate is ${rate}, non integer)`
+			)
+		}
+
+		return row.map(cell => deepRepeat(target, cell)).flat()
 	})
 }
 
+const updateRowCapacity = async (newValue: number) => {
+	const oldValue = rowCapacity
+	;[blocks, rowCapacity] = await toBlocks(
+		{
+			...work,
+			metadata: {
+				...work.metadata,
+				layout: stretchLayout(work.metadata.layout, oldValue, newValue),
+			},
+		},
+		$settings.portfoliolanguages
+	)
+	cols = [[400, rowCapacity]]
+}
+
+const addBlock =
+	(
+		type: LayedOutElement["type"],
+		overrideGeometry: {
+			x?: number | null
+			y?: number | null
+			h?: number | null
+			w?: number | null
+		} = {}
+	) =>
+	e => {
+		Object.entries(blocks).forEach(([lang, blocksOneLang]) => {
+			const empty = blocksOneLang.length === 0
+			const geometry = {
+				x: Object.hasOwn(overrideGeometry, "x")
+					? overrideGeometry?.x
+					: empty
+					? 0
+					: Math.min(
+							...blocksOneLang.map(block => block[rowCapacity].x)
+					  ),
+				y: Object.hasOwn(overrideGeometry, "y")
+					? overrideGeometry?.y
+					: empty
+					? 0
+					: Math.max(
+							...blocksOneLang.map(block => block[rowCapacity].y)
+					  ) + 1,
+				w: overrideGeometry?.w || rowCapacity,
+				h: overrideGeometry?.h || 1,
+			}
+
+			// compute new geometry for other blocks: if they are below the one being added, they need to be shifted down
+			const newGeometry = (old: ContentBlock[number]) => {
+				if (old.y < geometry.y) return old
+
+				return {
+					...old,
+					y: old.y + 1,
+				}
+			}
+
+			const id = `${type}:${
+				Math.max(
+					-1,
+					...blocksOneLang
+						.map(b => b.id.split(":"))
+						.filter(([bType, _]) => bType === type)
+						.map(([_, id]) => parseInt(id))
+				) + 1
+			}` as ItemID
+
+			const newOtherBlocks = blocks[lang].map(b => ({
+				...b,
+				[rowCapacity]: newGeometry(b[rowCapacity]),
+			}))
+
+			blocks[lang] = [
+				...newOtherBlocks.filter(b => b[rowCapacity].y <= geometry.y),
+				{
+					id,
+					[rowCapacity]: {
+						...gridHelp.item(geometry),
+						customDragger: true,
+						customResizer: true,
+					},
+					data: emptyContentUnit(type),
+				},
+				...newOtherBlocks.filter(b => b[rowCapacity].y > geometry.y),
+			]
+			blocks[lang] = blocks[lang].map(gridHelp.item)
+		})
+	}
+
 const removeBlock = (item: ContentBlock) => e => {
+	const itemWasAloneOnRow = Object.values(blocks).every(
+		oneLangBlocks =>
+			oneLangBlocks.filter(b => b[rowCapacity].y === item[rowCapacity].y)
+				.length === 1
+	)
 	blocks = Object.fromEntries(
 		Object.entries(blocks).map(([lang, blocks]) => [
 			lang,
-			blocks.filter(b => b.id !== item.id),
+			blocks
+				// Remove the item
+				.filter(b => b.id !== item.id)
+				// Clean up empty space left by the deleted item
+				.map(b => {
+					const x = block => block[rowCapacity].x
+					const y = block => block[rowCapacity].y
+
+					if (y(b) > y(item) && itemWasAloneOnRow) {
+						b[rowCapacity].y--
+					}
+					// TODO same y case
+					return b
+				}),
 		])
 	)
 }
@@ -151,11 +241,26 @@ function updateWork(blocks) {
 	}
 }
 
+function handleScroll(event: WheelEvent) {
+	// alt+scroll: adjust block height
+	if (event.altKey) {
+		event.preventDefault()
+		rowHeight = rowHeight + 0.25 * event.deltaY
+	}
+}
+
 function index(item: { id: string }): number {
 	return blocks[language].findIndex(it => it.id === item.id)
 }
 
+hotkeys(window, {
+	"$mod+L": addBlock("link"),
+	"$mod+M": addBlock("media"),
+	"$mod+P": addBlock("paragraph"),
+})
+
 $: updateWork(blocks)
+$: console.log("rowHeight=", rowHeight)
 </script>
 
 {#if !initialized}
@@ -174,50 +279,69 @@ $: updateWork(blocks)
 		{/each}
 	</ul>
 {:else if blocks[language].length > 0}
-	<Grid
-		bind:items={blocks[language]}
-		{cols}
-		rowHeight={400}
-		let:dataItem={item}
-		let:movePointerDown
-		let:resizePointerDown
-		on:change={_ => {
-			updateOtherLanguages()
-			updateWork(blocks)
-		}}
-	>
-		<CardContentBlock
-			bind:block={blocks[language][index(item)]}
-			bind:activeBlock
-			work={inLanguage(language)($workOnDisk)}
-			on:movePointerDown
-			on:resizePointerDown
-			on:remove={removeBlock(item)}
-		/>
-	</Grid>
-	<div class="create-block">
-		<h2>{$_("Add a new block?")}</h2>
-		<div class="types">
-			<button data-variant="none" on:click={addBlock("media")}>
-				<img
-					src="/assets/icon-media.svg"
-					alt="media icon"
-					class="icon"
-				/>
-				{$_("media")}
-			</button>
-			<button data-variant="none" on:click={addBlock("paragraph")}>
-				<img src="/assets/icon-paragraph.svg" alt="¶" class="icon" />
-				{$_("paragraph")}
-			</button>
-			<button data-variant="none" on:click={addBlock("link")}>
-				<img
-					src="/assets/icon-major-link.svg"
-					alt={$_("link icon")}
-					class="icon"
-				/>
-				{$_("link")}
-			</button>
+	<input
+		type="number"
+		name="row-capacity"
+		id="row-capacity"
+		bind:value={_newRowCapacity}
+		on:blur={() => updateRowCapacity(_newRowCapacity)}
+	/>
+	<div class="scroll-listener" on:wheel={handleScroll}>
+		<Grid
+			bind:items={blocks[language]}
+			{cols}
+			{rowHeight}
+			let:dataItem={item}
+			let:movePointerDown
+			let:resizePointerDown
+			on:change={_ => {
+				updateOtherLanguages()
+				updateWork(blocks)
+			}}
+		>
+			<CardContentBlock
+				bind:block={blocks[language][index(item)]}
+				bind:activeBlock
+				work={inLanguage(language)($workOnDisk)}
+				on:movePointerDown={e => movePointerDown(e.detail)}
+				on:resizePointerDown={e => resizePointerDown(e.detail)}
+				on:remove={removeBlock(item)}
+				on:insert-below={e => {
+					console.log("inserting", e.detail, "below", item)
+					addBlock(e.detail, {
+						y: item[rowCapacity].y + 1,
+					})(e)
+				}}
+			/>
+		</Grid>
+		<div class="create-block">
+			<h2>{$_("Add a new block?")}</h2>
+			<div class="types">
+				<button data-variant="none" on:click={addBlock("media")}>
+					<img
+						src="/assets/icon-media.svg"
+						alt="media icon"
+						class="icon"
+					/>
+					{$_("media")}
+				</button>
+				<button data-variant="none" on:click={addBlock("paragraph")}>
+					<img
+						src="/assets/icon-paragraph.svg"
+						alt="¶"
+						class="icon"
+					/>
+					{$_("paragraph")}
+				</button>
+				<button data-variant="none" on:click={addBlock("link")}>
+					<img
+						src="/assets/icon-major-link.svg"
+						alt={$_("link icon")}
+						class="icon"
+					/>
+					{$_("link")}
+				</button>
+			</div>
 		</div>
 	</div>
 {:else}
@@ -268,6 +392,10 @@ h2 {
 
 :global(.toolbar) {
 	align-self: flex-start;
+}
+
+.scroll-listener {
+	width: 100%;
 }
 
 .create-block:not(.empty) {
