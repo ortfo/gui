@@ -83,6 +83,18 @@ func startWebview() {
 		settings, _ := LoadSettings()
 		return settings.RebuildDatabase()
 	})
+	w.Bind("backend__rebuildWork", func(workID string) error {
+		ortfodbConfig, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"), ConfigurationDirectory("portfolio-database"))
+		if err != nil {
+			return fmt.Errorf("couldn't load database configuration: %w", err)
+		}
+
+		return ortfodb.BuildSome(workID, ConfigurationDirectory("portfolio-database"), ConfigurationDirectory("portfolio-database", "database.json"), ortfodb.Flags{
+			Scattered:    true,
+			Silent:       true,
+			ProgressFile: ConfigurationDirectory("portfolio-database", "progress.json"),
+		}, ortfodbConfig)
+	})
 	w.Bind("backend__layout", func(description ortfodb.ParsedDescription, languages []string) (map[string][]LayedOutElement, error) {
 		layedout, err := Layout(description, languages)
 		if err != nil {

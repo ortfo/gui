@@ -9,7 +9,7 @@ export async function saveWork(
 ) {
 	await backend.writeToDisk(parsedDescription, id)
 	volatileWorks.set(get(volatileWorks).filter(workID => workID !== id))
-	rebuildDatabase(reloadWhenDone)
+	rebuildDatabase(id, reloadWhenDone)
 }
 
 export function closeWork(summoner) {

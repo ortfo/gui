@@ -79,7 +79,7 @@ func (settings *Settings) RebuildDatabase() error {
 		return fmt.Errorf("couldn't load database configuration: %w", err)
 	}
 
-	go ortfodb.Build(
+	go ortfodb.BuildAll(
 		projectsFolder,
 		ConfigurationDirectory("portfolio-database", "database.json"),
 		ortfodb.Flags{Scattered: true, Silent: true, ProgressFile: ConfigurationDirectory("portfolio-database", "progress.json")},

@@ -23,12 +23,19 @@ export function startPolling(reloadWhenDone: boolean = true) {
 	}, 150)
 }
 
-export function rebuildDatabase(reloadWhenDone: boolean = true) {
+export function rebuildDatabase(
+	workID: string = "",
+	reloadWhenDone: boolean = true
+) {
 	if (get(rebuildingDatabase)) {
 		return
 	}
 	startPolling(reloadWhenDone)
-	backend.rebuildDatabase()
+	if (workID === "") {
+		backend.rebuildWork(workID)
+	} else {
+		backend.rebuildDatabase()
+	}
 }
 </script>
 

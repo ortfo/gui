@@ -101,6 +101,11 @@ export const backend = {
         return (await backend__rebuildDatabase()) as MaybeError
     },
     // ../backend/main.go
+    rebuildWork: async (id: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__rebuildDatabase(id)) as MaybeError
+    },
+    // ../backend/main.go
     layout: async (work: ParsedDescription, languages: string[]) => {
         const data = Object.fromEntries(
             Object.entries(
