@@ -232,22 +232,21 @@ let titleH1: HTMLHeadingElement
 						<FieldColors
 							key="colors"
 							images={Object.fromEntries(
-								Object.entries(
-									$workOnDisk.metadata.thumbnails
-								).map(([image, resolutions]) => [
-									resolutions?.[
-										closestTo(
-											400,
-											Object.keys(resolutions).map(
-												parseFloat
+								$workOnDisk.media[$state.lang]
+									.filter(
+										m => Object.keys(m.thumbnails).length
+									)
+									.map(m => [
+										m.thumbnails?.[
+											closestTo(
+												400,
+												Object.keys(m.thumbnails).map(
+													parseFloat
+												)
 											)
-										)
-									],
-									$workInEditor.mediaembeddeclarations[
-										$state.lang
-									].find(m => analyzed(m)?.path === image)
-										?.alt,
-								])
+										],
+										m?.alt,
+									])
 							)}
 							bind:value={$workInEditor.metadata.colors}
 						/>

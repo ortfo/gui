@@ -172,7 +172,6 @@ export interface WorkMetadata {
     pagebackground?: string
     wip?: boolean
     thumbnail: string
-    thumbnails: { [image: string]: { [resolution: number]: string } }
     aliases?: string[]
     titlestyle?: "filled" | "outlined"
 }
@@ -222,6 +221,7 @@ export interface Technology {
 }
 
 export interface Media {
+	thumbnails: {[resolution: number]: string}
     id: string
     alt: string
     title: string

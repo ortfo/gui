@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Tag, WorkOneLang } from "../ortfo"
+import type { Media, Tag, WorkOneLang } from "../ortfo"
 import JSONTree from "svelte-json-tree"
 import Card from "./Card.svelte"
 import { settings, state } from "../stores"
@@ -7,24 +7,26 @@ import { backend, localDatabase, relativeToDatabase } from "../backend"
 import type { Fuse } from "fuse.js"
 import HighlightText from "./HighlightText.svelte"
 import { _ } from "svelte-i18n"
-import { tooltip } from "../actions"
+import { helptip, tooltip } from "../actions"
 import { createEventDispatcher } from "svelte"
 import { closestTo } from "../utils"
 
 const dispatch = createEventDispatcher()
 
 function thumbPath() {
-	let chosenMedia: string;
+	let chosenMedia: Media
 	if (work.metadata?.thumbnail) {
-		chosenMedia = work.media.find(m => m.source === work.metadata.thumbnail)?.path
+		chosenMedia = work.media.find(
+			m => m.source === work.metadata.thumbnail
+		)
 	} else {
-		chosenMedia = Object.keys(work.metadata?.thumbnails || {})?.[0]
+		chosenMedia = work.media.filter(m => Object.keys(m.thumbnails).length)[0]
 	}
 	const sizes = Object.keys(
-		work.metadata.thumbnails?.[chosenMedia] || {}
+	chosenMedia.thumbnails
 	).map(Number)
 	const thumbnailPath =
-		work.metadata.thumbnails?.[chosenMedia]?.[closestTo(400, sizes)]
+		chosenMedia.thumbnails?.[closestTo(400, sizes)]
 	return thumbnailPath ? localDatabase(thumbnailPath) : ""
 }
 
@@ -61,11 +63,11 @@ $: dispatch(selected ? "select" : "deselect", { work })
 				<li>
 					<button
 						class:selected={selectedTag === tag}
-						use:tooltip={$settings.showtips
-							? $_("Click to only show works tagged {tag}", {
+						use:helptip={selectedTag === tag
+							? $_("Click to show all works")
+							: $_("Click to only show works tagged {tag}", {
 									values: { tag },
-							  })
-							: ""}
+							  })}
 						on:click|stopPropagation={e => {
 							dispatch("tag-click", tag)
 							e.target.blur()

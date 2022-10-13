@@ -19,10 +19,7 @@ function absoluteMediaPath(source: string): string {
 }
 
 function thumbnailOfSource(source: string): string {
-	let absolutePath =
-		$workOnDisk.metadata.thumbnails?.[
-			work.media.find(m => m.source === source)?.path
-		]?.[600]
+	let absolutePath = work.media.find(m => m.source === source)?.thumbnails?.[600]
 	return absolutePath
 		? localDatabase(absolutePath)
 		: absoluteMediaPath(source)
