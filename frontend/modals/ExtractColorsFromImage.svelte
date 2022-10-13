@@ -17,7 +17,6 @@ export let originalColors: ExtractedColors
 export let images: { [url: string]: string }
 export let selected: string | null = null
 export let extracted: ExtractedColors = { ...originalColors }
-console.log(images)
 
 $: $colorPickersSelectedColors[hash] = extracted
 $: if (selected) extract(selected)

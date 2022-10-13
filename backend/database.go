@@ -115,10 +115,10 @@ func (settings *Settings) ProgressFile() ortfomk.ProgressFile {
 		return progressFile
 	}
 	raw, err := os.ReadFile(progressFilePath)
-	LogToBrowser("Progress file raw is %s", string(raw))
 	if string(raw) == "" {
 		return settings.ProgressFile()
 	}
+	LogToBrowser("Progress file raw is %s", string(raw))
 	if err != nil {
 		ErrorToBrowser("Couldn't read progress file: %s", err)
 		return progressFile
