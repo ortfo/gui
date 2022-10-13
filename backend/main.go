@@ -257,6 +257,21 @@ func startWebview() {
 
 		return os.WriteFile(path, []byte{}, 0666)
 	})
+	w.Bind("backend__mediaContent", func(path string) (string, error) {
+		settings, err := LoadSettings()
+		if err != nil {
+			return "", fmt.Errorf("while loading media content of %s: %w", path, err)
+		}
+
+		absPath := filepath.Join(settings.ProjectsFolder, path)
+		fmt.Println("reading contents of file", absPath)
+		content, err := os.ReadFile(absPath)
+		if err != nil {
+			return "", err
+		}
+
+		return string(content), nil
+	})
 	w.Run()
 }
 

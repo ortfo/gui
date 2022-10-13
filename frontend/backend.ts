@@ -239,4 +239,8 @@ export const backend = {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__newFile(path)) as string
     },
+    mediaContent: async (path: string) => {
+        // @ts-ignore backend__* functions are injected by webview (from the backend)
+        return (await backend__mediaContent(path)) as string
+    },
 }
