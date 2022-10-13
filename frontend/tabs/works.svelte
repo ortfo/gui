@@ -8,6 +8,7 @@ import {
 	databaseCurrentLanguage,
 	volatileWorks,
 	WorkID,
+	state,
 	database,
 } from "../stores"
 import hotkeys from "../tinykeysInputDisabled"
@@ -28,6 +29,7 @@ let filterByTag: Tag["singular"] | "" = ""
 let selectedWorks: Set<WorkID> = new Set()
 let query: string = ""
 let searcher: Fuse<WorkOneLang>
+let searchBarElement: HTMLInputElement
 
 function withoutVolatiles<W extends WorkOneLang | Work>(works: W[]): W[] {
 	return works.filter(work => !$volatileWorks.includes(work.id))
@@ -46,19 +48,19 @@ onMount(() => {
 
 	hotkeys(window, {
 		"$mod+a": e => {
-			if (
-				["INPUT", "SELECT", "TEXTAREA"].includes(
-					document.activeElement.tagName
-				)
-			) {
-				return
-			}
-			e.preventDefault()
+			if (e.insideEditable) return
 			select(search(query).map(r => r.item))
 		},
+		"$mod+n": e => {
+			if (creatingWork) return
+			creatingWork = true
+		},
 		"$mod+Shift+a": e => {
-			e.preventDefault()
 			deselect(search(query).map(r => r.item))
+		},
+		"$mod+f": e => {
+			if (creatingWork) return
+			searchBarElement?.focus()
 		},
 	})
 })
@@ -113,7 +115,14 @@ function deselect(works: WorkOneLang[]) {
 
 <div class="actionbar">
 	<section class="filters">
-		<SearchBar bind:query />
+		<SearchBar
+			bind:htmlElement={searchBarElement}
+			bind:query
+			on:enter={() => {
+				$state.editingWorkID = search(query)[0].item.id
+				$state.openTab = "editor"
+			}}
+		/>
 		{#if $database.tags.length > 0}
 			<div class="tag-filter">
 				<label for="filter-by-tags">

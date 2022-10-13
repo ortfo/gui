@@ -21,6 +21,7 @@ import { _ } from "svelte-i18n"
 import SearchBar from "../components/SearchBar.svelte"
 import HighlightText from "../components/HighlightText.svelte"
 import { escapeRegExp } from "lodash"
+import hotkeys from "../tinykeysInputDisabled"
 const summon = createModalSummoner()
 
 // TODO use <SearchableList>
@@ -29,6 +30,18 @@ export let open: boolean = false
 
 let searcher: Fuse<DirEntry>
 let query: string = ""
+let searchBarElement: HTMLInputElement
+
+hotkeys(window, {
+	"$mod+f": e => {
+		searchBarElement?.focus()
+	},
+	Escape: e => {
+		if (open) {
+			open = false
+		}
+	},
+})
 
 async function getUndescribedWorks() {
 	let dirs = await backend.listDirectory($settings.projectsfolder)
@@ -117,7 +130,7 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 				)}
 			{/if}
 		</p>
-		<SearchBar bind:query />
+		<SearchBar bind:htmlElement={searchBarElement} bind:query />
 		<ul use:scrollStates={{ bottom: 50, top: 0 }}>
 			{#each search(dirs, query) as result (result.refIndex)}
 				<li>
