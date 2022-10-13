@@ -1,12 +1,37 @@
 <script lang="ts">
+import { createEventDispatcher, onMount } from "svelte"
+
 import { _ } from "svelte-i18n"
+import hotkeys from "../tinykeysInputDisabled"
+
+const dispatch = createEventDispatcher()
 
 export let query: string = ""
+export let htmlElement: HTMLInputElement
+
+onMount(() => {
+})
 </script>
 
 <div class="search-bar">
 	<img src="/assets/icon-search.svg" alt="⌕" class="icon" />
-	<input type="text" bind:value={query} placeholder={$_("Search")} />
+	<input
+		bind:this={htmlElement}
+		type="text"
+		bind:value={query}
+		placeholder={$_("Search")}
+		on:keyup={e => {
+			switch (e.key) {
+				case "Escape":
+					htmlElement.blur()
+					break
+				case "Enter":
+					console.log("dispatching")
+					dispatch("enter", e)
+					break
+			}
+		}}
+	/>
 	{#if query !== ""}
 		<button class="clear" data-variant="none" on:click={_ => (query = "")}
 			>×</button
