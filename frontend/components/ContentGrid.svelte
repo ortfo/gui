@@ -40,7 +40,7 @@ import { rebuildDatabase } from "./Navbar.svelte"
 import CardContentBlock from "./CardContentBlock.svelte"
 import { deleteWorks } from "../modals/ConfirmDeleteWorks.svelte"
 import { layoutWidth, OrtfoMkLayout } from "../layout"
-import { deepRepeat } from "../utils"
+import { deepRepeat, pick } from "../utils"
 import hotkeys from "../tinykeysInputDisabled"
 
 const dispatch = createEventDispatcher()
@@ -189,30 +189,30 @@ const addBlock =
 	}
 
 const removeBlock = (item: ContentBlock) => e => {
+	// updateOtherLanguages will not delete blocks that are in one language's layout but not the other, as they could've also been added from the other to the current one.
+	// we delete the block from other languages right there.
+	
 	const itemWasAloneOnRow = Object.values(blocks).every(
 		oneLangBlocks =>
 			oneLangBlocks.filter(b => b[rowCapacity].y === item[rowCapacity].y)
 				.length === 1
 	)
-	blocks = Object.fromEntries(
-		Object.entries(blocks).map(([lang, blocks]) => [
-			lang,
-			blocks
-				// Remove the item
-				.filter(b => b.id !== item.id)
-				// Clean up empty space left by the deleted item
-				.map(b => {
-					const x = block => block[rowCapacity].x
-					const y = block => block[rowCapacity].y
+	blocks[$state.lang] = blocks[$state.lang]
+		// Remove the item
+		.filter(b => b.id !== item.id)
+		// Clean up empty space left by the deleted item
+		.map(b => {
+			const x = block => block[rowCapacity].x
+			const y = block => block[rowCapacity].y
+			const h = block => block[rowCapacity].h
 
-					if (y(b) > y(item) && itemWasAloneOnRow) {
-						b[rowCapacity].y--
-					}
-					// TODO same y case
-					return b
-				}),
-		])
-	)
+			if (y(b) > y(item) && itemWasAloneOnRow) {
+				b[rowCapacity].y -= h(item)
+				console.log(`decremented y of ${b.id} by ${h(item)}`)
+			}
+			// TODO same y case
+			return b
+		})
 }
 
 function updateOtherLanguages() {
@@ -260,6 +260,21 @@ hotkeys(window, {
 })
 
 $: updateWork(blocks)
+$: blocks = Object.fromEntries(
+	Object.entries(blocks).map(([lang, blocksOneLang]) => {
+		console.log(`sorting blocks`)
+		return [
+			lang,
+			blocksOneLang.sort((a, b) =>
+				a[rowCapacity].y > b[rowCapacity].y ||
+				(a[rowCapacity].y === b[rowCapacity].y &&
+					a[rowCapacity].x > b[rowCapacity].x)
+					? 1
+					: -1
+			),
+		]
+	})
+)
 $: console.log("rowHeight=", rowHeight)
 </script>
 
