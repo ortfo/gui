@@ -1,6 +1,5 @@
 <script lang="ts">
 import { diff, Operation } from "just-diff"
-import JSONTree from "svelte-json-tree"
 
 export let a: object
 export let aLabel: string = "a"
@@ -28,13 +27,28 @@ function pathHTML(path: (string | number)[]): string {
 			{#if difference.op === "add"}
 				<td><strong>+</strong></td>
 				<td />
-				<td><JSONTree value={difference.value} /></td>
+				<td><code>{JSON.stringify(difference.value)}<code /></code></td>
 			{:else if difference.op === "replace"}
-				<td><JSONTree value={access(a, difference.path)} /></td>
+				<td
+					><code
+						>{JSON.stringify(access(a, difference.path))}<code
+						/></code
+					></td
+				>
 				<td><strong>→</strong></td>
-				<td><JSONTree value={access(b, difference.path)} /></td>
+				<td
+					><code
+						>{JSON.stringify(access(b, difference.path))}<code
+						/></code
+					></td
+				>
 			{:else if difference.op === "remove"}
-				<td><JSONTree value={access(a, difference.path)} /></td>
+				<td
+					><code
+						>{JSON.stringify(access(a, difference.path))}<code
+						/></code
+					></td
+				>
 				<td />
 				<td><strong>×</strong></td>
 			{/if}
