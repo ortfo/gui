@@ -10,7 +10,6 @@ import type { WorkOneLang } from "../ortfo"
 import { _ } from "svelte-i18n"
 import { tooltip } from "../actions"
 import ContentBlockMedia from "./ContentBlockMedia.svelte"
-import ClickOutside from "svelte-click-outside"
 
 const dispatch = createEventDispatcher()
 
@@ -123,7 +122,7 @@ let choosingWhatToInsert: boolean = false
 				choosingWhatToInsert = true
 			}}
 		>
-			<div class="icon open">+</div>
+			<div class="icon-insert-below open">+</div>
 		</div>
 	{/if}
 	<div
@@ -247,11 +246,11 @@ let choosingWhatToInsert: boolean = false
 	width: 2rem;
 }
 
-.insert-below .icon {
+.icon-insert-below, .insert-below .icon {
 	transform: scale(1.5);
 }
 
-.insert-below > .icon.open {
+.icon-insert-below.open {
 	font-size: 1.7rem;
 	justify-content: center;
 	align-items: center;
