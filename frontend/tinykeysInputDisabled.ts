@@ -28,7 +28,10 @@ export default function hotkeys(target, bindings) {
                 if (isInsideEditable(event.target) && ambiguousShortcut(key)) {
                     return
                 }
-                handler(event)
+                handler({
+                    ...event,
+                    insideEditable: isInsideEditable(event.target),
+                })
             },
         ])
     )
