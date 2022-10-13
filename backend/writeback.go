@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -13,7 +12,7 @@ func Writeback(settings Settings, parsedDescription ortfodb.ParsedDescription, w
 	// Put spaces back in metadata properties that should have them.
 	// It also removes technical metadata properties that shouldn't be written back.
 	// TODO: this behavior should be implemented in ortfo/mk.
-	parsedDescription.Metadata = ChangeKeys(parsedDescription.Metadata, map[string]string{
+	parsedDescription.Metadata = changeKeys(parsedDescription.Metadata, map[string]string{
 		"madewith":       "made with",
 		"pagebackground": "page background",
 		"layoutproper":   "", // empty keys means just delete it.
@@ -31,5 +30,5 @@ func Writeback(settings Settings, parsedDescription ortfodb.ParsedDescription, w
 	}
 
 	LogToBrowser("Writing description to %s", writeTo)
-	return ioutil.WriteFile(writeTo, []byte(description), 0644)
+	return os.WriteFile(writeTo, []byte(description), 0644)
 }

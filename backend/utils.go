@@ -34,7 +34,7 @@ func WriteIfNotExist(filePath string, data []byte) error {
 func JoinPaths(paths ...string) string {
 	result, err := homedir.Expand(filepath.Join(paths...))
 	if err != nil {
-		ErrorToBrowser("while expanding ~: %w", err)
+		ErrorToBrowser("while expanding ~: %s", err)
 		return filepath.Join(paths...)
 	}
 	return result
@@ -60,7 +60,9 @@ func LanguagesIn(description ortfodb.ParsedDescription) (languages []string) {
 	return
 }
 
-func ChangeKeys[K string, V any](m map[K]V, replaceMap map[K]K) map[K]V {
+// changeKeys changes the entries of m to replace its keys with the new keys described by replaceMap.
+// if the new key is the empty string, the corresponding entry is deleted.
+func changeKeys[K string, V any](m map[K]V, replaceMap map[K]K) map[K]V {
 	for oldKey, value := range m {
 		if newKey, ok := replaceMap[oldKey]; ok {
 			if newKey != "" {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -217,7 +216,7 @@ func startWebview() {
 		if err != nil {
 			return "", fmt.Errorf("while loading settings: %w", err)
 		}
-		bytes, err := ioutil.ReadFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"))
+		bytes, err := os.ReadFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"))
 		return string(bytes), err
 	})
 	w.Bind("backend__writeRawDescription", func(workID string, content string) error {
@@ -226,7 +225,7 @@ func startWebview() {
 			return fmt.Errorf("while loading settigns: %w", err)
 		}
 
-		return ioutil.WriteFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"), []byte(content), 0644)
+		return os.WriteFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"), []byte(content), 0644)
 	})
 	w.Bind("backend__clearThumbnails", func() error {
 		return os.RemoveAll(ConfigurationDirectory("portfolio-database", "media"))
@@ -241,9 +240,9 @@ func startWebview() {
 		fmt.Println("creating file", path)
 		err := os.MkdirAll(filepath.Dir(path), 0755)
 		if err != nil {
-			return  fmt.Errorf("while creating parent directory: %w",  err)
+			return fmt.Errorf("while creating parent directory: %w", err)
 		}
-		
+
 		return os.WriteFile(path, []byte{}, 0666)
 	})
 	w.Run()
