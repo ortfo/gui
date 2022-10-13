@@ -195,7 +195,7 @@ let titleH1: HTMLHeadingElement
 							>
 						</p>
 					{/if}
-					<dl>
+					<dl class="metadata">
 						<FieldList
 							key="tags"
 							bind:value={$workInEditor.metadata.tags}
@@ -229,6 +229,11 @@ let titleH1: HTMLHeadingElement
 							accept=".png"
 							bind:value={$workInEditor.metadata.thumbnail}
 						/>
+						<FieldFilepath
+							key="pagebackground"
+							relativeTo={PATHS_RELATIVE_TO}
+							bind:value={$workInEditor.metadata.pagebackground}
+						/>
 						<FieldColors
 							key="colors"
 							images={Object.fromEntries(
@@ -249,10 +254,6 @@ let titleH1: HTMLHeadingElement
 									])
 							)}
 							bind:value={$workInEditor.metadata.colors}
-						/>
-						<FieldImage
-							key="pagebackground"
-							bind:value={$workInEditor.metadata.pagebackground}
 						/>
 					</dl>
 				</section>
@@ -415,6 +416,10 @@ aside section:not(:first-of-type) {
 aside h2 {
 	margin-bottom: 0.25em;
 	font-size: 1.75em;
+}
+
+.metadata :global(.entry) {
+	margin-bottom: 1em;
 }
 
 .title,
