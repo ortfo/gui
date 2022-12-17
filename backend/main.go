@@ -28,20 +28,52 @@ type PickFileConstraint struct {
 }
 
 var w webview.WebView
+var ctx ortfodb.RunContext
+var settings Settings
 var Port = randomAvailablePort()
 
 const (
 	Version = "0.1.0-alpha.2"
 )
 
-func main() {
-	settings, _ := LoadSettings()
-	fmt.Printf("Settings: %#v\n", settings)
-	go startFilesystemServer(settings.ProjectsFolder)
-	startWebview()
+func projectsFolder() string {
+	result, _ := homedir.Expand(settings.ProjectsFolder)
+	return result
 }
 
-func startWebview() {
+func main() {
+	settings, _ = LoadSettings()
+	fmt.Printf("Settings: %#v\n", settings)
+	go startFilesystemServer(settings.ProjectsFolder)
+	err := startWebview()
+	if err != nil {
+		fmt.Printf("error: while starting webview: %s", err)
+	}
+}
+
+func newOrtfoContext() error {
+	var err error
+	ortfodbConfig, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"), ConfigurationDirectory("portfolio-database"))
+	if err != nil {
+		return fmt.Errorf("couldn't load database configuration: %w", err)
+	}
+	ctx, err = ortfodb.PrepareBuild(projectsFolder(), ConfigurationDirectory("portfolio-database", "database.json"), ortfodb.Flags{
+		Scattered:    true,
+		Silent:       true,
+		ProgressFile: ConfigurationDirectory("portfolio-database", "progress.json"),
+	}, ortfodbConfig)
+	if err != nil {
+		return fmt.Errorf("while preparing ortfodb build context: %w", err)
+	}
+	return nil
+}
+
+func startWebview() error {
+	err := newOrtfoContext()
+	if err != nil {
+		return err
+	}
+
 	w = webview.New(true)
 	defer w.Destroy()
 	w.SetTitle("ortfo")
@@ -61,7 +93,9 @@ func startWebview() {
 	})
 	w.Bind("backend__initialize", Initialize)
 	w.Bind("backend__settingsRead", func() (Settings, error) {
-		return LoadSettings()
+		var err error
+		settings, err = LoadSettings()
+		return settings, err
 	})
 	w.Bind("backend__settingsWrite", func(settings Settings) error {
 		LogToBrowser("Writing %#v into settings", settings)
@@ -73,36 +107,30 @@ func startWebview() {
 		return nil
 	})
 	w.Bind("backend__databaseRead", func() (ortfomk.Database, error) {
-		settings, _ := LoadSettings()
 		return settings.LoadDatabase()
-		// db, err := settings.LoadDatabase()
-		// spew.Dump(db, err)
-		// return db, err
 	})
 	w.Bind("backend__rebuildDatabase", func() error {
-		settings, _ := LoadSettings()
 		return settings.RebuildDatabase()
 	})
 	w.Bind("backend__rebuildWork", func(workID string) error {
-		ortfodbConfig, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"), ConfigurationDirectory("portfolio-database"))
-		if err != nil {
-			return fmt.Errorf("couldn't load database configuration: %w", err)
-		}
-
-		return ortfodb.BuildSome(workID, ConfigurationDirectory("portfolio-database"), ConfigurationDirectory("portfolio-database", "database.json"), ortfodb.Flags{
-			Scattered:    true,
-			Silent:       true,
-			ProgressFile: ConfigurationDirectory("portfolio-database", "progress.json"),
-		}, ortfodbConfig)
+		newOrtfoContext()
+		return ortfodb.BuildSome(workID, projectsFolder(), ctx.OutputDatabaseFile, ctx.Flags, *ctx.Config)
 	})
-	w.Bind("backend__layout", func(description ortfodb.ParsedDescription, languages []string) (map[string][]LayedOutElement, error) {
-		layedout, err := Layout(description, languages)
+	w.Bind("backend__analyzeMedia", func(workID string, mediaEmbed ortfodb.MediaEmbedDeclaration) (ortfodb.Media, error) {
+		settings, _ := LoadSettings()
+		projectsFolder, err := homedir.Expand(settings.ProjectsFolder)
 		if err != nil {
-			return nil, fmt.Errorf("while laying out: %w", err)
+			return ortfodb.Media{}, fmt.Errorf("while expanding projects folder: %w", err)
 		}
-		return layedout, nil
+		_, media, err := (&ortfodb.RunContext{
+			DatabaseDirectory: projectsFolder,
+		}).AnalyzeMediaFile(workID, mediaEmbed)
+		if err != nil {
+			return ortfodb.Media{}, fmt.Errorf("while analyzing media: %w", err)
+		}
+		return media, nil
 	})
-	w.Bind("backend__writeback", func(description ortfodb.ParsedDescription, workID string) error {
+	w.Bind("backend__writeback", func(description ortfodb.AnalyzedWork, workID string) error {
 		settings, err := LoadSettings()
 		if err != nil {
 			return fmt.Errorf("while loading settings: %w", err)
@@ -242,7 +270,7 @@ func startWebview() {
 	w.Bind("backend__clearThumbnails", func() error {
 		return os.RemoveAll(ConfigurationDirectory("portfolio-database", "media"))
 	})
-	w.Bind("backend__extractColors", func(imagePath string) (colors ortfodb.ExtractedColors, err error) {
+	w.Bind("backend__extractColors", func(imagePath string) (colors ortfodb.ColorPalette, err error) {
 		return ortfodb.ExtractColors(ConfigurationDirectory("portfolio-database", imagePath))
 	})
 	w.Bind("backend__newDir", func(path string) error {
@@ -273,6 +301,7 @@ func startWebview() {
 		return string(content), nil
 	})
 	w.Run()
+	return nil
 }
 
 func Initialize() error {

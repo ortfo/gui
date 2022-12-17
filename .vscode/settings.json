@@ -16,5 +16,6 @@
 		"& add(e)}\n\t\t\t/>\n\t\t",
 		" e.code === \"Enter\" ",
 		" e.code === \"Enter\" "
-	]
+	],
+	"svg.preview.background": "transparent"
 }

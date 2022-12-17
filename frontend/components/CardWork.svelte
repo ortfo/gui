@@ -20,6 +20,7 @@ function thumbPath() {
 			m => m.source === work.metadata.thumbnail
 		)
 	} else {
+		console.log(JSON.stringify(work.media[0]))
 		chosenMedia = work.media.filter(m => Object.keys(m.thumbnails).length)[0]
 	}
 	const sizes = Object.keys(

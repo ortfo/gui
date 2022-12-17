@@ -29,6 +29,7 @@ import {
 	state,
 	workOnDisk,
 	workOnDiskCurrentLanguage,
+	debugFlyoutContent,
 } from "../stores"
 import { createEventDispatcher, onMount } from "svelte"
 import { diff } from "just-diff"
@@ -276,6 +277,9 @@ $: blocks = Object.fromEntries(
 	})
 )
 $: console.log("rowHeight=", rowHeight)
+$: $debugFlyoutContent = blocks[$state.lang]
+	?.map(b => ({ id: b.id, ...pick(b["2"], "x", "y", "w", "h") }))
+	.map(b => `${b.id} (${b.x} ${b.y}) → (${b.x + b.w - 1} ${b.y + b.h - 1})`)
 </script>
 
 {#if !initialized}

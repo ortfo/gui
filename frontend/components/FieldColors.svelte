@@ -14,7 +14,7 @@ const emit = createEventDispatcher()
 const summon = createModalSummoner()
 const colorPickerHash = uniqueId("color-picker-")
 
-export let images: { [url: string]: string }
+export let images: { [path: string]: string } // {path (passed to localDatabase(...)) : description of image (alt text)}
 export let selectedImage: string | null = null
 export let value: {
 	primary: string

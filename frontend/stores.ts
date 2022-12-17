@@ -96,6 +96,8 @@ export const volatileWorks: Writable<WorkID[]> = writable([] as WorkID[])
 
 export const workInEditor: Writable<ParsedDescription | null> = writable(null)
 
+export const debugFlyoutContent: Writable<any> = writable(null)
+
 export const workOnDisk: Readable<Work | null> = derived(
     [database, state],
     ([$database, $state]) => {

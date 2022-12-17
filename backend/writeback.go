@@ -8,16 +8,10 @@ import (
 	ortfodb "github.com/ortfo/db"
 )
 
-func Writeback(settings Settings, parsedDescription ortfodb.ParsedDescription, workID string) error {
+func Writeback(settings Settings, parsedDescription ortfodb.AnalyzedWork, workID string) error {
 	// Put spaces back in metadata properties that should have them.
 	// It also removes technical metadata properties that shouldn't be written back.
 	// TODO: this behavior should be implemented in ortfo/mk.
-	parsedDescription.Metadata = changeKeys(parsedDescription.Metadata, map[string]string{
-		"madewith":       "made with",
-		"pagebackground": "page background",
-		"layoutproper":   "", // empty keys means just delete it.
-		"title":          "",
-	})
 	description, err := ortfodb.ReplicateDescription(parsedDescription)
 	// println("Replicated description:", description)
 	if err != nil {

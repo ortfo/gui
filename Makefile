@@ -8,6 +8,9 @@ build:
 # Build backend
 	cd backend && go build -o ../ortfo
 
+install:
+	mv ortfo ~/.local/bin/
+
 installers:
 	$(MAKE) build
 	cd installers && ./create.sh

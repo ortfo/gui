@@ -1,6 +1,6 @@
 <script lang="ts">
 import Navbar, { rebuildDatabase } from "./components/Navbar.svelte"
-import { database, onboardingNeeded, settings, state } from "./stores"
+import { database, onboardingNeeded, settings, state, debugFlyoutContent } from "./stores"
 import { backend } from "./backend"
 import Works from "./tabs/works.svelte"
 import Tags from "./tabs/tags.svelte"
@@ -23,7 +23,9 @@ import Notifications from "svelte-notifications"
 import { vimkeys } from "./vimkeys"
 import { createModalSummoner } from "./modals"
 import Onboarding from "./screens/Onboarding.svelte"
+import { createNotificationSpawner } from "./utils"
 
+const notifications = createNotificationSpawner()
 const summon = createModalSummoner()
 
 function loadLocales() {
@@ -92,6 +94,12 @@ onMount(() => {
 			closeWork(summon)
 		},
 		...vimkeys(60),
+		"ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight B A":
+			async () => {
+				$settings.poweruser = true
+				await backend.settingsWrite($settings)
+				notifications.add($_(`you are now a power user!`))
+			},
 	})
 
 	window.addEventListener("scroll", () => {
@@ -111,6 +119,7 @@ settings.subscribe(settings => applyTheme(settings.theme))
 		{:else}
 			<Modal closeButton={ModalButtonClose}>
 				<Navbar />
+				<pre class="debug-flyout">{JSON.stringify($debugFlyoutContent, null, 2)}</pre>
 				<main>
 					{#if $state.openTab == "works"}
 						<Works />
@@ -334,5 +343,17 @@ main {
 
 .error h2 {
 	margin-top: 5em;
+}
+
+.debug-flyout {
+	position: fixed;
+	z-index: 100;
+	bottom: 10px;
+	left: 10px;
+	background: #000;
+	color: #ffffff;
+	max-height: 75vh;
+	max-width: 50vw;
+	overflow: scroll;
 }
 </style>

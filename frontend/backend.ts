@@ -106,18 +106,6 @@ export const backend = {
         return (await backend__rebuildDatabase(id)) as MaybeError
     },
     // ../backend/main.go
-    layout: async (work: ParsedDescription, languages: string[]) => {
-        const data = Object.fromEntries(
-            Object.entries(
-                // @ts-ignore backend__* functions are injected by webview (from the backend)
-                (await backend__layout(work, languages)) as Translated<
-                    unknown[]
-                >
-            ).map(([lang, val]) => [lang, val.map(lowercaseNoSpacesKeys)])
-        )
-        return data as Translated<LayedOutElement[]>
-    },
-    // ../backend/main.go
     writeToDisk: async (work: ParsedDescription, workID: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeback(

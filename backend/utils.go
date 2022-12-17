@@ -40,7 +40,7 @@ func JoinPaths(paths ...string) string {
 	return result
 }
 
-func LanguagesIn(description ortfodb.ParsedDescription) (languages []string) {
+func LanguagesIn(description ortfodb.ParsedWork) (languages []string) {
 	languages = make([]string, 0)
 	for lang := range description.Title {
 		languages = append(languages, lang)
