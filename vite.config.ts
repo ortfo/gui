@@ -1,7 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite"
 import { svelte } from "@sveltejs/vite-plugin-svelte"
-import commonjs from "@rollup/plugin-commonjs"
 import replace from "@rollup/plugin-replace"
 import yaml from "@rollup/plugin-yaml"
 import { execSync } from "child_process"
@@ -27,8 +26,6 @@ export default defineConfig({
             ),
         }),
         svelte(),
-        /* resolve({ browser: true, dedupe: ["svelte"] }), */
-        commonjs(),
         yaml(),
     ],
 })

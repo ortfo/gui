@@ -17,8 +17,8 @@ const emit = createEventDispatcher()
 	class:selectable
 	class:selected
 	class:has-icon={hasIcon}
-	on:click={() => {
-		if (clickable) emit("click")
+	on:click={(e) => {
+		if (clickable) emit("click", e)
 	}}
 >
 	{#if selectable}
@@ -61,7 +61,9 @@ const emit = createEventDispatcher()
 
 .card.clickable {
 	cursor: pointer;
-	transition: all 0.25s ease, background-color 0.5s ease;
+	transition:
+		all 0.25s ease,
+		background-color 0.5s ease;
 }
 .card.clickable:not(.creates):hover {
 	background-color: var(--ortforange-light);

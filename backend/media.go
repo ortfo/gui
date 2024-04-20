@@ -22,7 +22,7 @@ func (m mediaRoot) Open(name string) (http.File, error) {
 	name = strings.TrimPrefix(name, "/")
 	command, path, _ := strings.Cut(name, "/")
 	path = filepath.Clean(path)
-	println(path, name)
+	println(command, path)
 	switch command {
 	case "projects":
 		return http.Dir(m.projectsRoot).Open(path)

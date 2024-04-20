@@ -1,11 +1,10 @@
 <script lang="ts">
-import { entries } from "lodash"
-import MarkdownEditor from "./MarkdownEditor.svelte"
-import { tooltip } from "../actions"
 import { createEventDispatcher } from "svelte"
 import { _ } from "svelte-i18n"
+import { tooltip } from "../actions"
+import MarkdownEditor from "./MarkdownEditor.svelte"
 
-const dispatch = createEventDispatcher()
+const dispatch = createEventDispatcher<{ input: Record<string, string> }>()
 type K = any
 type V = any
 

@@ -41,7 +41,7 @@ public/build/
 .config
 
 mock-projects/
-!mock-projects/*/.portfoliodb/
+!mock-projects/*/.ortfo/
 !mock-projects/neptune/cover-arts/renders/square.png
 
 vite.config.ts.js

@@ -1,50 +1,64 @@
 <script lang="ts">
-import type { Media, Tag, WorkOneLang } from "../ortfo"
-import JSONTree from "svelte-json-tree"
-import Card from "./Card.svelte"
-import { settings, state } from "../stores"
-import { backend, localDatabase, relativeToDatabase } from "../backend"
-import type { Fuse } from "fuse.js"
-import HighlightText from "./HighlightText.svelte"
-import { _ } from "svelte-i18n"
-import { helptip, tooltip } from "../actions"
+import type Fuse from "fuse.js"
 import { createEventDispatcher } from "svelte"
+import { _ } from "svelte-i18n"
+import { helptip } from "../actions"
+import { localDatabase } from "../backend"
+import type { AnalyzedWorkLocalized } from "../ortfo"
+import type { BlockElement } from "@ortfo/db/dist/database"
+import { database, state, workInEditor, workOnDisk } from "../stores"
 import { closestTo } from "../utils"
+import Card from "./Card.svelte"
+import HighlightText from "./HighlightText.svelte"
 
 const dispatch = createEventDispatcher()
 
 function thumbPath() {
-	let chosenMedia: Media
+	let chosenMedia: BlockElement
 	if (work.metadata?.thumbnail) {
-		chosenMedia = work.media.find(
-			m => m.source === work.metadata.thumbnail
+		chosenMedia = work.content.blocks.find(
+			m => m.distSource === work.metadata.thumbnail,
 		)
 	} else {
-		console.log(JSON.stringify(work.media[0]))
-		chosenMedia = work.media.filter(m => Object.keys(m.thumbnails).length)[0]
+		chosenMedia = work.content.blocks.filter(
+			m => Object.keys(m.thumbnails ?? {}).length,
+		)[0]
 	}
-	const sizes = Object.keys(
-	chosenMedia.thumbnails
-	).map(Number)
-	const thumbnailPath =
-		chosenMedia.thumbnails?.[closestTo(400, sizes)]
+	if (!chosenMedia) return ""
+	const sizes = Object.keys(chosenMedia.thumbnails).map(Number)
+	const thumbnailPath = chosenMedia.thumbnails?.[closestTo(400, sizes)]
 	return thumbnailPath ? localDatabase(thumbnailPath) : ""
 }
 
 function editWork() {
+	console.log(`editing work ${work.id}`)
+	$workInEditor = structuredClone($database[work.id])
+	$workOnDisk = structuredClone($database[work.id])
 	$state.editingWorkID = work.id
 	$state.openTab = "editor"
 }
-export let work: WorkOneLang
-export let highlightTitle: readonly Fuse.FuseRangeTuple[] = []
-export let selectedTag: Tag["singular"] | "" = ""
-export let selectable: boolean = true
-export let selected: boolean = false
+export let work: AnalyzedWorkLocalized
+export let highlightTitle: readonly Fuse.RangeTuple[] = []
+export let selectedTag = ""
+export let selectable = true
+export let selected = false
 
 $: dispatch(selected ? "select" : "deselect", { work })
 </script>
 
-<Card clickable {selectable} bind:selected on:click={editWork}>
+<Card
+	clickable
+	{selectable}
+	bind:selected
+	on:click={({detail: event}) => {
+		if (!(event instanceof MouseEvent)) return
+		if (event.ctrlKey || event.metaKey) {
+			selected = !selected
+		} else {
+			editWork()
+		}
+	}}
+>
 	{#await thumbPath()}
 		<div class="thumb loading" />
 	{:then _}
@@ -54,7 +68,7 @@ $: dispatch(selected ? "select" : "deselect", { work })
 		<h2>
 			<HighlightText
 				--bg="var(--ortforange-light)"
-				text={work.title || work.id}
+				text={work.content.title || work.id}
 				indices={highlightTitle}
 			/>
 		</h2>
@@ -68,8 +82,12 @@ $: dispatch(selected ? "select" : "deselect", { work })
 							? $_("Click to show all works")
 							: $_("Click to only show works tagged {tag}", {
 									values: { tag },
-							  })}
+								})}
 						on:click|stopPropagation={e => {
+							if (e.ctrlKey || e.metaKey) {
+								selected = !selected
+								return
+							}
 							dispatch("tag-click", tag)
 							e.target.blur()
 						}}

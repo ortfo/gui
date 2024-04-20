@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
-	ortfodb "github.com/ortfo/db"
 )
 
 func prepareQuotedString(message string, a ...interface{}) string {
@@ -40,25 +39,25 @@ func JoinPaths(paths ...string) string {
 	return result
 }
 
-func LanguagesIn(description ortfodb.ParsedWork) (languages []string) {
-	languages = make([]string, 0)
-	for lang := range description.Title {
-		languages = append(languages, lang)
-	}
-	for lang := range description.Paragraphs {
-		languages = append(languages, lang)
-	}
-	for lang := range description.Footnotes {
-		languages = append(languages, lang)
-	}
-	for lang := range description.Links {
-		languages = append(languages, lang)
-	}
-	for lang := range description.MediaEmbedDeclarations {
-		languages = append(languages, lang)
-	}
-	return
-}
+// func LanguagesIn(description ortfodb.ParsedWork) (languages []string) {
+// 	languages = make([]string, 0)
+// 	for lang := range description.Title {
+// 		languages = append(languages, lang)
+// 	}
+// 	for lang := range description.Paragraphs {
+// 		languages = append(languages, lang)
+// 	}
+// 	for lang := range description.Footnotes {
+// 		languages = append(languages, lang)
+// 	}
+// 	for lang := range description.Links {
+// 		languages = append(languages, lang)
+// 	}
+// 	for lang := range description.MediaEmbedDeclarations {
+// 		languages = append(languages, lang)
+// 	}
+// 	return
+// }
 
 // changeKeys changes the entries of m to replace its keys with the new keys described by replaceMap.
 // if the new key is the empty string, the corresponding entry is deleted.

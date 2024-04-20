@@ -9,7 +9,6 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
 	ortfodb "github.com/ortfo/db"
-	ortfomk "github.com/ortfo/mk"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/sqweek/dialog"
 	"github.com/webview/webview"
@@ -28,7 +27,7 @@ type PickFileConstraint struct {
 }
 
 var w webview.WebView
-var ctx ortfodb.RunContext
+var ctx *ortfodb.RunContext
 var settings Settings
 var Port = randomAvailablePort()
 
@@ -53,14 +52,15 @@ func main() {
 
 func newOrtfoContext() error {
 	var err error
-	ortfodbConfig, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"), ConfigurationDirectory("portfolio-database"))
+	// ortfodbConfig, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"))
+	ortfodbConfig, err := settings.InitializeOtfodbConfig()
 	if err != nil {
 		return fmt.Errorf("couldn't load database configuration: %w", err)
 	}
 	ctx, err = ortfodb.PrepareBuild(projectsFolder(), ConfigurationDirectory("portfolio-database", "database.json"), ortfodb.Flags{
-		Scattered:    true,
-		Silent:       true,
-		ProgressFile: ConfigurationDirectory("portfolio-database", "progress.json"),
+		Scattered:        true,
+		Silent:           true,
+		ProgressInfoFile: ConfigurationDirectory("progress.jsonl"),
 	}, ortfodbConfig)
 	if err != nil {
 		return fmt.Errorf("while preparing ortfodb build context: %w", err)
@@ -69,6 +69,9 @@ func newOrtfoContext() error {
 }
 
 func startWebview() error {
+	ortfodb.LogFilePath = ConfigurationDirectory("ortfodb.log")
+	ortfodb.PrependDateToLogs = true
+	ortfodb.ReleaseBuildLock(ConfigurationDirectory("portfolio-database", "database.json"))
 	err := newOrtfoContext()
 	if err != nil {
 		return err
@@ -77,6 +80,9 @@ func startWebview() error {
 	w = webview.New(true)
 	defer w.Destroy()
 	w.SetTitle("ortfo")
+	if os.Getenv("DEV") == "yes" {
+		w.SetTitle("ortfo [dev]")
+	}
 	w.SetSize(800, 600, webview.HintMin)
 	w.Navigate("http://localhost:" + func() string {
 		if os.Getenv("DEV") == "yes" {
@@ -106,25 +112,21 @@ func startWebview() error {
 		w.Terminate()
 		return nil
 	})
-	w.Bind("backend__databaseRead", func() (ortfomk.Database, error) {
+	w.Bind("backend__databaseRead", func() (ortfodb.Database, error) {
 		return settings.LoadDatabase()
 	})
 	w.Bind("backend__rebuildDatabase", func() error {
 		return settings.RebuildDatabase()
 	})
 	w.Bind("backend__rebuildWork", func(workID string) error {
-		newOrtfoContext()
-		return ortfodb.BuildSome(workID, projectsFolder(), ctx.OutputDatabaseFile, ctx.Flags, *ctx.Config)
-	})
-	w.Bind("backend__analyzeMedia", func(workID string, mediaEmbed ortfodb.MediaEmbedDeclaration) (ortfodb.Media, error) {
-		settings, _ := LoadSettings()
-		projectsFolder, err := homedir.Expand(settings.ProjectsFolder)
-		if err != nil {
-			return ortfodb.Media{}, fmt.Errorf("while expanding projects folder: %w", err)
+		if workID == "" {
+			return fmt.Errorf("workID is empty")
 		}
-		_, media, err := (&ortfodb.RunContext{
-			DatabaseDirectory: projectsFolder,
-		}).AnalyzeMediaFile(workID, mediaEmbed)
+		_, err := ctx.BuildSome(workID, projectsFolder(), ctx.OutputDatabaseFile, ctx.Flags, *ctx.Config)
+		return err
+	})
+	w.Bind("backend__analyzeMedia", func(workID string, mediaEmbed ortfodb.Media) (ortfodb.Media, error) {
+		_, media, _, err := ctx.AnalyzeMediaFile(workID, mediaEmbed)
 		if err != nil {
 			return ortfodb.Media{}, fmt.Errorf("while analyzing media: %w", err)
 		}
@@ -138,7 +140,7 @@ func startWebview() error {
 
 		return Writeback(settings, description, workID)
 	})
-	w.Bind("backend__writeTags", func(tags []ortfomk.Tag) error {
+	w.Bind("backend__writeTags", func(tags []ortfodb.Tag) error {
 		spew.Dump(tags)
 		tagsBytes, err := yaml.Marshal(tags)
 		if err != nil {
@@ -147,7 +149,7 @@ func startWebview() error {
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "tags.yaml"), tagsBytes, 0644)
 	})
-	w.Bind("backend__writeTechnologies", func(technologies []ortfomk.Technology) error {
+	w.Bind("backend__writeTechnologies", func(technologies []ortfodb.Technology) error {
 		tagsBytes, err := yaml.Marshal(technologies)
 		if err != nil {
 			ErrorToBrowser(fmt.Sprintf("while converting to YAML: %v", err))
@@ -156,7 +158,7 @@ func startWebview() error {
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "technologies.yaml"), tagsBytes, 0644)
 	})
-	w.Bind("backend__writeExternalSites", func(externalSites []ortfomk.ExternalSite) error {
+	w.Bind("backend__writeExternalSites", func(externalSites []ExternalSite) error {
 		sitesBytes, err := yaml.Marshal(externalSites)
 		if err != nil {
 			return fmt.Errorf("while converting to YAML: %w", err)
@@ -164,8 +166,8 @@ func startWebview() error {
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "sites.yaml"), sitesBytes, 0644)
 	})
-	w.Bind("backend__writeCollection", func(collections []ortfomk.Collection) error {
-		collectionsByID := make(map[string]ortfomk.Collection)
+	w.Bind("backend__writeCollection", func(collections []Collection) error {
+		collectionsByID := make(map[string]Collection)
 		for _, c := range collections {
 			collectionsByID[c.ID] = c
 		}
@@ -191,7 +193,7 @@ func startWebview() error {
 
 		return settings.LoadUIState()
 	})
-	w.Bind("backend__getBuildProgress", func() ortfomk.ProgressFile {
+	w.Bind("backend__getBuildProgress", func() ortfodb.ProgressInfoEvent {
 		settings, _ := LoadSettings()
 		return settings.ProgressFile()
 	})
@@ -256,7 +258,7 @@ func startWebview() error {
 		if err != nil {
 			return "", fmt.Errorf("while loading settings: %w", err)
 		}
-		bytes, err := os.ReadFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"))
+		bytes, err := os.ReadFile(JoinPaths(settings.ProjectsFolder, workID, ".ortfo", "description.md"))
 		return string(bytes), err
 	})
 	w.Bind("backend__writeRawDescription", func(workID string, content string) error {
@@ -265,7 +267,7 @@ func startWebview() error {
 			return fmt.Errorf("while loading settigns: %w", err)
 		}
 
-		return os.WriteFile(JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md"), []byte(content), 0644)
+		return os.WriteFile(JoinPaths(settings.ProjectsFolder, workID, ".ortfo", "description.md"), []byte(content), 0644)
 	})
 	w.Bind("backend__clearThumbnails", func() error {
 		return os.RemoveAll(ConfigurationDirectory("portfolio-database", "media"))
@@ -320,21 +322,15 @@ func Initialize() error {
 		return fmt.Errorf("couldn't save default settings: %w", err)
 	}
 
+	_, err = settings.InitializeOtfodbConfig()
+	if err != nil {
+		return fmt.Errorf("couldn't initialize configuration file: %w", err)
+	}
+
 	err = settings.InitializeDatabase()
 	if err != nil {
 		return fmt.Errorf("couldn't initialize portfolio database: %w", err)
 	}
 
-	ortfomk.WarmUp(&ortfomk.GlobalData{
-		Flags: ortfomk.Flags{
-			ProgressFile: ConfigurationDirectory(".progress.json"),
-			Silent:       true,
-		},
-		// TODO make configurable
-		OutputDirectory: ConfigurationDirectory("built"),
-		// TODO #4 make configurable
-		TemplatesDirectory: ConfigurationDirectory("templates"),
-		HTTPLinks:          make(map[string][]string),
-	})
 	return nil
 }

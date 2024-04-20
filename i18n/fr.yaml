@@ -162,7 +162,7 @@ selected_works_label: "{count, plural, one {# projet sélectionné} other {# pro
 add a tag: ajouter un tag
 remove a tag: supprimer un tag
 set tags: définir les tags
-Deleting this work will remove the <code>.portfoliodb</code> folder associated with <em>{id}</em>: Supprimer ce projet supprimera le dossier <code>.portfoliodb</code> associé à <em>{id}</em>.
+Deleting this work will remove the <code>.ortfo</code> folder associated with <em>{id}</em>: Supprimer ce projet supprimera le dossier <code>.ortfo</code> associé à <em>{id}</em>.
 "The following files will be removed: ": "Les fichiers suivants seront supprimés : "
 Are you sure?: Êtes-vous sûr ?
 deleting_works_warning: Vous êtes sur le point de supprimer {ids}. Cette action ne peut pas être annulée.

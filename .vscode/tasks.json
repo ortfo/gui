@@ -5,9 +5,9 @@
 			"label": "front",
 			"type": "shell",
 			"command": "pnpm frontend-dev",
-			"runOptions": {
-				"runOn": "folderOpen"
-			},
+			// "runOptions": {
+			// 	"runOn": "folderOpen"
+			// },
 			"presentation": {
 				"group": "dev"
 			},
@@ -17,9 +17,9 @@
 			"label": "back",
 			"type": "shell",
 			"command": "pnpm backend-dev",
-			"runOptions": {
-				"runOn": "folderOpen"
-			},
+			// "runOptions": {
+			// 	"runOn": "folderOpen"
+			// },
 			"presentation": {
 				"group": "dev"
 			}
@@ -28,9 +28,9 @@
 			"label": "tests",
 			"type": "shell",
 			"command": "pnpm vitest watch",
-			"runOptions": {
-				"runOn": "folderOpen"
-			},
+			// "runOptions": {
+			// 	"runOn": "folderOpen"
+			// },
 			"presentation": {
 				"group": "tdd"
 			}

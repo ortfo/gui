@@ -12,12 +12,12 @@ func Writeback(settings Settings, parsedDescription ortfodb.AnalyzedWork, workID
 	// Put spaces back in metadata properties that should have them.
 	// It also removes technical metadata properties that shouldn't be written back.
 	// TODO: this behavior should be implemented in ortfo/mk.
-	description, err := ortfodb.ReplicateDescription(parsedDescription)
+	description, err := ctx.ReplicateDescription(parsedDescription)
 	// println("Replicated description:", description)
 	if err != nil {
 		return fmt.Errorf("while replicating description: %w", err)
 	}
-	writeTo := JoinPaths(settings.ProjectsFolder, workID, ".portfoliodb", "description.md")
+	writeTo := JoinPaths(settings.ProjectsFolder, workID, ".ortfo", "description.md")
 	err = os.MkdirAll(filepath.Dir(writeTo), 0755)
 	if err != nil {
 		return fmt.Errorf("couldn't create missing directories: %w", err)

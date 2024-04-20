@@ -52,6 +52,7 @@ export let nolabel: boolean = false
 
 	dt {
 		font-size: 0.8em;
+		margin-bottom: 0.7em;
 	}
 	dd {
 		flex-direction: column;

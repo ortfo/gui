@@ -9,11 +9,10 @@ import FieldText from "./FieldText.svelte"
 import MetadataField from "./MetadataField.svelte"
 
 const EMPTY_SITE: ExternalSite = {
-	aliases: [],
-	description: "",
-	learnmoreurl: "",
-	plural: "",
-	singular: "",
+	purpose: "",
+	url: "",
+	name: "",
+	username: "",
 }
 
 let newSite: ExternalSite = EMPTY_SITE

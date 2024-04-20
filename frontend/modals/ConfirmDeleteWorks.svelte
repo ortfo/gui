@@ -1,9 +1,12 @@
 <script lang="ts" context="module">
 export async function deleteWorks(notifications, workIDs: WorkID[]) {
-	database.set({
-		...get(database),
-		works: get(database).works.filter(w => !workIDs.includes(w.id)),
-	})
+	database.set(
+		Object.fromEntries(
+			Object.entries(get(database)).filter(
+				([id]) => !workIDs.includes(id),
+			),
+		),
+	)
 	try {
 		await backend.deleteWorks(workIDs)
 	} catch (error) {
@@ -45,8 +48,8 @@ export let workIDs: WorkID[]
 	<ul>
 		{#each workIDs as id}
 			<li>
-				<code>{$settings.projectsfolder}/{id}/.portfoliodb/</code>
-				{#await backend.listDirectory(`${$settings.projectsfolder}/${id}/.portfoliodb`)}
+				<code>{$settings.projectsfolder}/{id}/.ortfo/</code>
+				{#await backend.listDirectory(`${$settings.projectsfolder}/${id}/.ortfo`)}
 					<p use:i18n>Loading…</p>
 				{:then files}
 					<ul class="files">

@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/cloudfoundry-attic/jibber_jabber"
+	ortfodb "github.com/ortfo/db"
+	"gopkg.in/yaml.v3"
 )
 
 var ThemeNames = [...]string{"dark", "light"}
@@ -139,11 +141,6 @@ func InitializeConfigurationDirectory() error {
 		return fmt.Errorf("couldn't create configuration directory: %w", err)
 	}
 
-	err = WriteIfNotExist(ConfigurationDirectory("ortfodb.yaml"), []byte(""))
-	if err != nil {
-		return fmt.Errorf("couldn't initialize database settings file: %w", err)
-	}
-
 	return nil
 }
 
@@ -202,4 +199,32 @@ func (settings *Settings) LoadUIState() (state UIState, err error) {
 	}
 
 	return
+}
+
+func (settings *Settings) InitializeOtfodbConfig() (ortfodb.Configuration, error) {
+	if settings == nil {
+		settings_, err := LoadSettings()
+		if err != nil {
+			return ortfodb.Configuration{}, fmt.Errorf("while loading settings: %w", err)
+		}
+		settings = &settings_
+	}
+	// try to validate current ortfodb settings. if ok, don't touch them.
+	config, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"))
+	if err == nil {
+		return config, nil
+	}
+	config = ortfodb.DefaultConfiguration()
+	config.ProjectsDirectory = settings.ProjectsFolder
+	encoded, err := yaml.Marshal(config)
+	if err != nil {
+		return config, fmt.Errorf("while encoding configuration to YAML: %w", err)
+	}
+
+	err = os.WriteFile(ConfigurationDirectory("ortfodb.yaml"), encoded, 0644)
+	if err != nil {
+		return config, fmt.Errorf("while writing ortfodb.yaml: %w", err)
+	}
+
+	return config, nil
 }

@@ -1,60 +1,35 @@
 <script lang="ts">
-import gridHelp from "svelte-grid/build/helper"
+import { diff } from "just-diff"
+import { createEventDispatcher, onMount } from "svelte"
 import Grid from "svelte-grid"
-import MarkdownEditor from "./MarkdownEditor.svelte"
-import { scale } from "svelte/transition"
-import { tooltip } from "../actions"
-import {
-	backend,
-	localDatabase,
-	localProjects,
-	relativeToDatabase,
-} from "../backend"
+import gridHelp from "svelte-grid/build/helper"
+import { _ } from "svelte-i18n"
 import {
 	ContentBlock,
-	eachLanguage,
-	emptyContentUnit,
-	fromBlocksToParsedDescription,
 	ItemID,
+	emptyContentUnit,
 	toBlocks,
 } from "../contentblocks"
-import {
-	inLanguage,
-	LayedOutElement,
-	ParsedDescription,
-	Translated,
-} from "../ortfo"
-import {
-	settings,
-	state,
-	workOnDisk,
-	workOnDiskCurrentLanguage,
-	debugFlyoutContent,
-} from "../stores"
-import { createEventDispatcher, onMount } from "svelte"
-import { diff } from "just-diff"
-import { _ } from "svelte-i18n"
-import { i18n } from "../actions"
-import FieldFilepath from "./FieldFilepath.svelte"
-import FieldText from "./FieldText.svelte"
-import { rebuildDatabase } from "./Navbar.svelte"
-import CardContentBlock from "./CardContentBlock.svelte"
-import { deleteWorks } from "../modals/ConfirmDeleteWorks.svelte"
-import { layoutWidth, OrtfoMkLayout } from "../layout"
-import { deepRepeat, pick } from "../utils"
+import { OrtfoMkLayout, layoutWidth } from "../layout"
+import { localize, type AnalyzedWork, type Translated } from "../ortfo"
+import { debugFlyoutContent, settings, state, workOnDisk } from "../stores"
 import hotkeys from "../tinykeysInputDisabled"
+import { deepRepeat, pick } from "../utils"
+import CardContentBlock from "./CardContentBlock.svelte"
 
 const dispatch = createEventDispatcher()
 
-export let work: ParsedDescription
+export let work: AnalyzedWork
 export let language: string
 
-let blocks: Translated<ContentBlock[]> = {}
+let blocks: Translated<ContentBlock[]> = Object.fromEntries(
+	Object.entries(work.content).map(([lang, content]) => [lang, []]),
+)
 let cols: number[][] = []
 let rowCapacity: number = 0
 let rowHeight: number = 500
 let _newRowCapacity = rowCapacity
-let activeBlock: number | null = null
+let activeBlock: string | null = null
 let initialized = false
 let error: Error | null = null
 
@@ -62,9 +37,12 @@ onMount(async () => {
 	try {
 		;[blocks, rowCapacity] = await toBlocks(
 			work,
-			$settings.portfoliolanguages
+			$settings.portfoliolanguages,
 		)
+		console.log(`blocks:`, blocks)
+		console.log(`rowCapacity:`, rowCapacity)
 		cols = [[400, rowCapacity]]
+		console.log("cols", cols)
 		// Need timeout because of the scale transition
 		setTimeout(() => {
 			window.scrollTo({
@@ -92,7 +70,7 @@ const stretchLayout = (oldLayout: OrtfoMkLayout, oldRowCapacity, target) => {
 		const rate = target / row.length
 		if (!Number.isInteger(rate)) {
 			throw Error(
-				`Cannot stretch layout row of size ${row.length} into size ${target} (rate is ${rate}, non integer)`
+				`Cannot stretch layout row of size ${row.length} into size ${target} (rate is ${rate}, non integer)`,
 			)
 		}
 
@@ -105,25 +83,34 @@ const updateRowCapacity = async (newValue: number) => {
 	;[blocks, rowCapacity] = await toBlocks(
 		{
 			...work,
-			metadata: {
-				...work.metadata,
-				layout: stretchLayout(work.metadata.layout, oldValue, newValue),
-			},
+			content: Object.fromEntries(
+				Object.entries(work.content).map(([lang, content]) => [
+					lang,
+					{
+						...content,
+						layout: stretchLayout(
+							content.layout as OrtfoMkLayout,
+							oldValue,
+							newValue,
+						),
+					},
+				]),
+			),
 		},
-		$settings.portfoliolanguages
+		$settings.portfoliolanguages,
 	)
 	cols = [[400, rowCapacity]]
 }
 
 const addBlock =
 	(
-		type: LayedOutElement["type"],
+		type: "paragraph" | "media" | "link",
 		overrideGeometry: {
 			x?: number | null
 			y?: number | null
 			h?: number | null
 			w?: number | null
-		} = {}
+		} = {},
 	) =>
 	e => {
 		Object.entries(blocks).forEach(([lang, blocksOneLang]) => {
@@ -132,17 +119,21 @@ const addBlock =
 				x: Object.hasOwn(overrideGeometry, "x")
 					? overrideGeometry?.x
 					: empty
-					? 0
-					: Math.min(
-							...blocksOneLang.map(block => block[rowCapacity].x)
-					  ),
+						? 0
+						: Math.min(
+								...blocksOneLang.map(
+									block => block[rowCapacity].x,
+								),
+							),
 				y: Object.hasOwn(overrideGeometry, "y")
 					? overrideGeometry?.y
 					: empty
-					? 0
-					: Math.max(
-							...blocksOneLang.map(block => block[rowCapacity].y)
-					  ) + 1,
+						? 0
+						: Math.max(
+								...blocksOneLang.map(
+									block => block[rowCapacity].y,
+								),
+							) + 1,
 				w: overrideGeometry?.w || rowCapacity,
 				h: overrideGeometry?.h || 1,
 			}
@@ -163,7 +154,7 @@ const addBlock =
 					...blocksOneLang
 						.map(b => b.id.split(":"))
 						.filter(([bType, _]) => bType === type)
-						.map(([_, id]) => parseInt(id))
+						.map(([_, id]) => parseInt(id)),
 				) + 1
 			}` as ItemID
 
@@ -192,11 +183,11 @@ const addBlock =
 const removeBlock = (item: ContentBlock) => e => {
 	// updateOtherLanguages will not delete blocks that are in one language's layout but not the other, as they could've also been added from the other to the current one.
 	// we delete the block from other languages right there.
-	
+
 	const itemWasAloneOnRow = Object.values(blocks).every(
 		oneLangBlocks =>
 			oneLangBlocks.filter(b => b[rowCapacity].y === item[rowCapacity].y)
-				.length === 1
+				.length === 1,
 	)
 	blocks[$state.lang] = blocks[$state.lang]
 		// Remove the item
@@ -227,13 +218,17 @@ function updateOtherLanguages() {
 	}
 }
 
-function updateWork(blocks) {
-	let updatedWork = fromBlocksToParsedDescription(
-		blocks,
-		rowCapacity,
-		work,
-		language
-	)
+function updateWork(blocks: Translated<ContentBlock[]>) {
+	let updatedWork: AnalyzedWork = {
+		...work,
+		content: {
+			...work.content,
+			[language]: {
+				...work.content[language],
+				blocks: blocks[language].map(b => b.data),
+			},
+		},
+	}
 	let delta = diff(updatedWork, work)
 	if (delta.length > 0) {
 		console.info("Work changed, delta is", delta)
@@ -260,26 +255,28 @@ hotkeys(window, {
 	"$mod+P": addBlock("paragraph"),
 })
 
-$: updateWork(blocks)
-$: blocks = Object.fromEntries(
-	Object.entries(blocks).map(([lang, blocksOneLang]) => {
-		console.log(`sorting blocks`)
-		return [
-			lang,
-			blocksOneLang.sort((a, b) =>
-				a[rowCapacity].y > b[rowCapacity].y ||
-				(a[rowCapacity].y === b[rowCapacity].y &&
-					a[rowCapacity].x > b[rowCapacity].x)
-					? 1
-					: -1
-			),
-		]
-	})
-)
+$: if (initialized) updateWork(blocks)
+/*
+$: if (blocks)
+	blocks = Object.fromEntries(
+		Object.entries(blocks).map(([lang, blocksOneLang]) => {
+			console.log(`sorting blocks`)
+			return [
+				lang,
+				blocksOneLang.sort((a, b) =>
+					a[rowCapacity].y > b[rowCapacity].y ||
+					(a[rowCapacity].y === b[rowCapacity].y &&
+						a[rowCapacity].x > b[rowCapacity].x)
+						? 1
+						: -1,
+				),
+			]
+		}),
+	)*/
 $: console.log("rowHeight=", rowHeight)
-$: $debugFlyoutContent = blocks[$state.lang]
-	?.map(b => ({ id: b.id, ...pick(b["2"], "x", "y", "w", "h") }))
-	.map(b => `${b.id} (${b.x} ${b.y}) → (${b.x + b.w - 1} ${b.y + b.h - 1})`)
+// $debugFlyoutContent = blocks[$state.lang]
+// 	?.map(b => ({ id: b.id, ...pick(b["2"], "x", "y", "w", "h") }))
+// 	.map(b => `${b.id} (${b.x} ${b.y}) → (${b.x + b.w - 1} ${b.y + b.h - 1})`)
 </script>
 
 {#if !initialized}
@@ -287,7 +284,7 @@ $: $debugFlyoutContent = blocks[$state.lang]
 {:else if error}
 	<h1>{$_("An error occured: ")}</h1>
 	<ul class="reason">
-		{#each error.toString().split(": ") as reason}
+		{#each (error?.toString() ?? "Unknown error").split(": ") as reason}
 			<li>
 				{#if Array.from(reason).includes("\n")}
 					<pre>{reason}</pre>
@@ -321,7 +318,7 @@ $: $debugFlyoutContent = blocks[$state.lang]
 			<CardContentBlock
 				bind:block={blocks[language][index(item)]}
 				bind:activeBlock
-				work={inLanguage(language)($workOnDisk)}
+				work={localize($workOnDisk, language)}
 				on:movePointerDown={e => movePointerDown(e.detail)}
 				on:resizePointerDown={e => resizePointerDown(e.detail)}
 				on:remove={removeBlock(item)}
@@ -447,7 +444,9 @@ h2 {
 	height: 6em;
 	padding: 0.5em;
 	margin: 0.5em;
-	transition: all 0.25s ease, font-varation-settings 1s ease,
+	transition:
+		all 0.25s ease,
+		font-varation-settings 1s ease,
 		box-shadow 0.25s ease 0.125s;
 	outline: none;
 	border: 1px solid transparent;

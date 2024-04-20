@@ -1,14 +1,13 @@
 <script lang="ts">
-import { tooltip } from "./../actions.ts"
-import { colorPickersSelectedColors } from "./../stores.ts"
-import { createEventDispatcher, getContext } from "svelte"
+import { uniqueId } from "lodash"
+import { createEventDispatcher } from "svelte"
+import { _ } from "svelte-i18n"
 import { createModalSummoner } from "../modals"
+import ExtractColorsFromImage from "../modals/ExtractColorsFromImage.svelte"
+import { tooltip } from "./../actions"
+import { colorPickersSelectedColors } from "./../stores"
 import FieldColor from "./FieldColor.svelte"
 import MetadataField from "./MetadataField.svelte"
-import { _ } from "svelte-i18n"
-import type { Media, MediaEmbedDeclaration } from "../ortfo"
-import ExtractColorsFromImage from "../modals/ExtractColorsFromImage.svelte"
-import { uniqueId } from "lodash"
 
 const emit = createEventDispatcher()
 const summon = createModalSummoner()
@@ -16,6 +15,7 @@ const colorPickerHash = uniqueId("color-picker-")
 
 export let images: { [path: string]: string } // {path (passed to localDatabase(...)) : description of image (alt text)}
 export let selectedImage: string | null = null
+export let initial: typeof value
 export let value: {
 	primary: string
 	secondary: string
@@ -52,9 +52,24 @@ export let key: string
 		class="pick-from-image">{$_("extract from an image")}</button
 	>
 	<dl>
-		<FieldColor compact key="primary" bind:value={value.primary} />
-		<FieldColor compact key="secondary" bind:value={value.secondary} />
-		<FieldColor compact key="tertiary" bind:value={value.tertiary} />
+		<FieldColor
+			compact
+			key="primary"
+			bind:value={value.primary}
+			initial={initial.primary}
+		/>
+		<FieldColor
+			compact
+			key="secondary"
+			bind:value={value.secondary}
+			initial={initial.secondary}
+		/>
+		<FieldColor
+			compact
+			key="tertiary"
+			bind:value={value.tertiary}
+			initial={initial.tertiary}
+		/>
 	</dl>
 </MetadataField>
 
@@ -67,6 +82,6 @@ export let key: string
 dl {
 	margin-left: 2em;
 	display: flex;
-	gap: 1.3em;
+	gap: 1.5em;
 }
 </style>

@@ -3,16 +3,20 @@ export function startPolling(reloadWhenDone: boolean = true) {
 	let poller = setIntervalAsync(async () => {
 		let progress = (await backend.getBuildProgress()) as BuildProgress
 		buildProgress.set(progress)
-		if (progress.percent === 100) {
+		let percent = progress.works_total
+			? (progress.works_done / progress.works_total) * 100
+			: 0
+		if (percent >= 100) {
 			clearIntervalAsync(poller)
 			// Leave time for the progress bar to fade out
 			setTimeout(() => {
 				buildProgress.set({
-					percent: 0,
-					current: {},
-					total: 0,
-					processed: 0,
-				} as BuildProgress)
+					details: [],
+					phase: "",
+					work_id: "",
+					works_done: 0,
+					works_total: 0,
+				} satisfies BuildProgress)
 				if (reloadWhenDone) {
 					setTimeout(() => {
 						window.location.reload()
@@ -23,58 +27,58 @@ export function startPolling(reloadWhenDone: boolean = true) {
 	}, 150)
 }
 
-export function rebuildDatabase(
+export async function rebuildDatabase(
 	workID: string = "",
-	reloadWhenDone: boolean = true
+	reloadWhenDone: boolean = true,
 ) {
 	if (get(rebuildingDatabase)) {
 		return
 	}
-	startPolling(reloadWhenDone)
-	if (workID === "") {
-		backend.rebuildWork(workID)
+	if (workID !== "") {
+		await backend.rebuildWork(workID)
 	} else {
-		backend.rebuildDatabase()
+		await backend.rebuildDatabase()
 	}
 }
 </script>
 
 <script lang="ts">
-import { helptip, tooltip } from "../actions"
 import {
-	settings,
-	state,
-	hasUnsavedChanges,
-	buildProgress,
-	rebuildingDatabase,
-	unsavedChanges,
-} from "../stores"
-import type { PageName } from "../stores"
-import { createModalSummoner } from "../modals"
-import { backend, BuildProgress } from "../backend"
-import {
-	setIntervalAsync,
 	clearIntervalAsync,
+	setIntervalAsync,
 } from "set-interval-async/dynamic"
 import { _ } from "svelte-i18n"
-import UnsavedChanges from "../modals/UnsavedChanges.svelte"
-import { create } from "lodash"
-import { getContext } from "svelte"
-import { slide } from "svelte/transition"
 import { cubicOut } from "svelte/easing"
-import { closeWork } from "../tabs/editor.svelte"
-import AboutOrtfo from "../modals/AboutOrtfo.svelte"
 import { get } from "svelte/store"
+import { slide } from "svelte/transition"
+import { helptip, tooltip } from "../actions"
+import { BuildProgress, backend } from "../backend"
+import { createModalSummoner } from "../modals"
+import AboutOrtfo from "../modals/AboutOrtfo.svelte"
+import type { PageName } from "../stores"
+import {
+	buildProgress,
+	hasUnsavedChanges,
+	rebuildingDatabase,
+	settings,
+	state,
+} from "../stores"
+import { closeWork } from "../tabs/editor.svelte"
+import { onMount } from "svelte"
 
 const summon = createModalSummoner()
 
-let rebuildErrored = false
 let rebuildError = ""
+$: rebuildErrored = Boolean(rebuildError)
 
 let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
+
+onMount(() => {
+	startPolling(true)
+})
 </script>
 
-<nav>
+<nav class:rebuilding={$rebuildingDatabase}>
 	<img
 		src={`assets/${$settings.theme}-logo.svg`}
 		alt="ortfo's logo"
@@ -131,8 +135,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 	{/if}
 	<div class="spacer">
 		{#if $rebuildingDatabase && $settings.poweruser}
-			{$buildProgress.current.step}: {$buildProgress.current.file}
-			{$buildProgress.current.resolution || $buildProgress.current.output}
+			{$buildProgress.phase}: {$buildProgress.work_id}
 		{/if}
 	</div>
 	<button on:click={_ => rebuildDatabase()}>
@@ -159,7 +162,7 @@ let tabs: PageName[] = ["tags", "technologies", "sites", "settings"]
 		style={`width: ${
 			rebuildErrored || !$rebuildingDatabase
 				? 100
-				: $buildProgress.percent
+				: ($buildProgress.works_done / $buildProgress.works_total) * 100
 		}%`}
 	/>
 </nav>
@@ -182,6 +185,10 @@ nav {
 	/* position: relative; */
 }
 
+nav.rebuilding img {
+	filter: grayscale(100%) brightness(0);
+}
+
 .progress-bar {
 	position: absolute;
 	top: 0;
@@ -190,7 +197,9 @@ nav {
 	background-color: var(--ortforange);
 	/* background-color: red; */
 	z-index: -10;
-	transition: width 0.25s ease, opacity 0.5s ease;
+	transition:
+		width 0.25s ease,
+		opacity 0.5s ease;
 	opacity: 0;
 }
 
@@ -263,10 +272,6 @@ nav a.current {
 	font-family: var(--mono);
 	opacity: 0.5;
 	font-size: 0.75em;
-}
-
-nav:not(:hover):not(:focus-within) .spacer {
-	opacity: 0;
 }
 
 .quit {

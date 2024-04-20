@@ -1,48 +1,53 @@
 <script lang="ts">
+import Fuse from "fuse.js"
+import { onMount } from "svelte"
+import { _ } from "svelte-i18n"
+import { i18n } from "../actions"
 import Card from "../components/Card.svelte"
 import CardWork from "../components/CardWork.svelte"
-import NewWork from "../modals/NewWork.svelte"
-import { i18n } from "../actions"
+import SearchBar from "../components/SearchBar.svelte"
+import { createModalSummoner } from "../modals"
+import ConfirmDeleteWorks from "../modals/ConfirmDeleteWorks.svelte"
+import CreateWork from "../modals/CreateWork.svelte"
+import type { AnalyzedWork, AnalyzedWorkLocalized } from "../ortfo"
 import {
-	settings,
-	databaseCurrentLanguage,
-	volatileWorks,
 	WorkID,
+	databaseCurrentLanguage,
+	settings,
 	state,
-	database,
+	tagsRepository,
+	volatileWorks
 } from "../stores"
 import hotkeys from "../tinykeysInputDisabled"
-import { createModalSummoner } from "../modals"
-import { _ } from "svelte-i18n"
-import { getContext, onMount } from "svelte"
-import CreateWork from "../modals/CreateWork.svelte"
-import type { Tag, Work, WorkOneLang } from "../ortfo"
-import Fuse from "fuse.js"
-import SearchBar from "../components/SearchBar.svelte"
-import FieldSelect from "../components/FieldSelect.svelte"
-import ConfirmDeleteWorks from "../modals/ConfirmDeleteWorks.svelte"
 
 const summon = createModalSummoner()
 
 let creatingWork = false
-let filterByTag: Tag["singular"] | "" = ""
+let filterByTag: string = ""
 let selectedWorks: Set<WorkID> = new Set()
 let query: string = ""
-let searcher: Fuse<WorkOneLang>
+let searcher: Fuse<AnalyzedWorkLocalized>
 let searchBarElement: HTMLInputElement
 
-function withoutVolatiles<W extends WorkOneLang | Work>(works: W[]): W[] {
+function withoutVolatiles<W extends AnalyzedWorkLocalized | AnalyzedWork>(
+	works: W[],
+): W[] {
 	return works.filter(work => !$volatileWorks.includes(work.id))
 }
 
-$: searcher = new Fuse(withoutVolatiles($databaseCurrentLanguage.works), {
-	keys: ["id", "title"],
-	includeMatches: true,
-	includeScore: true,
-})
+$: searcher = new Fuse(
+	withoutVolatiles(Object.values($databaseCurrentLanguage)),
+	{
+		keys: ["id", "title"],
+		includeMatches: true,
+		includeScore: true,
+	},
+)
 
 onMount(() => {
-	if (withoutVolatiles($databaseCurrentLanguage.works).length === 0) {
+	if (
+		withoutVolatiles(Object.values($databaseCurrentLanguage)).length === 0
+	) {
 		creatingWork = true
 	}
 
@@ -65,16 +70,16 @@ onMount(() => {
 	})
 })
 
-function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
-	let results: Fuse.FuseResult<WorkOneLang>[] = []
+function search(query: string): Fuse.FuseResult<AnalyzedWorkLocalized>[] {
+	let results: Fuse.FuseResult<AnalyzedWorkLocalized>[] = []
 	if (query.length === 0) {
-		results = withoutVolatiles($databaseCurrentLanguage.works).map(
+		results = withoutVolatiles(Object.values($databaseCurrentLanguage)).map(
 			(work, i) => ({
 				item: work,
 				matches: [],
 				refIndex: i,
 				score: 1,
-			})
+			}),
 		)
 	} else {
 		results = searcher.search(query)
@@ -82,21 +87,21 @@ function search(query: string): Fuse.FuseResult<WorkOneLang>[] {
 
 	if (filterByTag !== "") {
 		results = results.filter(r =>
-			r.item.metadata?.tags?.includes(filterByTag)
+			r.item.metadata?.tags?.includes(filterByTag),
 		)
 	}
 
 	return results
 }
 
-function select(works: WorkOneLang[]) {
+function select(works: AnalyzedWorkLocalized[]) {
 	selectedWorks = new Set(works.map(work => work.id))
 }
-function deselect(works: WorkOneLang[]) {
+function deselect(works: AnalyzedWorkLocalized[]) {
 	selectedWorks = new Set(
 		Array.from(selectedWorks).filter(
-			id => !works.map(w => w.id).includes(id)
-		)
+			id => !works.map(w => w.id).includes(id),
+		),
 	)
 }
 </script>
@@ -123,7 +128,7 @@ function deselect(works: WorkOneLang[]) {
 				$state.openTab = "editor"
 			}}
 		/>
-		{#if $database.tags.length > 0}
+		{#if $tagsRepository.length > 0}
 			<div class="tag-filter">
 				<label for="filter-by-tags">
 					<img src="assets/icon-tag.svg" alt="tagged" class="icon" />
@@ -133,7 +138,7 @@ function deselect(works: WorkOneLang[]) {
 					class="tags"
 					bind:value={filterByTag}
 				>
-					{#each ["", ...$database.tags.map(t => t.singular)] as tag}
+					{#each ["", ...$tagsRepository.map(t => t.singular)] as tag}
 						<option value={tag}
 							>{tag === "" ? $_("All tags") : tag}</option
 						>
@@ -184,7 +189,7 @@ function deselect(works: WorkOneLang[]) {
 					]))}
 				on:deselect={() => {
 					selectedWorks = new Set(
-						[...selectedWorks].filter(id => id !== result.item.id)
+						[...selectedWorks].filter(id => id !== result.item.id),
 					)
 				}}
 				on:tag-click={e => {
