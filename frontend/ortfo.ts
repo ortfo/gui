@@ -1,11 +1,9 @@
-export type Translated<T> = { [langage: string]: T }
-import { Database as DatabaseConverter } from "@ortfo/db"
-import type {
-    Database as _AnalyzedWork,
-    ContentValue,
-} from "@ortfo/db/dist/database"
+import { databaseRead, LocalizedContent, Work } from "./backend.generated"
 
-export type AnalyzedWork = _AnalyzedWork
+export type Database = NonNullable<Awaited<ReturnType<typeof databaseRead>>>
+
+export type Translated<T> = { [langage: string]: T }
+
 export type Localized<T extends Record<string, any>> = T[string]
 
 export interface Link {
@@ -32,28 +30,23 @@ export interface ExternalSite {
     username?: string
 }
 
-export type Database = ReturnType<typeof DatabaseConverter.toDatabase>
-
-export type AnalyzedWorkLocalized = Omit<AnalyzedWork, "content"> & {
-    content: ContentValue
+export type WorkLocalized = Omit<Work, "content"> & {
+    content: LocalizedContent
 }
-export type DatabaseOneLang = Record<string, AnalyzedWorkLocalized>
 
-export function localize(
-    work: AnalyzedWork,
-    lang: string
-): AnalyzedWorkLocalized {
+export type DatabaseOneLang = Record<string, WorkLocalized>
+
+export function localize(work: Work, lang: string): WorkLocalized {
     return {
         ...work,
-        content:
-            lang in work.content
-                ? work.content[lang]
-                : work.content["default"] ?? {
-                      blocks: [],
-                      footnotes: {},
-                      layout: [],
-                      title: "",
-                  },
+        content: work.content?.[lang] ??
+            work.content?.["default"] ?? {
+                blocks: [],
+                footnotes: {},
+                layout: [],
+                title: "",
+                abbreviations: {},
+            },
     }
 }
 

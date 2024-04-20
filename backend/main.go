@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 
 	"github.com/cloudfoundry-attic/jibber_jabber"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/go-homedir"
 	ortfodb "github.com/ortfo/db"
+	"github.com/ortfo/tsreflect"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/sqweek/dialog"
 	"github.com/webview/webview"
@@ -68,79 +70,54 @@ func newOrtfoContext() error {
 	return nil
 }
 
-func startWebview() error {
-	ortfodb.LogFilePath = ConfigurationDirectory("ortfodb.log")
-	ortfodb.PrependDateToLogs = true
-	ortfodb.ReleaseBuildLock(ConfigurationDirectory("portfolio-database", "database.json"))
-	err := newOrtfoContext()
-	if err != nil {
-		return err
-	}
-
-	w = webview.New(true)
-	defer w.Destroy()
-	w.SetTitle("ortfo")
-	if os.Getenv("DEV") == "yes" {
-		w.SetTitle("ortfo [dev]")
-	}
-	w.SetSize(800, 600, webview.HintMin)
-	w.Navigate("http://localhost:" + func() string {
-		if os.Getenv("DEV") == "yes" {
-			return "3000"
-		} else {
-			return fmt.Sprintf("%d/index.html", Port)
-		}
-	}())
-	w.Bind("backend__fileserverPort", func() (int, error) {
+var BackendFunctions = map[string]interface{}{
+	"fileserverPort": func() (int, error) {
 		return Port, nil
-	})
-	w.Bind("backend__getUserLanguage", func() (string, error) {
+	},
+	"getUserLanguage": func() (string, error) {
 		return jibber_jabber.DetectLanguage()
-	})
-	w.Bind("backend__initialize", Initialize)
-	w.Bind("backend__settingsRead", func() (Settings, error) {
-		var err error
-		settings, err = LoadSettings()
-		return settings, err
-	})
-	w.Bind("backend__settingsWrite", func(settings Settings) error {
-		LogToBrowser("Writing %#v into settings", settings)
+	},
+	"initialize": Initialize,
+	"settingsRead": func() (Settings, error) {
+		return settings, nil
+	},
+	"settingsWrite": func(settings Settings) error {
 		return SaveSettings(settings)
-	})
-	w.Bind("backend__quit", func() error {
+	},
+	"quit": func() error {
 		println("Quitting...")
 		w.Terminate()
 		return nil
-	})
-	w.Bind("backend__databaseRead", func() (ortfodb.Database, error) {
+	},
+	"databaseRead": func() (ortfodb.Database, error) {
 		return settings.LoadDatabase()
-	})
-	w.Bind("backend__rebuildDatabase", func() error {
+	},
+	"rebuildDatabase": func() error {
 		return settings.RebuildDatabase()
-	})
-	w.Bind("backend__rebuildWork", func(workID string) error {
+	},
+	"rebuildWork": func(workID string) error {
 		if workID == "" {
 			return fmt.Errorf("workID is empty")
 		}
 		_, err := ctx.BuildSome(workID, projectsFolder(), ctx.OutputDatabaseFile, ctx.Flags, *ctx.Config)
 		return err
-	})
-	w.Bind("backend__analyzeMedia", func(workID string, mediaEmbed ortfodb.Media) (ortfodb.Media, error) {
+	},
+	"analyzeMedia": func(workID string, mediaEmbed ortfodb.Media) (ortfodb.Media, error) {
 		_, media, _, err := ctx.AnalyzeMediaFile(workID, mediaEmbed)
 		if err != nil {
 			return ortfodb.Media{}, fmt.Errorf("while analyzing media: %w", err)
 		}
 		return media, nil
-	})
-	w.Bind("backend__writeback", func(description ortfodb.AnalyzedWork, workID string) error {
+	},
+	"writeback": func(description ortfodb.Work, workID string) error {
 		settings, err := LoadSettings()
 		if err != nil {
 			return fmt.Errorf("while loading settings: %w", err)
 		}
 
 		return Writeback(settings, description, workID)
-	})
-	w.Bind("backend__writeTags", func(tags []ortfodb.Tag) error {
+	},
+	"writeTags": func(tags []ortfodb.Tag) error {
 		spew.Dump(tags)
 		tagsBytes, err := yaml.Marshal(tags)
 		if err != nil {
@@ -148,8 +125,8 @@ func startWebview() error {
 		}
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "tags.yaml"), tagsBytes, 0644)
-	})
-	w.Bind("backend__writeTechnologies", func(technologies []ortfodb.Technology) error {
+	},
+	"writeTechnologies": func(technologies []ortfodb.Technology) error {
 		tagsBytes, err := yaml.Marshal(technologies)
 		if err != nil {
 			ErrorToBrowser(fmt.Sprintf("while converting to YAML: %v", err))
@@ -157,16 +134,16 @@ func startWebview() error {
 		}
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "technologies.yaml"), tagsBytes, 0644)
-	})
-	w.Bind("backend__writeExternalSites", func(externalSites []ExternalSite) error {
+	},
+	"writeExternalSites": func(externalSites []ExternalSite) error {
 		sitesBytes, err := yaml.Marshal(externalSites)
 		if err != nil {
 			return fmt.Errorf("while converting to YAML: %w", err)
 		}
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "sites.yaml"), sitesBytes, 0644)
-	})
-	w.Bind("backend__writeCollection", func(collections []Collection) error {
+	},
+	"writeCollection": func(collections []Collection) error {
 		collectionsByID := make(map[string]Collection)
 		for _, c := range collections {
 			collectionsByID[c.ID] = c
@@ -177,27 +154,27 @@ func startWebview() error {
 		}
 
 		return os.WriteFile(ConfigurationDirectory("portfolio-database", "collections.yaml"), collectionsBytes, 0644)
-	})
-	w.Bind("backend__saveState", func(state UIState) error {
+	},
+	"saveState": func(state UIState) error {
 		err := SaveUIState(state)
 		if err != nil {
 			return fmt.Errorf("while saving UI state: %w", err)
 		}
 		return nil
-	})
-	w.Bind("backend__loadState", func() (UIState, error) {
+	},
+	"loadState": func() (UIState, error) {
 		settings, err := LoadSettings()
 		if err != nil {
 			return UIState{}, fmt.Errorf("couldn't load settings: %w", err)
 		}
 
 		return settings.LoadUIState()
-	})
-	w.Bind("backend__getBuildProgress", func() ortfodb.ProgressInfoEvent {
+	},
+	"getBuildProgress": func() ortfodb.ProgressInfoEvent {
 		settings, _ := LoadSettings()
 		return settings.ProgressFile()
-	})
-	w.Bind("backend__listDirectory", func(directory string) ([]DirEntry, error) {
+	},
+	"listDirectory": func(directory string) ([]DirEntry, error) {
 		expanded, _ := homedir.Expand(directory)
 		entries := make([]DirEntry, 0)
 		lazyEntries, err := os.ReadDir(expanded)
@@ -217,11 +194,11 @@ func startWebview() error {
 			})
 		}
 		return entries, nil
-	})
-	w.Bind("backend__openInBrowser", func(url string) error {
+	},
+	"openInBrowser": func(url string) error {
 		return open.Start(url)
-	})
-	w.Bind("backend__pickFile", func(title string, startIn string, constraint PickFileConstraint, relativeTo string) (picked string, err error) {
+	},
+	"pickFile": func(title string, startIn string, constraint PickFileConstraint, relativeTo string) (picked string, err error) {
 		startIn, err = homedir.Expand(startIn)
 		if err != nil {
 			return
@@ -245,40 +222,40 @@ func startWebview() error {
 			picked, err = filepath.Rel(relativeTo, picked)
 		}
 		return
-	})
-	w.Bind("backend__deleteWorks", func(workIDs []string) error {
+	},
+	"deleteWorks": func(workIDs []string) error {
 		settings, err := LoadSettings()
 		if err != nil {
 			return fmt.Errorf("while loading settings: %w", err)
 		}
 		return settings.DeleteWorks(workIDs)
-	})
-	w.Bind("backend__rawDescription", func(workID string) (string, error) {
+	},
+	"rawDescription": func(workID string) (string, error) {
 		settings, err := LoadSettings()
 		if err != nil {
 			return "", fmt.Errorf("while loading settings: %w", err)
 		}
 		bytes, err := os.ReadFile(JoinPaths(settings.ProjectsFolder, workID, ".ortfo", "description.md"))
 		return string(bytes), err
-	})
-	w.Bind("backend__writeRawDescription", func(workID string, content string) error {
+	},
+	"writeRawDescription": func(workID string, content string) error {
 		settings, err := LoadSettings()
 		if err != nil {
 			return fmt.Errorf("while loading settigns: %w", err)
 		}
 
 		return os.WriteFile(JoinPaths(settings.ProjectsFolder, workID, ".ortfo", "description.md"), []byte(content), 0644)
-	})
-	w.Bind("backend__clearThumbnails", func() error {
+	},
+	"clearThumbnails": func() error {
 		return os.RemoveAll(ConfigurationDirectory("portfolio-database", "media"))
-	})
-	w.Bind("backend__extractColors", func(imagePath string) (colors ortfodb.ColorPalette, err error) {
+	},
+	"extractColors": func(imagePath string) (colors ortfodb.ColorPalette, err error) {
 		return ortfodb.ExtractColors(ConfigurationDirectory("portfolio-database", imagePath))
-	})
-	w.Bind("backend__newDir", func(path string) error {
+	},
+	"newDir": func(path string) error {
 		return os.MkdirAll(path, 0755)
-	})
-	w.Bind("backend__newFile", func(path string) error {
+	},
+	"newFile": func(path string) error {
 		fmt.Println("creating file", path)
 		err := os.MkdirAll(filepath.Dir(path), 0755)
 		if err != nil {
@@ -286,8 +263,8 @@ func startWebview() error {
 		}
 
 		return os.WriteFile(path, []byte{}, 0666)
-	})
-	w.Bind("backend__mediaContent", func(path string) (string, error) {
+	},
+	"mediaContent": func(path string) (string, error) {
 		settings, err := LoadSettings()
 		if err != nil {
 			return "", fmt.Errorf("while loading media content of %s: %w", path, err)
@@ -301,7 +278,62 @@ func startWebview() error {
 		}
 
 		return string(content), nil
-	})
+	},
+}
+
+func startWebview() error {
+	typescript := tsreflect.New(tsreflect.ExportEverything())
+	typescript.Add(reflect.TypeOf(ortfodb.Work{}))
+	typescript.Add(reflect.TypeOf(ortfodb.Tag{}))
+	typescript.Add(reflect.TypeOf(ortfodb.Technology{}))
+	typescript.Add(reflect.TypeOf(ortfodb.ProgressInfoEvent{}))
+	typescript.Add(reflect.TypeOf(DirEntry{}))
+	typescript.Add(reflect.TypeOf(UIState{}))
+	typescript.Add(reflect.TypeOf(Settings{}))
+	typescript.Add(reflect.TypeOf(ortfodb.Media{}))
+	typescript.Add(reflect.TypeOf(Collection{}))
+	typescript.Add(reflect.TypeOf(ExternalSite{}))
+	typescript.Add(reflect.TypeOf(ortfodb.Database{}))
+
+	ortfodb.LogFilePath = ConfigurationDirectory("ortfodb.log")
+	ortfodb.PrependDateToLogs = true
+	ortfodb.ReleaseBuildLock(ConfigurationDirectory("portfolio-database", "database.json"))
+	err := newOrtfoContext()
+	if err != nil {
+		return err
+	}
+
+	w = webview.New(true)
+	defer w.Destroy()
+	w.SetTitle("ortfo")
+	if os.Getenv("DEV") == "yes" {
+		w.SetTitle("ortfo [dev]")
+	}
+	w.SetSize(800, 600, webview.HintMin)
+	w.Navigate("http://localhost:" + func() string {
+		if os.Getenv("DEV") == "yes" {
+			return "3000"
+		} else {
+			return fmt.Sprintf("%d/index.html", Port)
+		}
+	}())
+	for name, function := range BackendFunctions {
+		argslist := ""
+		for i := 0; i < reflect.TypeOf(function).NumIn(); i++ {
+			if i > 0 {
+				argslist += ", "
+			}
+			argslist += fmt.Sprintf("arg%d", i)
+		}
+		err := w.Bind(fmt.Sprintf("backend__%s", name), function)
+		if err != nil {
+			fmt.Printf("error while binding %s: %s\n", name, err)
+		} else {
+			typescript.AddFunc(reflect.TypeOf(function), name, true, fmt.Sprintf("\t// @ts-ignore backend__* functions are injected by the Go backend\n\treturn backend__%s(%s);", name, argslist))
+		}
+	}
+	wd, _ := os.Getwd()
+	os.WriteFile(filepath.Join(wd, "../frontend/backend.generated.ts"), []byte(typescript.DeclarationsTypeScript()), 0644)
 	w.Run()
 	return nil
 }

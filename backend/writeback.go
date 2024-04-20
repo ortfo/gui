@@ -8,7 +8,7 @@ import (
 	ortfodb "github.com/ortfo/db"
 )
 
-func Writeback(settings Settings, parsedDescription ortfodb.AnalyzedWork, workID string) error {
+func Writeback(settings Settings, parsedDescription ortfodb.Work, workID string) error {
 	// Put spaces back in metadata properties that should have them.
 	// It also removes technical metadata properties that shouldn't be written back.
 	// TODO: this behavior should be implemented in ortfo/mk.

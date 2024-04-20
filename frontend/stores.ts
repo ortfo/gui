@@ -1,26 +1,16 @@
-import type { Database as AnalyzedWork, Colors } from "@ortfo/db/dist/database"
 import { diff, type Operation } from "just-diff"
 import type { Readable, Writable } from "svelte/store"
 import { derived, writable } from "svelte/store"
 import type { BuildProgress } from "./backend"
+import { WorkLocalized, Database, DatabaseOneLang, localize } from "./ortfo"
 import {
-    type AnalyzedWorkLocalized,
-    type Database,
-    type DatabaseOneLang,
-    localize,
-} from "./ortfo"
-import { Tags } from "@ortfo/db/dist/tags"
-import { Technologies } from "@ortfo/db/dist/technologies"
-
-export type Settings = {
-    theme: string
-    surname: string
-    projectsfolder: string
-    language: "en" | "fr"
-    portfoliolanguages: string[]
-    showtips: boolean
-    poweruser: boolean
-}
+    ColorPalette,
+    Settings,
+    Tag,
+    Technology,
+    UIState,
+    Work,
+} from "./backend.generated"
 
 export type PageName =
     | "works"
@@ -32,17 +22,17 @@ export type PageName =
 
 export type WorkID = string
 
-export type State = {
-    openTab: PageName
-    editingWorkID: WorkID | null
-    lang: "en" | "fr"
-    metadataPaneSplitRatio: number
-    scrollPositions: { [tab in PageName]: number }
-}
+// export type State = {
+//     openTab: PageName
+//     editingWorkID: WorkID | null
+//     lang: "en" | "fr"
+//     metadataPaneSplitRatio: number
+//     scrollPositions: { [tab in PageName]: number }
+// }
 
 export const DEFAULT_SETTINGS: Settings = {
     theme: "light",
-    portfoliolanguages: ["en"],
+    portfolioLanguages: ["en"],
     surname: "",
     projectsfolder: "",
     language: "en",
@@ -51,11 +41,12 @@ export const DEFAULT_SETTINGS: Settings = {
 }
 export const settings: Writable<Settings> = writable(DEFAULT_SETTINGS)
 
-export const DEFAULT_UI_STATE: State = {
+export const DEFAULT_UI_STATE: UIState = {
     openTab: "works",
     editingWorkID: "",
     lang: "en",
     metadataPaneSplitRatio: 0.333,
+    rebuildingDatabase: false,
     scrollPositions: {
         works: 0,
         tags: 0,
@@ -65,10 +56,10 @@ export const DEFAULT_UI_STATE: State = {
         editor: 0,
     },
 }
-export const state: Writable<State> = writable(DEFAULT_UI_STATE)
+export const state: Writable<UIState> = writable(DEFAULT_UI_STATE)
 
 export const colorPickersSelectedColors: Writable<{
-    [hash: string]: Colors
+    [hash: string]: ColorPalette
 }> = writable({})
 
 export const buildProgress: Writable<BuildProgress> = writable({
@@ -89,8 +80,8 @@ export const volatileWorks: Writable<WorkID[]> = writable([] as WorkID[])
 
 export const debugFlyoutContent: Writable<any> = writable(null)
 
-export const workInEditor: Writable<AnalyzedWork | null> = writable(null)
-export const workOnDisk: Writable<AnalyzedWork | null> = writable(null)
+export const workInEditor: Writable<Work | null> = writable(null)
+export const workOnDisk: Writable<Work | null> = writable(null)
 
 export const unsavedChanges: Readable<
     { op: Operation; path: (string | number)[]; value: any }[]
@@ -126,7 +117,7 @@ export const databaseLanguages: Readable<Set<string>> = derived(
     ([$database]) =>
         new Set(
             Object.values($database)
-                .map(w => Object.keys(w.content))
+                .map(w => Object.keys(w.content ?? {}))
                 .flat()
                 .filter(l => l !== "default"),
         ),
@@ -149,15 +140,14 @@ export const databaseCurrentLanguage: Readable<DatabaseOneLang> = derived(
     },
 )
 
-export const workOnDiskCurrentLanguage: Readable<
-    AnalyzedWorkLocalized | undefined
-> = derived(
-    [databaseCurrentLanguage, state],
-    ([databaseCurrentLanguage, state]) =>
-        Object.values(databaseCurrentLanguage).find(
-            w => w.id === state.editingWorkID,
-        ),
-)
+export const workOnDiskCurrentLanguage: Readable<WorkLocalized | undefined> =
+    derived(
+        [databaseCurrentLanguage, state],
+        ([databaseCurrentLanguage, state]) =>
+            Object.values(databaseCurrentLanguage).find(
+                w => w.id === state.editingWorkID,
+            ),
+    )
 
-export const tagsRepository: Writable<Tags[]> = writable([])
-export const technologiesRepository: Writable<Technologies[]> = writable([])
+export const tagsRepository: Writable<Tag[]> = writable([])
+export const technologiesRepository: Writable<Technology[]> = writable([])

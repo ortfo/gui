@@ -52,7 +52,7 @@ async function loadSettings() {
 	await backend.initialize()
 	$settings = await backend.settingsRead()
 	console.info(`Loaded settings from backend: ${JSON.stringify($settings)}`)
-	$state = await backend.readUIState()
+	$state = await backend.loadState()
 	console.info(`Loaded UI state save from backend: ${JSON.stringify($state)}`)
 }
 
@@ -100,7 +100,7 @@ $: if ($state.editingWorkID) {
 onMount(() => {
 	hotkeys(window, {
 		"$mod+r": () => {
-			backend.saveUIState($state)
+			backend.saveState($state)
 			window.location.reload()
 		},
 		"$mod+b": () => {
