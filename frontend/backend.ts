@@ -1,17 +1,8 @@
-import { applyAbbreviations, collectAbbreviations } from "./description"
-import type {
-    Database,
-    ExternalSite,
-    LayedOutElement,
-    ParsedDescription,
-    Tag,
-    Technology,
-    Translated,
-    Collection,
-} from "./ortfo"
+import type { AnalyzedWork, Collection, Database, ExternalSite } from "./ortfo"
 import type { Settings, State } from "./stores"
 import { lowercaseFirstCharacter, lowercaseNoSpacesKeys } from "./utils"
-
+import type { Tags as Tag } from "@ortfo/db/dist/tags"
+import type { Technologies as Technology } from "@ortfo/db/dist/technologies"
 /*
  * Strings that represent binary files, with a filetype at the start.
  * Can be used in [src] attributes of images, for example.
@@ -31,17 +22,11 @@ export type DirEntry = {
 export type MaybeError = string | null
 
 export type BuildProgress = {
-    total: number
-    processed: number
-    percent: number
-    current: {
-        id: string
-        step: string
-        resolution: number
-        file: string
-        language: string
-        output: string
-    }
+    works_done: number
+    works_total: number
+    work_id: string
+    phase: string
+    details: string[]
 }
 
 export type PickFileConstraint = {
@@ -83,17 +68,29 @@ export const backend = {
     },
     // ../backend/main.go
     databaseRead: async () => {
-        return lowercaseNoSpacesKeys(
+        const db =
             // @ts-ignore backend__* functions are injected by webview (from the backend)
-            (await backend__databaseRead()) || {}
-        ) as Database
+            ((await backend__databaseRead()) || {}) as Database
+        // TODO understand why madeWith can be null instead of []
+        return Object.fromEntries(
+            Object.entries(db).map(([id, work]) => [
+                id,
+                {
+                    ...work,
+                    metadata: {
+                        ...work.metadata,
+                        madeWith: work.metadata.madeWith || [],
+                    },
+                },
+            ]),
+        )
     },
     // ../backend/main.go
     getBuildProgress: async () => {
-        return lowercaseNoSpacesKeys(
+        return (
             // @ts-ignore backend__* functions are injected by webview (from the backend)
-            (await backend__getBuildProgress()) || {}
-        ) as BuildProgress
+            ((await backend__getBuildProgress()) || {}) as BuildProgress
+        )
     },
     // ../backend/main.go
     rebuildDatabase: async () => {
@@ -103,27 +100,12 @@ export const backend = {
     // ../backend/main.go
     rebuildWork: async (id: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return (await backend__rebuildDatabase(id)) as MaybeError
+        return (await backend__rebuildWork(id)) as MaybeError
     },
     // ../backend/main.go
-    layout: async (work: ParsedDescription, languages: string[]) => {
-        const data = Object.fromEntries(
-            Object.entries(
-                // @ts-ignore backend__* functions are injected by webview (from the backend)
-                (await backend__layout(work, languages)) as Translated<
-                    unknown[]
-                >
-            ).map(([lang, val]) => [lang, val.map(lowercaseNoSpacesKeys)])
-        )
-        return data as Translated<LayedOutElement[]>
-    },
-    // ../backend/main.go
-    writeToDisk: async (work: ParsedDescription, workID: string) => {
+    writeToDisk: async (work: AnalyzedWork, workID: string) => {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
-        return (await backend__writeback(
-            applyAbbreviations(work),
-            workID
-        )) as MaybeError
+        return (await backend__writeback(work, workID)) as MaybeError
     },
     // ../backend/main.go
     saveUIState: async (state: State) => {
@@ -140,7 +122,7 @@ export const backend = {
     listDirectory: async (path: string) => {
         return lowercaseNoSpacesKeys(
             // @ts-ignore backend__* functions are injected by webview (from the backend)
-            await backend__listDirectory(path)
+            await backend__listDirectory(path),
         ) as DirEntry[]
     },
     // ../backend/main.go
@@ -152,8 +134,8 @@ export const backend = {
                 Plural: t.plural,
                 Description: t.description,
                 Aliases: t.aliases,
-                LearnMoreURL: t.learnmoreurl,
-            }))
+                LearnMoreURL: t["learn more at"],
+            })),
         )) as MaybeError
     },
     // ../backend/main.go
@@ -191,7 +173,7 @@ export const backend = {
             title,
             startIn,
             constraint,
-            relativeTo
+            relativeTo,
         )) as string
     },
     // ../backend/main.go:182
@@ -209,7 +191,7 @@ export const backend = {
         // @ts-ignore backend__* functions are injected by webview (from the backend)
         return (await backend__writeRawDescription(
             workID,
-            content
+            content,
         )) as MaybeError
     },
     // ../backend/main.go
@@ -224,7 +206,7 @@ export const backend = {
     extractColors: async (imagePath: string) => {
         return lowercaseNoSpacesKeys(
             // @ts-ignore backend__* functions are injected by webview (from the backend)
-            await backend__extractColors(imagePath)
+            await backend__extractColors(imagePath),
         ) as {
             primary: string
             secondary: string

@@ -1,25 +1,25 @@
 <script lang="ts">
-import { workOnDisk, settings } from "../stores"
-import type { ContentBlock } from "../contentblocks"
-import type { WorkOneLang } from "../ortfo"
-import { backend, localDatabase, localProjects } from "../backend"
-import { _ } from "svelte-i18n"
-import FieldFilepath from "./FieldFilepath.svelte"
-import FieldToggle from "./FieldToggle.svelte"
-import FieldText from "./FieldText.svelte"
 import db from "mime-db"
-import type MimeDatabase from "mime-db"
+import { _ } from "svelte-i18n"
+import { backend, localDatabase, localProjects } from "../backend"
+import type { ContentBlock } from "../contentblocks"
+import type { AnalyzedWorkLocalized } from "../ortfo"
+import { settings, workOnDisk } from "../stores"
+import FieldFilepath from "./FieldFilepath.svelte"
+import FieldText from "./FieldText.svelte"
+import FieldToggle from "./FieldToggle.svelte"
 
-export let block: ContentBlock & { data: { type: "media" } }
-export let work: WorkOneLang
+export let block: ContentBlock
+export let work: AnalyzedWorkLocalized
 export let activeBlock: string
 
 function absoluteMediaPath(source: string): string {
-	return localProjects(`${$workOnDisk.id}/.portfoliodb/${source}`)
+	// TODO don't hardcode scattered mode folder to .ortfo
+	return localProjects(`${$workOnDisk.id}/.ortfo/${source}`)
 }
 
 function thumbnailOfSource(source: string): string {
-	let absolutePath = work.media.find(m => m.source === source)?.thumbnails?.[600]
+	let absolutePath = work.content.blocks.find(m => m.distSource === source)?.thumbnails?.[600]
 	return absolutePath
 		? localDatabase(absolutePath)
 		: absoluteMediaPath(source)
@@ -33,25 +33,25 @@ function generalContentType(source: string): string {
 }
 </script>
 
-<div class="media-preview" data-type={generalContentType(block.data.source)}>
-	{#if generalContentType(block.data.source) === "image"}
-		<img src={thumbnailOfSource(block.data.source)} alt="" />
-	{:else if generalContentType(block.data.source) === "video"}
+<div class="media-preview" data-type={generalContentType(block.data.relativeSource)}>
+	{#if generalContentType(block.data.relativeSource) === "image"}
+		<img src={thumbnailOfSource(block.data.relativeSource)} alt="" />
+	{:else if generalContentType(block.data.relativeSource) === "video"}
 		<video
 			controls={block.data.attributes.controls}
 			loop={block.data.attributes.loop}
 			muted={block.data.attributes.muted}
-			src={absoluteMediaPath(block.data.source)}
+			src={absoluteMediaPath(block.data.relativeSource)}
 		/>
-	{:else if generalContentType(block.data.source) === "audio"}
+	{:else if generalContentType(block.data.relativeSource) === "audio"}
 		<audio
 			controls={block.data.attributes.controls}
 			loop={block.data.attributes.loop}
-			src={absoluteMediaPath(block.data.source)}
+			src={absoluteMediaPath(block.data.relativeSource)}
 		/>
 		<!-- <audio src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3" controls></audio> -->
-	{:else if generalContentType(block.data.source) === "text"}
-		{#await backend.mediaContent(block.data.source)}
+	{:else if generalContentType(block.data.relativeSource) === "text"}
+		{#await backend.mediaContent(block.data.relativeSource)}
 			<div class="loading">{$_("loading text file…")}</div>
 		{:then content}
 			<pre>{content}</pre>
@@ -69,16 +69,16 @@ function generalContentType(source: string): string {
 		placeholder={$_("describe your media")}
 	/>
 	<FieldFilepath
-		relativeTo={`${$settings.projectsfolder}/${work.id}/.portfoliodb`}
+		relativeTo={`${$settings.projectsfolder}/${work.id}/.ortfo`}
 		key="source"
-		bind:value={block.data.source}
+		bind:value={block.data.relativeSource}
 		on:focus={() => (activeBlock = block.id)}
 		on:blur={() => (activeBlock = null)}
 		placeholder={$_("put the path or url to the media here")}
 	/>
 </dl>
 
-{#if ["video", "audio"].includes(generalContentType(block.data.source))}
+{#if ["video", "audio"].includes(generalContentType(block.data.relativeSource))}
 	<dl class="attributes">
 		<FieldToggle
 			key="loop"
@@ -86,7 +86,7 @@ function generalContentType(source: string): string {
 			on:focus={() => (activeBlock = block.id)}
 			on:blur={() => (activeBlock = null)}
 		/>
-		{#if generalContentType(block.data.source) === "video"}
+		{#if generalContentType(block.data.relativeSource) === "video"}
 			<FieldToggle
 				key="autoplay"
 				help={$_("mutes the video")}

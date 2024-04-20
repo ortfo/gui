@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	ortfodb "github.com/ortfo/db"
-	ortfomk "github.com/ortfo/mk"
 )
 
 func (settings *Settings) InitializeDatabase() error {
@@ -16,7 +16,7 @@ func (settings *Settings) InitializeDatabase() error {
 		return fmt.Errorf("couldn't create data directories: %w", err)
 	}
 	// initialize portfolio database
-	err = WriteIfNotExist(ConfigurationDirectory("portfolio-database", "database.json"), []byte("[]"))
+	err = WriteIfNotExist(ConfigurationDirectory("portfolio-database", "database.json"), []byte("{}"))
 	if err != nil {
 		return fmt.Errorf("couldn't initialize portfolio database file: %w", err)
 	}
@@ -48,7 +48,7 @@ func (settings *Settings) InitializeDatabase() error {
 	return nil
 }
 
-func (settings *Settings) LoadDatabase() (db ortfomk.Database, err error) {
+func (settings *Settings) LoadDatabase() (db ortfodb.Database, err error) {
 	// Check if projects folder exists
 	projectsFolder, err := homedir.Expand(settings.ProjectsFolder)
 	if err != nil {
@@ -64,25 +64,27 @@ func (settings *Settings) LoadDatabase() (db ortfomk.Database, err error) {
 	}
 
 	println("Not re-building database...")
-	return ortfomk.LoadDatabase(ConfigurationDirectory("portfolio-database"))
+	return ortfodb.LoadDatabase(ConfigurationDirectory("portfolio-database", "database.json"), true)
 }
 
 func (settings *Settings) RebuildDatabase() error {
 	os.Chdir(ConfigurationDirectory("portfolio-database"))
 	LogToBrowser("Rebuilding database...")
+	LogToBrowser(fmt.Sprintf("context is %#v", ctx))
 	projectsFolder, err := homedir.Expand(settings.ProjectsFolder)
 	if err != nil {
 		return fmt.Errorf("while expanding ~: %w", err)
 	}
-	ortfodbConfig, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"), ConfigurationDirectory("portfolio-database"))
+	ortfodbConfig, err := ortfodb.NewConfiguration(ConfigurationDirectory("ortfodb.yaml"))
 	if err != nil {
 		return fmt.Errorf("couldn't load database configuration: %w", err)
 	}
 
-	go ortfodb.BuildAll(
+	LogToBrowser("building with ctx %#v", ctx)
+	ctx.BuildAll(
 		projectsFolder,
 		ConfigurationDirectory("portfolio-database", "database.json"),
-		ortfodb.Flags{Scattered: true, Silent: true, ProgressFile: ConfigurationDirectory("portfolio-database", "progress.json")},
+		ortfodb.Flags{Scattered: true, Silent: true, ProgressInfoFile: ConfigurationDirectory("progress.jsonl")},
 		ortfodbConfig,
 	)
 	if crash := recover(); crash != nil {
@@ -91,15 +93,14 @@ func (settings *Settings) RebuildDatabase() error {
 	if err != nil {
 		return fmt.Errorf("couldn't build the portfolio's database: %w", err)
 	}
-	LogToBrowser("Finish rebuilding database")
 	return nil
 }
 
 func (settings *Settings) DeleteWorks(ids []string) error {
 	var err error
 	for _, id := range ids {
-		LogToBrowser("Deleting %s", JoinPaths(settings.ProjectsFolder, id, ".portfoliodb"))
-		err = os.RemoveAll(JoinPaths(settings.ProjectsFolder, id, ".portfoliodb"))
+		LogToBrowser("Deleting %s", JoinPaths(settings.ProjectsFolder, id, ".ortfo"))
+		err = os.RemoveAll(JoinPaths(settings.ProjectsFolder, id, ".ortfo"))
 		if err != nil {
 			ErrorToBrowser(err.Error())
 			return err
@@ -108,9 +109,9 @@ func (settings *Settings) DeleteWorks(ids []string) error {
 	return nil
 }
 
-func (settings *Settings) ProgressFile() ortfomk.ProgressFile {
-	var progressFile ortfomk.ProgressFile
-	progressFilePath := ConfigurationDirectory("portfolio-database", "progress.json")
+func (settings *Settings) ProgressFile() ortfodb.ProgressInfoEvent {
+	var progressFile ortfodb.ProgressInfoEvent
+	progressFilePath := ConfigurationDirectory("progress.jsonl")
 	if _, err := os.Stat(progressFilePath); os.IsNotExist(err) {
 		return progressFile
 	}
@@ -118,11 +119,14 @@ func (settings *Settings) ProgressFile() ortfomk.ProgressFile {
 	if string(raw) == "" {
 		return settings.ProgressFile()
 	}
-	LogToBrowser("Progress file raw is %s", string(raw))
+	// keep only the last line
 	if err != nil {
 		ErrorToBrowser("Couldn't read progress file: %s", err)
 		return progressFile
 	}
+	// Keep only the last line
+	lines := strings.Split(string(raw), "\n")
+	raw = []byte(lines[len(lines)-2])
 	err = json.Unmarshal(raw, &progressFile)
 	if err != nil {
 		ErrorToBrowser("Couldn't parse progress file: %s. Raw was %q", err, string(raw))

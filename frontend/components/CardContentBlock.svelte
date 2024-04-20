@@ -6,7 +6,7 @@ import MarkdownEditor from "./MarkdownEditor.svelte"
 import { clickOutside } from "../actions"
 import { scale } from "svelte/transition"
 import { settings } from "../stores"
-import type { WorkOneLang } from "../ortfo"
+import type { AnalyzedWorkLocalized } from "../ortfo"
 import { _ } from "svelte-i18n"
 import { tooltip } from "../actions"
 import ContentBlockMedia from "./ContentBlockMedia.svelte"
@@ -14,7 +14,7 @@ import ContentBlockMedia from "./ContentBlockMedia.svelte"
 const dispatch = createEventDispatcher()
 
 export let block: ContentBlock
-export let work: WorkOneLang
+export let work: AnalyzedWorkLocalized
 export let activeBlock: string
 
 let choosingWhatToInsert: boolean = false
@@ -41,7 +41,7 @@ let choosingWhatToInsert: boolean = false
 			<dl>
 				<FieldText
 					key="name"
-					bind:value={block.data.name}
+					bind:value={block.data.text}
 					on:focus={() => (activeBlock = block.id)}
 					on:blur={() => (activeBlock = null)}
 					placeholder={$_("name your link")}

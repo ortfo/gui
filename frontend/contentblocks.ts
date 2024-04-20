@@ -1,17 +1,8 @@
+import { type Database as AnalyzedWork, BlockElement } from "@ortfo/db/dist/database"
 import gridHelp from "svelte-grid/build/helper"
-import { backend } from "./backend"
-import { fromBlocksToLayout, layoutWidth } from "./layout"
-import {
-    ContentType,
-    LayedOutElement,
-    Link,
-    MediaEmbedDeclaration,
-    Paragraph,
-    ParsedDescription,
-    replaceLanguageDefaultInObject,
-    Translated,
-} from "./ortfo"
-import { distance, first, pick, second } from "./utils"
+import { layoutWidth, OrtfoMkLayout } from "./layout"
+import { Translated } from "./ortfo"
+import { distance, first, second } from "./utils"
 
 export type ContentBlock = {
     id: ItemID
@@ -34,17 +25,10 @@ export type ContentBlock = {
             h?: number
         }
     }
-    data: ContentUnit
+    data: BlockElement
 }
 
-export type ContentUnit =
-    | ({ type: "paragraph" } & Paragraph)
-    | ({ type: "media" } & MediaEmbedDeclaration & {
-              generalcontenttype: string
-          })
-    | ({ type: "link" } & Link)
-
-export type ItemID = `${ContentUnit["type"]}:${number}`
+export type ItemID = string
 
 /**
  *
@@ -95,28 +79,24 @@ export function eachLanguage<I, O>(blocks: Translated<I[]>) {
  * @returns [content blocks, max. number of columns per row (row "capacity")]
  */
 export async function toBlocks(
-    description: ParsedDescription,
+    description: AnalyzedWork,
     languages: string[]
 ): Promise<[Translated<ContentBlock[]>, number]> {
-    const rowCapacity = description.metadata.layout
-        ? layoutWidth(description.metadata.layout)
+    const layout = description.content[languages[0]].layout as OrtfoMkLayout
+    const rowCapacity = layout.length
+        ? layoutWidth(layout)
         : 1
-    let layouts: Translated<LayedOutElement[]>
-    layouts = await backend.layout(description, languages)
-    layouts = replaceLanguageDefaultInObject(layouts, languages)
+
+    console.log('converting to blocks from', description)
     return [
-        eachLanguage<LayedOutElement, ContentBlock>(layouts).map(
-            (item: LayedOutElement) => {
-                const {
-                    type,
-                    layoutindex,
-                    positions,
-                    generalcontenttype,
-                    metadata,
-                    ...contentunit
-                } = item
-                let block = {
-                    id: `${type}:${layoutindex}` as ItemID,
+        Object.fromEntries(Object.entries(description.content).map(([language, content]) => {
+            return [language, content.blocks.map((item: BlockElement) => {
+                // Find all positions as (x, y) in the 2D layout array where the block is. the 2D layout array contains block IDs.
+                const positions = layout.flatMap((row, y) =>
+                    (Array.isArray(row) ? row : [row]).map((cell, x) => (cell === item.id ? [y, x] : null))
+                ).filter(Boolean) as [number, number][]
+                return {
+                    id: item.id,
                     [rowCapacity]: gridHelp.item({
                         // We assume that the element's positions are contiguous.
                         x: Math.min(...positions.map(second)),
@@ -126,150 +106,51 @@ export async function toBlocks(
                         customDragger: true,
                         customResizer: true,
                     }),
-                }
-                let blockData: ContentBlock["data"]
-                switch (type) {
-                    case "media":
-                        blockData = {
-                            type,
-                            ...pick(
-                                contentunit,
-                                "alt",
-                                "title",
-                                "source",
-                                "attributes"
-                            ),
-                            generalcontenttype,
-                        }
-
-                        break
-                    case "link":
-                        blockData = {
-                            type,
-                            ...pick(contentunit, "id", "name", "title", "url"),
-                        }
-                        break
-                    case "paragraph":
-                        blockData = {
-                            type,
-                            ...pick(contentunit, "id", "content"),
-                        }
-                }
-
-                return { ...block, data: blockData }
-            }
-        ),
+                    data: item
+                } 
+            })]})),
         Math.max(rowCapacity, 1),
     ]
 }
 
-function onlyOfType(
-    type: "media" | "link" | "paragraph",
-    blocks: Translated<ContentBlock[]>
-): Translated<ContentBlock[]> {
-    return eachLanguage<ContentBlock, ContentBlock>(blocks).filter(
-        block => block.data.type === type
-    )
-}
-
-export function fromBlocksToParsedDescription(
-    blocks: Translated<ContentBlock[]>,
-    rowCapacity: number,
-    base: ParsedDescription,
-    currentLanguage: string // necessary for layout changes, they only occur in the current language's blocks, we need to propagate them to the other languages
-): ParsedDescription {
-    if (Object.keys(blocks).length === 0) {
-        return base
-    }
-    let description: ParsedDescription = {
-        ...base,
-        paragraphs: {},
-        mediaembeddeclarations: {},
-        links: {},
-    }
-
-    if (Object.keys(blocks).length === 0) {
-        return description
-    }
-
-    description.metadata.layout = fromBlocksToLayout(
-        blocks[currentLanguage],
-        rowCapacity
-    )
-
-    description.paragraphs = eachLanguage<ContentBlock, Paragraph>(
-        onlyOfType("paragraph", blocks)
-    ).map((block: ContentBlock) => {
-        const { content, id } = block.data as Paragraph & { type: "paragraph" }
-        return {
-            content,
-            id,
-        } as Paragraph
-    })
-
-    description.links = eachLanguage<ContentBlock, Link>(
-        onlyOfType("link", blocks)
-    ).map((block: ContentBlock) => {
-        const { name, id, title, url } = block.data as Link & { type: "link" }
-        return {
-            url,
-            id,
-            title,
-            name,
-        } as Link
-    })
-
-    type MediaEmbed = MediaEmbedDeclaration
-
-    description.mediaembeddeclarations = eachLanguage<ContentBlock, MediaEmbed>(
-        onlyOfType("media", blocks)
-    ).map((block: ContentBlock) => {
-        const { alt, attributes, source, title } = block.data as MediaEmbed & {
-            type: "media"
-        }
-        return {
-            alt,
-            attributes,
-            source,
-            title,
-        } as MediaEmbed
-    })
-
-    return description
-}
-
-export function emptyContentUnit(type: LayedOutElement["type"]): ContentUnit {
-    switch (type) {
-        case "media":
-            return {
-                type,
-                alt: "",
-                attributes: {
-                    autoplay: false,
-                    controls: true,
-                    loop: false,
-                    muted: false,
-                    playsinline: false,
-                },
-                source: "",
-                title: "",
-                generalcontenttype: ""
-            }
-        case "link":
-            return {
-                type,
-                id: "",
-                name: "",
-                title: "",
-                url: "",
-            }
-        case "paragraph":
-            return {
-                type,
-                content: "",
-                id: "",
-            }
-        default:
-            throw Error(`Unknown content unit type "${type}"`)
+export function emptyContentUnit(type: "paragraph"|"link"|"media"): BlockElement {
+    return {
+        type, 
+        alt: "",
+    analyzed: false,
+    anchor: "",
+    attributes: {
+        autoplay: false,
+        controls: true,
+        loop: false,
+        muted: false,
+        playsinline: false
+    },
+    caption: "",
+    colors: {
+        primary: "",
+        secondary: "",
+        tertiary: ""
+    },
+    content: "",
+    contentType: "",
+    dimensions: {
+        aspectRatio: 0,
+        height: 0,
+        width: 0
+    },
+    distSource: "",
+    duration: 0,
+    hasSound: false,
+    id: "",
+    index: 0,
+    online: false,
+    relativeSource: "",
+    size: 0,
+    text: "",
+    thumbnails: {},
+    thumbnailsBuiltAt: "",
+    title: "",
+    url: "",
     }
 }

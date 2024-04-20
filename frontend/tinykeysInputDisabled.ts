@@ -1,6 +1,6 @@
 // thx https://github.com/jamiebuilds/tinykeys/issues/17#issuecomment-1163109758
 
-import tinykeys from "tinykeys"
+import { tinykeys } from "tinykeys"
 
 function isInsideEditable(target) {
     if (target === null) return false
@@ -19,7 +19,13 @@ function ambiguousShortcut(key) {
         .some(stroke => ["Ctrl", "$mod"].includes(stroke))
 }
 
-export default function hotkeys(target, bindings) {
+export default function hotkeys(
+    target,
+    bindings: Record<
+        string,
+        (event: KeyboardEvent & { insideEditable: boolean }) => void
+    >,
+) {
     const wrappedBindings = Object.fromEntries(
         Object.entries(bindings).map(([key, handler]) => [
             key,
@@ -33,7 +39,7 @@ export default function hotkeys(target, bindings) {
                     insideEditable: isInsideEditable(event.target),
                 })
             },
-        ])
+        ]),
     )
     tinykeys(target, wrappedBindings)
 }

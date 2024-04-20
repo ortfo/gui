@@ -1,27 +1,23 @@
 <script lang="ts">
-import { backend, DirEntry } from "../backend"
-import { scrollStates } from "../actions"
-import { i18n } from "../actions"
-import type { Work } from "../ortfo"
-import { unslug } from "../utils"
-import UnsavedChanges from "../modals/UnsavedChanges.svelte"
-import { getContext } from "svelte"
 import Fuse from "fuse.js"
+import { _ } from "svelte-i18n"
+import { i18n, scrollStates } from "../actions"
+import { backend, DirEntry } from "../backend"
+import HighlightText from "../components/HighlightText.svelte"
+import SearchBar from "../components/SearchBar.svelte"
 import { createModalSummoner } from "../modals"
+import UnsavedChanges from "../modals/UnsavedChanges.svelte"
+import type { AnalyzedWork } from "../ortfo"
 import {
 	database,
 	databaseCurrentLanguage,
-	databaseLanguages,
 	hasUnsavedChanges,
 	settings,
 	state,
-	volatileWorks,
+	volatileWorks
 } from "../stores"
-import { _ } from "svelte-i18n"
-import SearchBar from "../components/SearchBar.svelte"
-import HighlightText from "../components/HighlightText.svelte"
-import { escapeRegExp } from "lodash"
 import hotkeys from "../tinykeysInputDisabled"
+import { unslug } from "../utils"
 const summon = createModalSummoner()
 
 // TODO use <SearchableList>
@@ -46,15 +42,14 @@ hotkeys(window, {
 async function getUndescribedWorks() {
 	let dirs = await backend.listDirectory($settings.projectsfolder)
 
-	let inDatabase = dir =>
-		$database.works.find(w => w.id === dir.name) !== undefined
+	let inDatabase = dir => dir.name in $database
 	let isVolatile = dir => $volatileWorks.includes(dir.name)
 
 	let undescribed = dirs.filter(
 		dir =>
 			(!inDatabase(dir) || isVolatile(dir)) &&
 			dir.isdir &&
-			!dir.name.startsWith(".")
+			!dir.name.startsWith("."),
 	)
 
 	searcher = new Fuse(undescribed, {
@@ -69,29 +64,47 @@ async function getUndescribedWorks() {
 async function createWork(dir: DirEntry) {
 	const translated = data =>
 		Object.fromEntries(
-			Array.from($settings.portfoliolanguages).map(l => [l, data])
+			Array.from($settings.portfoliolanguages).map(l => [l, data]),
 		)
 	await backend.newFile(
 		$settings.projectsfolder +
 			"/" +
 			dir.name +
-			"/.portfoliodb/description.md"
+			"/.ortfo/description.md",
 	)
-	$database.works = [
-		...$database.works,
-		{
-			footnotes: translated({}),
+	$database = {
+		...$database,
+		[dir.name]: {
+			Partial: true,
+			builtAt: null,
+			descriptionHash: "",
 			id: dir.name,
-			links: translated([]),
-			media: translated([]),
-			title: translated(unslug(dir.name)),
-			paragraphs: translated([]),
 			metadata: {
-				thumbnails: {},
-				layout: [],
+				additionalMetadata: {},
+				aliases: [],
+				colors: { primary: "", secondary: "", tertiary: "" },
+				databaseMetadata:
+					Object.values($database)[0].metadata.databaseMetadata,
+				finished: "",
+				madeWith: [],
+				pageBackground: "",
+				private: true,
+				started: "",
+				tags: [],
+				thumbnail: "",
+				titleStyle: "",
+				wip: false,
 			},
-		},
-	]
+			content: {
+				default: {
+					title: unslug(dir.name),
+					blocks: [],
+					footnotes: {},
+					layout: [],
+				},
+			},
+		} satisfies AnalyzedWork,
+	}
 	$volatileWorks = [...$volatileWorks, dir.name]
 }
 
@@ -110,7 +123,7 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 
 <div class="sheet" class:open>
 	<h1>
-		{#if $databaseCurrentLanguage.works.length === 0}
+		{#if Object.keys($databaseCurrentLanguage).length === 0}
 			{$_("Let’s get this portfolio started.")}
 		{:else}
 			{$_("Let’s describe a work")}
@@ -120,13 +133,13 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 		{$_("Loading…")}
 	{:then dirs}
 		<p class="intro">
-			{#if $databaseCurrentLanguage.works.length === 0}
+			{#if Object.keys($databaseCurrentLanguage).length === 0}
 				{$_(
-					"Pick a work to write a portfolio article about it. We’ll take care of the rest."
+					"Pick a work to write a portfolio article about it. We’ll take care of the rest.",
 				)}
 			{:else}
 				{$_(
-					"Here are the works in your projects folder that don’t have a description yet"
+					"Here are the works in your projects folder that don’t have a description yet",
 				)}
 			{/if}
 		</p>
@@ -172,7 +185,7 @@ function search(dirs: DirEntry[], query: string): Fuse.FuseResult<DirEntry>[] {
 	{:catch error}
 		<!-- getU was rejected -->
 	{/await}
-	{#if $databaseCurrentLanguage.works.length === 0}
+	{#if Object.keys($databaseCurrentLanguage).length === 0}
 		<p class="troubleshooot-bottom" use:i18n>
 			Can’t find what you’re looking for?
 		</p>

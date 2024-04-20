@@ -1,0 +1,12 @@
+PUT $DOCUMENT_DIR/../ortfo AS ortfo
+
+works.ewen.ortfo.yml [
+	app-id: works.ewen.ortfo
+	runtime: org.freedesktop.Platform
+	runtime-version: '21.08'
+	sdk: org.freedesktop.Sdk
+	command: ortfo
+	modules:
+	- name: ortfo
+	  buildsystem: 
+]

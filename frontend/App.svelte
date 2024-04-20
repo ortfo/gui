@@ -1,29 +1,40 @@
 <script lang="ts">
-import Navbar, { rebuildDatabase } from "./components/Navbar.svelte"
-import { database, onboardingNeeded, settings, state } from "./stores"
-import { backend } from "./backend"
-import Works from "./tabs/works.svelte"
-import Tags from "./tabs/tags.svelte"
-import Editor, { closeWork } from "./tabs/editor.svelte"
-import Settings from "./tabs/settings.svelte"
 import { onMount } from "svelte"
-import Modal from "svelte-simple-modal"
-import ModalButtonClose from "./components/ModalButtonClose.svelte"
-import hotkeys from "./tinykeysInputDisabled"
-import { addMessages, init as i18nInit, locale } from "svelte-i18n"
-import { _ } from "svelte-i18n"
-import { i18n } from "./actions"
-import messagesFrench from "../i18n/fr.yaml"
-import messagesEnglish from "../i18n/en.yaml"
-import Technologies from "./tabs/technologies.svelte"
-import Externalsites from "./tabs/externalsites.svelte"
-import FieldText from "./components/FieldText.svelte"
-import FieldFilepath from "./components/FieldFilepath.svelte"
+import { _, addMessages, init as i18nInit, locale } from "svelte-i18n"
 import Notifications from "svelte-notifications"
-import { vimkeys } from "./vimkeys"
+import Modal from "svelte-simple-modal"
+// @ts-expect-error language server too dumb to understand that i can import yaml
+import messagesEnglish from "../i18n/en.yaml"
+// @ts-expect-error same
+import messagesFrench from "../i18n/fr.yaml"
+import { i18n } from "./actions"
+import { backend } from "./backend"
+import FieldFilepath from "./components/FieldFilepath.svelte"
+import ModalButtonClose from "./components/ModalButtonClose.svelte"
+import Navbar, { rebuildDatabase } from "./components/Navbar.svelte"
 import { createModalSummoner } from "./modals"
 import Onboarding from "./screens/Onboarding.svelte"
+import {
+	buildProgress,
+	database,
+	debugFlyoutContent,
+	onboardingNeeded,
+	settings,
+	state,
+	workInEditor,
+	workOnDisk,
+} from "./stores"
+import Editor, { closeWork } from "./tabs/editor.svelte"
+import Externalsites from "./tabs/externalsites.svelte"
+import Settings from "./tabs/settings.svelte"
+import Tags from "./tabs/tags.svelte"
+import Technologies from "./tabs/technologies.svelte"
+import Works from "./tabs/works.svelte"
+import hotkeys from "./tinykeysInputDisabled"
+import { createNotificationSpawner } from "./utils"
+import { vimkeys } from "./vimkeys"
 
+const notifications = createNotificationSpawner()
 const summon = createModalSummoner()
 
 function loadLocales() {
@@ -79,6 +90,13 @@ async function load() {
 	await loadDatabase()
 }
 
+$: if ($state.editingWorkID) {
+	if (!$workInEditor)
+		$workInEditor = structuredClone($database[$state.editingWorkID])
+	if (!$workOnDisk)
+		$workOnDisk = structuredClone($database[$state.editingWorkID])
+}
+
 onMount(() => {
 	hotkeys(window, {
 		"$mod+r": () => {
@@ -86,12 +104,18 @@ onMount(() => {
 			window.location.reload()
 		},
 		"$mod+b": () => {
-			rebuildDatabase(true)
+			rebuildDatabase("", true)
 		},
 		"$mod+w": () => {
 			closeWork(summon)
 		},
 		...vimkeys(60),
+		"ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight B A":
+			async () => {
+				$settings.poweruser = true
+				await backend.settingsWrite($settings)
+				notifications.add($_(`you are now a power user!`))
+			},
 	})
 
 	window.addEventListener("scroll", () => {
@@ -99,8 +123,14 @@ onMount(() => {
 	})
 })
 
-settings.subscribe(settings => applyTheme(settings.theme))
+$: applyTheme($settings.theme)
 </script>
+
+<svelte:head>
+	{#if import.meta.env.DEV }
+		<title>ortfodb [dev]</title>
+	{/if}
+</svelte:head>
 
 <Notifications>
 	{#await load()}
@@ -111,6 +141,11 @@ settings.subscribe(settings => applyTheme(settings.theme))
 		{:else}
 			<Modal closeButton={ModalButtonClose}>
 				<Navbar />
+				<pre class="debug-flyout">{JSON.stringify(
+						$debugFlyoutContent,
+						null,
+						2,
+					)}</pre>
 				<main>
 					{#if $state.openTab == "works"}
 						<Works />
@@ -181,7 +216,9 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	font-variation-settings: "wght" 400;
 }
 
-:global(*:not(input):not(select):not(textarea):not(.ProseMirror):focus-visible) {
+:global(
+		*:not(input):not(select):not(textarea):not(.ProseMirror):focus-visible
+	) {
 	outline: 1px solid var(--ortforange);
 }
 
@@ -224,7 +261,10 @@ settings.subscribe(settings => applyTheme(settings.theme))
 	transition: all 0.25s ease;
 }
 
-:global(button[data-variant="inline"]:not(:disabled):hover, button[data-variant="inline"]:not(:disabled):focus) {
+:global(
+		button[data-variant="inline"]:not(:disabled):hover,
+		button[data-variant="inline"]:not(:disabled):focus
+	) {
 	background-color: var(--ortforange);
 	color: black;
 }
@@ -284,7 +324,12 @@ settings.subscribe(settings => applyTheme(settings.theme))
 :global(input:hover, textarea:hover, select:hover, ._markdown-editor:hover) {
 	border-radius: 0;
 }
-:global(input:focus, textarea:focus, select:focus-visible, ._markdown-editor:focus-within) {
+:global(
+		input:focus,
+		textarea:focus,
+		select:focus-visible,
+		._markdown-editor:focus-within
+	) {
 	border-radius: 0;
 	border-color: var(--ortforange);
 }
@@ -334,5 +379,17 @@ main {
 
 .error h2 {
 	margin-top: 5em;
+}
+
+.debug-flyout {
+	position: fixed;
+	z-index: 100;
+	bottom: 10px;
+	left: 10px;
+	background: #000;
+	color: #ffffff;
+	max-height: 75vh;
+	max-width: 50vw;
+	overflow: scroll;
 }
 </style>

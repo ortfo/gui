@@ -1,0 +1,15 @@
+PUT $DOCUMENT_DIR/../LICENSE AS LICENSE
+
+ortfo-{{version}}.ebuild [
+	# Copyright 1999-2021 Gentoo Authors
+	# Distributed under the terms of the GNU General Public License v2
+	EAPI=8
+
+	DESCRIPTION={{description}}
+	HOMEPAGE="https://github.com/ortfo/gui"
+	SRC_URI="https://github.com/ortfo/gui/releases/download/{{version}}/ortfo-linux.tar.gz"
+	LICENSE="LICENSE"
+	SLOT="0"
+	KEYWORDS="alpha ~amd64"
+	DEPEND="gtk3 webkit2gtk"
+]

@@ -1,11 +1,10 @@
 <script context="module" lang="ts">
-import { localDatabase } from "../backend"
-import FieldToggle from "./../components/FieldToggle.svelte"
 import FieldDate from "./../components/FieldDate.svelte"
+import FieldToggle from "./../components/FieldToggle.svelte"
 export async function saveWork(
 	id: WorkID,
-	parsedDescription: ParsedDescription,
-	reloadWhenDone: boolean = true
+	parsedDescription: AnalyzedWork,
+	reloadWhenDone: boolean = true,
 ) {
 	await backend.writeToDisk(parsedDescription, id)
 	volatileWorks.set(get(volatileWorks).filter(workID => workID !== id))
@@ -27,45 +26,43 @@ export function closeWork(summoner) {
 
 <script lang="ts">
 import { onMount } from "svelte"
-import { toParsedDescription } from "../description"
-import SwitchButton from "../components/SwitchButton.svelte"
-import {
-	state,
-	settings,
-	workInEditor,
-	workOnDisk,
-	WorkID,
-	volatileWorks,
-	hasUnsavedChanges,
-} from "../stores"
 import JSONTree from "svelte-json-tree"
 import { i18n } from "../actions"
-import FieldImage from "../components/FieldImage.svelte"
-import FieldList from "../components/FieldList.svelte"
-import FieldColors from "../components/FieldColors.svelte"
 import ContentGrid from "../components/ContentGrid.svelte"
+import FieldList from "../components/FieldList.svelte"
+import SwitchButton from "../components/SwitchButton.svelte"
+import {
+	WorkID,
+	hasUnsavedChanges,
+	settings,
+	state,
+	unsavedChanges,
+	volatileWorks,
+	workInEditor,
+	workOnDisk,
+} from "../stores"
 // @ts-ignore don't know why ts thinks Split does not exist, it does
 import { Split } from "@geoffcox/svelte-splitter"
-import hotkeys from "../tinykeysInputDisabled"
-import { backend } from "../backend"
-import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
-import { MissingWork } from "../errors"
-import type { Media, MediaEmbedDeclaration, ParsedDescription } from "../ortfo"
-import FieldMap from "../components/FieldMap.svelte"
-import { rebuildDatabase } from "../components/Navbar.svelte"
 import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
-import UnsavedChanges from "../modals/UnsavedChanges.svelte"
-import { LANGUAGES, LANGUAGES_ALL } from "../languagecodes"
-import { closestTo, objectFilter } from "../utils"
-import MetadataField from "../components/MetadataField.svelte"
+import { backend } from "../backend"
 import FieldColors from "../components/FieldColors.svelte"
 import FieldFilepath from "../components/FieldFilepath.svelte"
+import FieldMap from "../components/FieldMap.svelte"
+import MetadataField from "../components/MetadataField.svelte"
+import { rebuildDatabase } from "../components/Navbar.svelte"
+import ObjectDiffTable from "../components/ObjectDiffTable.svelte"
+import { MissingWork } from "../errors"
+import { LANGUAGES_ALL } from "../languagecodes"
+import UnsavedChanges from "../modals/UnsavedChanges.svelte"
+import hotkeys from "../tinykeysInputDisabled"
+import { closestTo } from "../utils"
+import type { AnalyzedWork } from "../ortfo"
 
 let rawDescription: string = ""
 
 const PATHS_RELATIVE_TO =
-	$settings.projectsfolder + "/" + $state.editingWorkID + "/.portfoliodb"
+	$settings.projectsfolder + "/" + $state.editingWorkID + "/.ortfo"
 
 onMount(async () => {
 	hotkeys(window, {
@@ -82,16 +79,9 @@ async function initialize() {
 		throw MissingWork(`Work ${$state.editingWorkID} not found.`)
 	} else {
 		rawDescription = await backend.rawDescription($state.editingWorkID)
-		$workInEditor = toParsedDescription(
-			$workOnDisk,
-			$settings.portfoliolanguages
-		)
+		$workInEditor = structuredClone($workOnDisk)
 		$state.lang ||= "en"
 	}
-}
-
-function analyzed(media: MediaEmbedDeclaration): Media {
-	return $workOnDisk.media[$state.lang].find(m => m.source === media.source)
 }
 
 function editTitle(e) {
@@ -100,15 +90,22 @@ function editTitle(e) {
 		titleH1.focus()
 	} else {
 		editingTitle = false
-		$workInEditor.title = {
-			...$workInEditor.title,
-			[$state.lang]: titleH1.textContent,
+		$workInEditor.content = {
+			...$workInEditor.content,
+			[$state.lang]: {
+				...$workInEditor.content[$state.lang],
+				title: titleH1.textContent,
+			},
 		}
 	}
 }
 
 let editingTitle = false
 let titleH1: HTMLHeadingElement
+
+$: console.log(new Date().getTime(), "in editor", $workInEditor)
+$: console.log(new Date().getTime(), "on disk", $workOnDisk)
+$: console.log(new Date().getTime(), "diff", $unsavedChanges)
 </script>
 
 {#if $state.editingWorkID}
@@ -123,7 +120,7 @@ let titleH1: HTMLHeadingElement
 						options={Object.fromEntries(
 							Object.entries(LANGUAGES_ALL)
 								.filter(([code, l]) =>
-									$settings.portfoliolanguages.includes(code)
+									$settings.portfoliolanguages.includes(code),
 								)
 								.map(([code, l]) => [
 									code,
@@ -131,7 +128,7 @@ let titleH1: HTMLHeadingElement
 										(l.country === "All countries"
 											? ""
 											: ` (${l.country})`),
-								])
+								]),
 						)}
 						showCodes
 					/>
@@ -155,18 +152,18 @@ let titleH1: HTMLHeadingElement
 									e.preventDefault()
 									editingTitle = false
 									titleH1.textContent =
-										$workInEditor.title[$state.lang]
+										$workInEditor.content[$state.lang].title
 									break
 							}
 						}}
 						on:blur={editTitle}
 						contenteditable={editingTitle}
 					>
-						{$workInEditor.title[$state.lang]}
+						{$workInEditor.content[$state.lang].title}
 					</h1>
 					<button data-variant="inline" on:click={editTitle}
 						>{#if editingTitle}{$_("finish")}{:else}{$_(
-								"edit"
+								"edit",
 							)}{/if}</button
 					>
 				</div>
@@ -174,7 +171,7 @@ let titleH1: HTMLHeadingElement
 				{#if $settings.showtips}
 					<p class="tip">
 						{$_(
-							"Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it."
+							"Drag and drop blocks to arrange the layout of the page. Double-click a block to edit it.",
 						)}
 					</p>
 				{/if}
@@ -202,7 +199,7 @@ let titleH1: HTMLHeadingElement
 						/>
 						<FieldList
 							key="madewith"
-							bind:value={$workInEditor.metadata.madewith}
+							bind:value={$workInEditor.metadata.madeWith}
 						/>
 						<MetadataField key="dates" colon>
 							<dl>
@@ -232,28 +229,31 @@ let titleH1: HTMLHeadingElement
 						<FieldFilepath
 							key="pagebackground"
 							relativeTo={PATHS_RELATIVE_TO}
-							bind:value={$workInEditor.metadata.pagebackground}
+							bind:value={$workInEditor.metadata.pageBackground}
 						/>
 						<FieldColors
 							key="colors"
 							images={Object.fromEntries(
-								$workOnDisk.media[$state.lang]
+								$workOnDisk.content[$state.lang].blocks
 									.filter(
-										m => Object.keys(m.thumbnails).length
+										m =>
+											Object.keys(m.thumbnails ?? {})
+												.length,
 									)
 									.map(m => [
 										m.thumbnails?.[
 											closestTo(
 												400,
-												Object.keys(m.thumbnails).map(
-													parseFloat
-												)
+												Object.keys(
+													m.thumbnails ?? {},
+												).map(parseFloat),
 											)
 										],
-										m?.alt,
-									])
+										m.alt,
+									]),
 							)}
 							bind:value={$workInEditor.metadata.colors}
+							initial={$workOnDisk.metadata.colors}
 						/>
 					</dl>
 				</section>
@@ -262,16 +262,16 @@ let titleH1: HTMLHeadingElement
 					<h2>{$_("Footnotes")}</h2>
 					<!-- TODO when a key changes, update references. -->
 					<FieldMap
-						value={$workInEditor.footnotes[$state.lang]}
+						value={$workInEditor.content[$state.lang].footnotes}
 						richText
 						on:input={({ detail }) => {
-							$workInEditor.footnotes = {
-								...$workInEditor.footnotes,
-								[$state.lang]: Object.fromEntries(
+							$workInEditor.content[$state.lang].footnotes = {
+								...$workInEditor.content[$state.lang].footnotes,
+								...Object.fromEntries(
 									Object.entries(detail).map(([k, v]) => [
 										k,
 										v.replace(/<p>(.+)<\/p>/, "$1"),
-									])
+									]),
 								),
 							}
 						}}
@@ -281,11 +281,12 @@ let titleH1: HTMLHeadingElement
 					/>
 				</section>
 
+				<!--
 				<section class="abbreviations">
 					<h2>{$_("Abbreviations")}</h2>
 
 					<FieldMap
-						value={$workInEditor.abbreviations[$state.lang]}
+						value={$workInEditor.content[$state.lang]}
 						on:input={({ detail }) => {
 							$workInEditor.abbreviations = {
 								...$workInEditor.abbreviations,
@@ -293,14 +294,14 @@ let titleH1: HTMLHeadingElement
 									Object.entries(detail).map(([k, v]) => [
 										k,
 										v.replace(/<p>(.+)<\/p>/, "$1"),
-									])
+									]),
 								),
 							}
 						}}
 						placeholderKey={$_("name")}
 						placeholderValue={$_("definition")}
 					/>
-				</section>
+				</section> -->
 			</aside>
 		</Split>
 		{#if import.meta.env.DEV}
@@ -311,10 +312,7 @@ let titleH1: HTMLHeadingElement
 			<div class="float dev-only">
 				<div id="debug" />
 				<ObjectDiffTable
-					a={toParsedDescription(
-						$workOnDisk || null,
-						$settings.portfoliolanguages
-					) || {}}
+					a={$workOnDisk}
 					b={$workInEditor}
 					aLabel="on disk"
 					bLabel="in editor"
@@ -332,7 +330,7 @@ let titleH1: HTMLHeadingElement
 							values: {
 								id: $state.editingWorkID,
 							},
-						}
+						},
 					)}
 				</p>
 				<button
@@ -353,7 +351,7 @@ let titleH1: HTMLHeadingElement
 		<textarea
 			name="raw-description"
 			id="raw-description"
-			rows={rawDescription.split("\n").length}
+			rows="20"
 			cols="80"
 			bind:value={rawDescription}
 		/>
@@ -362,9 +360,9 @@ let titleH1: HTMLHeadingElement
 			on:click={async () => {
 				await backend.writeRawDescription(
 					$state.editingWorkID,
-					rawDescription
+					rawDescription,
 				)
-				rebuildDatabase(true)
+				rebuildDatabase($state.editingWorkID, true)
 			}}>save</button
 		>
 	</details>
